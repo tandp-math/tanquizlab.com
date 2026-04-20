@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trắc Nghiệm Toán 12 – Thầy Đinh Phước Tân</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<style>
+:root {
+  --ink:#1a1207; --paper:#fdf6e3; --cream:#f5ead0;
+  --gold:#b8860b; --gold2:#d4a017; --rust:#c0392b;
+  --teal:#0e6655; --teal2:#1abc9c; --rule:#d6c9a5;
+  --correct-bg:#d4edda; --correct-bd:#28a745;
+  --wrong-bg:#f8d7da;   --wrong-bd:#dc3545;
+  --shadow:0 4px 24px rgba(0,0,0,.12);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Source Serif 4',Georgia,serif;
+  background:var(--cream);color:var(--ink);min-height:100vh;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(184,134,11,.06) 28px);
+}
+
+/* ── SCREEN: NHẬP TÊN ── */
+#screen-name{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:20px;
+}
+.name-card{
+  background:var(--paper);border-radius:16px;
+  box-shadow:var(--shadow);padding:48px 40px;
+  max-width:460px;width:100%;text-align:center;
+  border-top:6px solid var(--gold);
+}
+.name-card .logo{font-family:'Playfair Display',serif;font-size:1.1rem;
+  color:var(--gold2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.name-card h1{font-family:'Playfair Display',serif;font-size:1.9rem;
+  font-weight:900;margin-bottom:6px;}
+.name-card p{opacity:.65;font-size:.95rem;margin-bottom:28px;font-style:italic;}
+.name-input{
+  width:100%;padding:13px 16px;font-size:1.1rem;
+  font-family:'Source Serif 4',serif;
+  border:2px solid var(--rule);border-radius:8px;
+  background:var(--cream);color:var(--ink);outline:none;
+  transition:border-color .2s;margin-bottom:10px;
+}
+.name-input:focus{border-color:var(--gold);}
+.class-input{
+  width:100%;padding:10px 16px;font-size:1rem;
+  font-family:'Source Serif 4',serif;
+  border:2px solid var(--rule);border-radius:8px;
+  background:var(--cream);color:var(--ink);outline:none;
+  transition:border-color .2s;margin-bottom:20px;
+}
+.class-input:focus{border-color:var(--gold);}
+.name-hint{font-size:.8rem;opacity:.5;margin-bottom:24px;}
+.btn-start{
+  width:100%;padding:14px;border:none;border-radius:8px;
+  background:var(--gold);color:#fff;font-size:1.1rem;
+  font-family:'Source Serif 4',serif;font-weight:700;
+  cursor:pointer;transition:all .2s;letter-spacing:.03em;
+}
+.btn-start:hover{background:var(--gold2);transform:translateY(-2px);
+  box-shadow:0 6px 18px rgba(184,134,11,.4);}
+
+/* ── HEADER ── */
+.site-header{
+  background:var(--ink);color:var(--paper);
+  padding:24px 32px 18px;text-align:center;position:relative;overflow:hidden;
+}
+.site-header::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(-45deg,transparent,transparent 10px,
+    rgba(184,134,11,.07) 10px,rgba(184,134,11,.07) 11px);
+}
+.school-name{font-family:'Playfair Display',serif;font-size:clamp(1rem,2.5vw,1.3rem);
+  letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);position:relative;}
+.teacher-name{font-size:.85rem;opacity:.65;margin-top:3px;font-style:italic;position:relative;}
+.quiz-title{font-family:'Playfair Display',serif;
+  font-size:clamp(1.5rem,4vw,2.2rem);font-weight:900;margin-top:8px;position:relative;}
+.student-badge{
+  display:inline-block;margin-top:8px;padding:5px 16px;
+  background:rgba(255,255,255,.1);border-radius:99px;
+  font-size:.9rem;position:relative;letter-spacing:.05em;
+}
+.student-badge span{color:var(--gold2);font-weight:700;}
+.gold-rule{width:60px;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold2),transparent);
+  margin:10px auto 0;position:relative;}
+
+/* ── CTRL BAR ── */
+.ctrl-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;padding:14px 32px;
+  background:var(--paper);border-bottom:1px solid var(--rule);
+  box-shadow:0 2px 8px rgba(0,0,0,.06);position:sticky;top:0;z-index:100;
+}
+.timer-wrap{display:flex;align-items:center;gap:8px;}
+.timer-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;opacity:.6;}
+#timer{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;
+  color:var(--rust);min-width:80px;transition:color .3s;}
+#timer.warning{animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.progress-wrap{flex:1;min-width:140px;}
+.progress-label{font-size:.72rem;opacity:.6;margin-bottom:4px;}
+.progress-track{height:6px;background:var(--rule);border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;
+  background:linear-gradient(90deg,var(--gold),var(--teal2));
+  border-radius:99px;width:0%;transition:width .4s ease;}
+.btn{padding:9px 18px;border:none;border-radius:6px;
+  font-family:'Source Serif 4',serif;font-size:.88rem;cursor:pointer;
+  transition:all .2s;font-weight:600;letter-spacing:.03em;}
+.btn-gold{background:var(--gold);color:#fff;}
+.btn-gold:hover{background:var(--gold2);transform:translateY(-1px);}
+.btn-teal{background:var(--teal);color:#fff;}
+.btn-teal:hover{background:var(--teal2);transform:translateY(-1px);}
+.btn-outline{background:transparent;border:2px solid var(--ink);color:var(--ink);}
+.btn-outline:hover{background:var(--ink);color:var(--paper);}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;}
+
+/* ── RESULT BANNER ── */
+#result-banner{
+  display:none;margin:24px 32px;padding:28px;
+  background:var(--paper);border:2px solid var(--gold);
+  border-radius:12px;box-shadow:var(--shadow);text-align:center;
+}
+#result-banner h2{font-family:'Playfair Display',serif;
+  font-size:1.7rem;color:var(--gold);margin-bottom:8px;}
+.score-ring{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:110px;height:110px;border-radius:50%;border:6px solid var(--gold);
+  font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;
+  color:var(--gold);margin:14px auto;
+  background:radial-gradient(circle,#fffbf0,var(--cream));
+}
+.score-detail{font-size:1rem;opacity:.75;margin-top:6px;}
+.send-status{margin-top:14px;padding:10px 16px;border-radius:8px;
+  font-size:.9rem;display:none;}
+.send-ok{background:#d4edda;color:#155724;border:1px solid #c3e6cb;}
+.send-err{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;}
+
+/* ── CARDS ── */
+#quiz-wrap{padding:24px 32px 40px;max-width:860px;margin:0 auto;}
+.q-card{
+  background:var(--paper);border-radius:10px;box-shadow:var(--shadow);
+  margin-bottom:28px;border-left:4px solid var(--gold);overflow:hidden;
+  animation:slideUp .35s ease both;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.q-head{display:flex;align-items:baseline;gap:10px;
+  padding:18px 22px 12px;border-bottom:1px solid var(--rule);}
+.q-num{font-family:'Playfair Display',serif;font-size:1rem;
+  font-weight:700;color:var(--gold);white-space:nowrap;}
+.q-text{font-size:1rem;line-height:1.65;flex:1;}
+.svg-wrap{text-align:center;padding:8px 22px 0;overflow-x:auto;}
+svg{max-width:100%;height:auto;}
+.options{display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;padding:14px 22px 18px;}
+@media(max-width:560px){.options{grid-template-columns:1fr;}}
+.opt{display:flex;align-items:center;gap:10px;padding:11px 14px;
+  border:1.5px solid var(--rule);border-radius:7px;cursor:pointer;
+  transition:border-color .2s,background .2s;font-size:.95rem;
+  line-height:1.5;user-select:none;background:var(--cream);}
+.opt:hover:not(.locked){border-color:var(--gold);background:#fef9ec;}
+.opt input[type=radio]{display:none;}
+.opt-label{display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;min-width:26px;border-radius:50%;
+  border:2px solid var(--rule);font-weight:700;font-size:.82rem;
+  transition:all .2s;background:#fff;}
+.opt.selected .opt-label{background:var(--gold);border-color:var(--gold);color:#fff;}
+.opt.correct{background:var(--correct-bg);border-color:var(--correct-bd);}
+.opt.correct .opt-label{background:var(--correct-bd);border-color:var(--correct-bd);color:#fff;}
+.opt.wrong{background:var(--wrong-bg);border-color:var(--wrong-bd);}
+.opt.wrong .opt-label{background:var(--wrong-bd);border-color:var(--wrong-bd);color:#fff;}
+.opt.locked{cursor:default;}
+.solution{display:none;margin:0 22px 18px;padding:14px 16px;
+  background:#fffbea;border-left:4px solid var(--gold2);
+  border-radius:0 8px 8px 0;font-size:.9rem;line-height:1.75;color:#3d3000;}
+.solution-title{font-weight:700;font-size:.78rem;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--gold);margin-bottom:6px;}
+
+/* ── FOOTER ── */
+.site-footer{text-align:center;padding:18px;font-size:.78rem;opacity:.45;
+  border-top:1px solid var(--rule);}
+
+@media(max-width:600px){
+  .ctrl-bar,.site-header{padding-left:16px;padding-right:16px;}
+  #quiz-wrap{padding:14px 12px 36px;}
+  .q-head,.options,.solution{padding-left:14px;padding-right:14px;}
+  #result-banner{margin:14px;}
+  .name-card{padding:36px 24px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ SCREEN: NHẬP TÊN ══════════════════════════════════ -->
+<div id="screen-name">
+  <div class="name-card">
+    <div class="logo">Cơ sở Trí Đức · Ca Văn Thỉnh</div>
+    <h1>Trắc Nghiệm Toán 12</h1>
+    <p>Thầy Đinh Phước Tân</p>
+    <input class="name-input" id="inp-name" type="text"
+      placeholder="Họ và tên học sinh..." maxlength="60"
+      onkeydown="if(event.key==='Enter')startQuiz()">
+    <input class="class-input" id="inp-class" type="text"
+      placeholder="Lớp (VD: 12A1)..." maxlength="20"
+      onkeydown="if(event.key==='Enter')startQuiz()">
+    <div class="name-hint">Nhập đúng tên để thầy ghi điểm chính xác</div>
+    <button class="btn-start" onclick="startQuiz()">Bắt đầu làm bài →</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: BÀI THI ═══════════════════════════════════ -->
+<div id="screen-quiz" style="display:none">
+  <header class="site-header">
+    <div class="school-name">Cơ sở dạy thêm Trí Đức · THPT Ca Văn Thỉnh</div>
+    <div class="teacher-name">Giáo viên: Thầy Đinh Phước Tân</div>
+    <h1 class="quiz-title">Trắc Nghiệm Toán 12</h1>
+    <div class="student-badge">Học sinh: <span id="disp-name">–</span> &nbsp;·&nbsp; Lớp: <span id="disp-class">–</span></div>
+    <div class="gold-rule"></div>
+  </header>
+
+  <div class="ctrl-bar">
+    <div class="timer-wrap">
+      <div>
+        <div class="timer-label">Thời gian</div>
+        <div id="timer">45:00</div>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label" id="prog-label">0 / 15 câu đã trả lời</div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-outline" onclick="shuffleAndRestart()">🔀 Đề mới</button>
+      <button class="btn btn-teal" id="submit-btn" onclick="submitQuiz()">✓ Nộp bài</button>
+    </div>
+  </div>
+
+  <div id="result-banner">
+    <h2>🎉 Kết quả bài thi</h2>
+    <div class="score-ring" id="score-ring">–</div>
+    <div class="score-detail" id="score-detail"></div>
+    <div id="send-status" class="send-status"></div>
+    <div style="margin-top:18px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-gold" onclick="shuffleAndRestart()">🔀 Thi lại (đề mới)</button>
+      <button class="btn btn-outline" onclick="restartSame()">↺ Làm lại đề này</button>
+    </div>
+  </div>
+
+  <main id="quiz-wrap"></main>
+  <footer class="site-footer">© Trí Đức – Thầy Đinh Phước Tân · Kết quả lưu tự động vào Google Sheets</footer>
+</div>
+
+<script>
+// ══ CẤU HÌNH – THẦY ĐIỀN VÀO ĐÂY ══════════════════════
+// Bước 1: Tạo Google Apps Script (xem hướng dẫn setup.md)
+// Bước 2: Dán Web App URL vào đây
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxgD9S8mW2vVmUux7-YDtSD_ItIN8E9Q6SCU3oz0b5dELWojzPQJ6MNpIljQuEny6G0uw/exec';
+// ═══════════════════════════════════════════════════════
+
+// ── SVG ─────────────────────────────────────────────────
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,text){
+  const e=document.createElementNS(NS,tag);
+  for(const[k,v]of Object.entries(attrs||{}))e.setAttribute(k,v);
+  if(text!=null)e.textContent=text;return e;
+}
+
+function svg_bbt1(){
+  const W=440,H=100,xs=[0,55,130,205,280,350,420],rows=[18,42,68,95];
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H,style:'font-family:serif'});
+  svg.appendChild(el('rect',{x:1,y:1,width:W-2,height:H-2,fill:'none',stroke:'#333',strokeWidth:1.2}));
+  [rows[0]+14,rows[1]+14].forEach(y=>svg.appendChild(el('line',{x1:1,y1:y,x2:W-1,y2:y,stroke:'#333',strokeWidth:.8})));
+  svg.appendChild(el('line',{x1:xs[1],y1:1,x2:xs[1],y2:H-1,stroke:'#333',strokeWidth:.8}));
+  xs.slice(2,-1).forEach(x=>svg.appendChild(el('line',{x1:x,y1:1,x2:x,y2:H-1,stroke:'#ddd',strokeWidth:.7})));
+  const txt=(t,x,y,bold,color)=>{
+    const n=el('text',{x,y,textAnchor:'middle',dominantBaseline:'middle',
+      fontSize:12,fontWeight:bold?'bold':'normal',fill:color||'#111'});
+    n.textContent=t;svg.appendChild(n);
+  };
+  txt('x',28,rows[0]+7,true);txt("y'",28,rows[1]+7,true);txt('y',28,rows[2]+14,true);
+  ['-∞','-8','0','8','+∞'].forEach((v,i)=>txt(v,xs[i+1],rows[0]+7));
+  const signs=['+','0','-','0','+','0','-'];
+  const sX=[(xs[1]+xs[2])/2,xs[2],(xs[2]+xs[3])/2,xs[3],(xs[3]+xs[4])/2,xs[4],(xs[4]+xs[5])/2];
+  signs.forEach((s,i)=>txt(s,sX[i],rows[1]+7,false,s==='+'?'#0a5':s==='-'?'#c00':'#333'));
+  const yvals=['-∞','-5','-7','-5','-∞'],yVpos=[rows[2]+22,rows[2]+6,rows[2]+22,rows[2]+6,rows[2]+22];
+  const ycols=['#555','#0a5','#c00','#0a5','#555'];
+  yvals.forEach((v,i)=>txt(v,xs[i+1],yVpos[i],false,ycols[i]));
+  const defs=el('defs',{});svg.insertBefore(defs,svg.firstChild);
+  const mk=el('marker',{id:'arr1',markerWidth:6,markerHeight:6,refX:3,refY:3,orient:'auto'});
+  mk.appendChild(el('path',{d:'M0,0 L6,3 L0,6 Z',fill:'#333'}));defs.appendChild(mk);
+  const arrow=(x1,y1,x2,y2)=>svg.appendChild(el('line',{x1,y1,x2,y2,stroke:'#333',strokeWidth:1.2,markerEnd:'url(#arr1)'}));
+  arrow(xs[1]+8,rows[2]+22-2,xs[2]-8,rows[2]+6+2);
+  arrow(xs[2]+8,rows[2]+6+2,xs[3]-8,rows[2]+22-2);
+  arrow(xs[3]+8,rows[2]+22-2,xs[4]-8,rows[2]+6+2);
+  arrow(xs[4]+8,rows[2]+6+2,xs[5]-8,rows[2]+22-2);
+  return svg.outerHTML;
+}
+
+function svg_dt2(){
+  const W=220,H=200,cx=90,cy=110,sx=35,sy=28;
+  const f=x=>Math.pow(x+1,3)-3*Math.pow(x+1,2)+1;
+  const px=x=>cx+x*sx,py=y=>cy-y*sy;
+  let d='';
+  for(let xi=-2.8;xi<=2.8;xi+=0.04){const yi=f(xi);if(yi<-4.5||yi>2.5)continue;d+=(d===''?'M':'L')+`${px(xi).toFixed(2)},${py(yi).toFixed(2)} `;}
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H,style:'font-family:serif;overflow:visible'});
+  const defs=el('defs',{});svg.insertBefore(defs,svg.firstChild);
+  const mk=el('marker',{id:'arr2',markerWidth:6,markerHeight:6,refX:5,refY:3,orient:'auto'});
+  mk.appendChild(el('path',{d:'M0,0 L6,3 L0,6 Z',fill:'#333'}));defs.appendChild(mk);
+  svg.appendChild(el('line',{x1:10,y1:cy,x2:W-10,y2:cy,stroke:'#333',strokeWidth:1.2,markerEnd:'url(#arr2)'}));
+  svg.appendChild(el('line',{x1:cx,y1:H-10,x2:cx,y2:8,stroke:'#333',strokeWidth:1.2,markerEnd:'url(#arr2)'}));
+  svg.appendChild(el('path',{d,fill:'none',stroke:'#1a5fb4',strokeWidth:2}));
+  const t=(txt,x,y,anc,sz)=>{const n=el('text',{x,y,textAnchor:anc||'middle',dominantBaseline:'middle',fontSize:sz||11,fill:'#111'});n.textContent=txt;svg.appendChild(n);};
+  [[-1,'−1'],[1,'1']].forEach(([x,lbl])=>{svg.appendChild(el('line',{x1:px(x),y1:cy-3,x2:px(x),y2:cy+3,stroke:'#333',strokeWidth:1}));t(lbl,px(x),cy+12);});
+  [[1,'1'],[-3,'−3']].forEach(([y,lbl])=>{svg.appendChild(el('line',{x1:cx-3,y1:py(y),x2:cx+3,y2:py(y),stroke:'#333',strokeWidth:1}));t(lbl,cx-14,py(y));});
+  const dash={stroke:'#888',strokeWidth:.8,strokeDasharray:'4,3'};
+  svg.appendChild(el('line',{x1:px(1),y1:cy,x2:px(1),y2:py(-3),...dash}));svg.appendChild(el('line',{x1:cx,y1:py(-3),x2:px(1),y2:py(-3),...dash}));
+  svg.appendChild(el('line',{x1:px(-1),y1:cy,x2:px(-1),y2:py(1),...dash}));svg.appendChild(el('line',{x1:cx,y1:py(1),x2:px(-1),y2:py(1),...dash}));
+  t('O',cx-10,cy+12);t('x',W-8,cy+12);t('y',cx+8,12);
+  return svg.outerHTML;
+}
+
+function svg_bxt3(){
+  const W=340,H=70,xs=[0,55,140,230,310],rows=[0,22,44,68];
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H,style:'font-family:serif'});
+  svg.appendChild(el('rect',{x:1,y:1,width:W-2,height:H-2,fill:'none',stroke:'#333',strokeWidth:1.2}));
+  svg.appendChild(el('line',{x1:1,y1:rows[1],x2:W-1,y2:rows[1],stroke:'#333',strokeWidth:.8}));
+  svg.appendChild(el('line',{x1:xs[1],y1:1,x2:xs[1],y2:H-1,stroke:'#333',strokeWidth:.8}));
+  [xs[2],xs[3]].forEach(x=>svg.appendChild(el('line',{x1:x,y1:1,x2:x,y2:H-1,stroke:'#ddd',strokeWidth:.7})));
+  const txt=(t,x,y,bold,color)=>{const n=el('text',{x,y,textAnchor:'middle',dominantBaseline:'middle',fontSize:12,fontWeight:bold?'bold':'normal',fill:color||'#111'});n.textContent=t;svg.appendChild(n);};
+  txt('x',28,rows[0]+11,true);txt("y'",28,rows[1]+11,true);
+  ['-∞','15','16','+∞'].forEach((v,i)=>txt(v,xs[i+1],rows[0]+11));
+  const signs=['+','0','-','0','+'],sX=[(xs[1]+xs[2])/2,xs[2],(xs[2]+xs[3])/2,xs[3],(xs[3]+xs[4])/2];
+  signs.forEach((s,i)=>txt(s,sX[i],rows[1]+11,false,s==='+'?'#0a5':s==='-'?'#c00':'#333'));
+  return svg.outerHTML;
+}
+
+function svg_dt4(){
+  const W=260,H=200,cx=55,cy=110,sx=24,sy=22;
+  const rx=x=>cx+(x/8)*sx,ry=y=>cy-(y/8)*sy;
+  const pts=[[-8,-16],[0,8],[16,-16],[24,24],[40,8]];
+  const px=pts.map(([x,y])=>[rx(x),ry(y)]);
+  function catmullPath(p){
+    if(p.length<2)return'';
+    let d=`M${p[0][0].toFixed(1)},${p[0][1].toFixed(1)}`;
+    for(let i=0;i<p.length-1;i++){
+      const p0=p[Math.max(0,i-1)],p1=p[i],p2=p[i+1],p3=p[Math.min(p.length-1,i+2)];
+      const cp1x=p1[0]+(p2[0]-p0[0])/6,cp1y=p1[1]+(p2[1]-p0[1])/6;
+      const cp2x=p2[0]-(p3[0]-p1[0])/6,cp2y=p2[1]-(p3[1]-p1[1])/6;
+      d+=` C${cp1x.toFixed(1)},${cp1y.toFixed(1)} ${cp2x.toFixed(1)},${cp2y.toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;
+    }return d;
+  }
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H,style:'font-family:serif;overflow:visible'});
+  const defs=el('defs',{});svg.insertBefore(defs,svg.firstChild);
+  const mk=el('marker',{id:'arr4',markerWidth:6,markerHeight:6,refX:5,refY:3,orient:'auto'});
+  mk.appendChild(el('path',{d:'M0,0 L6,3 L0,6 Z',fill:'#333'}));defs.appendChild(mk);
+  svg.appendChild(el('line',{x1:8,y1:cy,x2:W-8,y2:cy,stroke:'#333',strokeWidth:1.2,markerEnd:'url(#arr4)'}));
+  svg.appendChild(el('line',{x1:cx,y1:H-6,x2:cx,y2:6,stroke:'#333',strokeWidth:1.2,markerEnd:'url(#arr4)'}));
+  svg.appendChild(el('path',{d:catmullPath(px),fill:'none',stroke:'#1a5fb4',strokeWidth:2}));
+  const t=(txt,x,y,anc,sz)=>{const n=el('text',{x,y,textAnchor:anc||'middle',dominantBaseline:'middle',fontSize:sz||10,fill:'#111'});n.textContent=txt;svg.appendChild(n);};
+  const dash={stroke:'#888',strokeWidth:.8,strokeDasharray:'4,3'};
+  const kp=pts.map(([x,y])=>({x,y,px:rx(x),py:ry(y)}));
+  svg.appendChild(el('line',{x1:kp[0].px,y1:cy,x2:kp[0].px,y2:kp[0].py,...dash}));
+  svg.appendChild(el('line',{x1:cx,y1:kp[0].py,x2:kp[0].px,y2:kp[0].py,...dash}));
+  svg.appendChild(el('line',{x1:kp[2].px,y1:cy,x2:kp[2].px,y2:kp[2].py,...dash}));
+  svg.appendChild(el('line',{x1:kp[3].px,y1:cy,x2:kp[3].px,y2:kp[3].py,...dash}));
+  svg.appendChild(el('line',{x1:cx,y1:kp[3].py,x2:kp[3].px,y2:kp[3].py,...dash}));
+  svg.appendChild(el('line',{x1:kp[4].px,y1:cy,x2:kp[4].px,y2:kp[4].py,...dash}));
+  svg.appendChild(el('line',{x1:cx,y1:kp[4].py,x2:kp[4].px,y2:kp[4].py,...dash}));
+  t('−8',kp[0].px,cy+13);t('16',kp[2].px,cy+13);t('24',kp[3].px,cy+13);t('40',kp[4].px,cy+13);
+  t('−16',cx-18,kp[0].py);t('8',cx-12,kp[4].py);t('24',cx-14,kp[3].py);
+  t('O',cx-10,cy+11);t('x',W-6,cy+11);t('y',cx+8,9);
+  return svg.outerHTML;
+}
+
+function svg_dt9(){
+  const W=220,H=200,cx=60,cy=110,sx=36,sy=32;
+  const f=x=>x*x*x-3*x*x+2,px=x=>cx+x*sx,py=y=>cy-y*sy;
+  let d='';
+  for(let xi=-1.2;xi<=3.0;xi+=0.04){const yi=f(xi);if(yi<-3.5||yi>3.5)continue;d+=(d===''?'M':'L')+`${px(xi).toFixed(2)},${py(yi).toFixed(2)} `;}
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H,style:'font-family:serif;overflow:visible'});
+  const defs=el('defs',{});svg.insertBefore(defs,svg.firstChild);
+  const mk=el('marker',{id:'arr9',markerWidth:6,markerHeight:6,refX:5,refY:3,orient:'auto'});
+  mk.appendChild(el('path',{d:'M0,0 L6,3 L0,6 Z',fill:'#333'}));defs.appendChild(mk);
+  svg.appendChild(el('line',{x1:8,y1:cy,x2:W-8,y2:cy,stroke:'#333',strokeWidth:1.2,markerEnd:'url(#arr9)'}));
+  svg.appendChild(el('line',{x1:cx,y1:H-6,x2:cx,y2:6,stroke:'#333',strokeWidth:1.2,markerEnd:'url(#arr9)'}));
+  svg.appendChild(el('path',{d,fill:'none',stroke:'#1a5fb4',strokeWidth:2}));
+  const t=(txt,x,y,anc)=>{const n=el('text',{x,y,textAnchor:anc||'middle',dominantBaseline:'middle',fontSize:11,fill:'#111'});n.textContent=txt;svg.appendChild(n);};
+  const dash={stroke:'#888',strokeWidth:.8,strokeDasharray:'4,3'};
+  svg.appendChild(el('line',{x1:px(2),y1:cy-3,x2:px(2),y2:cy+3,stroke:'#333',strokeWidth:1}));t('2',px(2),cy+12);
+  [2,-2].forEach(y=>{svg.appendChild(el('line',{x1:cx-3,y1:py(y),x2:cx+3,y2:py(y),stroke:'#333',strokeWidth:1}));t(y===2?'2':'−2',cx-16,py(y));});
+  svg.appendChild(el('line',{x1:px(2),y1:cy,x2:px(2),y2:py(-2),...dash}));svg.appendChild(el('line',{x1:cx,y1:py(-2),x2:px(2),y2:py(-2),...dash}));
+  svg.appendChild(el('line',{x1:cx,y1:py(2),x2:px(0),y2:py(2),...dash}));
+  t('O',cx-10,cy+12);t('x',W-8,cy+12);t('y',cx+8,10);
+  return svg.outerHTML;
+}
+
+const SVG_MAP={bbt1:svg_bbt1,dt2:svg_dt2,bxt3:svg_bxt3,dt4:svg_dt4,dt9:svg_dt9};
+
+// ── DỮ LIỆU CÂU HỎI ─────────────────────────────────────
+const ALL_QUESTIONS=[
+  {id:1,q:`Cho hàm số $y=f(x)$ có bảng biến thiên như sau:<br><div class="svg-wrap" data-svg="bbt1"></div><br>Hàm số <b>nghịch biến</b> trên khoảng nào dưới đây?`,
+   opts:['$(-8;\\,8)$','$(-8;\\,+\\infty)$','$(-\\infty;\\,8)$','$(8;\\,+\\infty)$'],ans:3,
+   exp:`Từ bảng biến thiên, $y'<0$ trên $(8;+\\infty)$ nên hàm số nghịch biến trên khoảng đó.`},
+  {id:2,q:`Cho hàm số $y=f(x)$ có đồ thị như hình vẽ bên.<div class="svg-wrap" data-svg="dt2"></div>Hàm số <b>đồng biến</b> trên khoảng nào?`,
+   opts:['$(-1;\\,+\\infty)$','$(-\\infty;\\,1)$','$(-\\infty;\\,-1)$ và $(1;\\,+\\infty)$','$(-1;\\,1)$'],ans:2,
+   exp:`Từ đồ thị: hàm đồng biến trên $(-\\infty;-1)$ và $(1;+\\infty)$.`},
+  {id:3,q:`$f'(x)=(x-15)(x-16),\\;\\forall x\\in\\mathbb{R}$. Hàm số <b>nghịch biến</b> trên khoảng nào?`,
+   opts:['$(15;\\,+\\infty)$','$(16;\\,+\\infty)$','$(-\\infty;\\,15)$','$(15;\\,16)$'],ans:3,
+   exp:`Bảng xét dấu:<div class="svg-wrap" data-svg="bxt3"></div>$f'<0$ trên $(15;16)$ → nghịch biến trên $(15;16)$.`},
+  {id:4,q:`Cho $y=f(x)$ liên tục trên $[-8;40]$, đồ thị như hình vẽ.<div class="svg-wrap" data-svg="dt4"></div>Tích giá trị lớn nhất và giá trị nhỏ nhất bằng`,
+   opts:['$-384$','$-383$','$-386$','$-385$'],ans:0,
+   exp:`Giá trị lớn nhất $=24$, nhỏ nhất $=-16$. Tích $=24\\times(-16)=-384$.`},
+  {id:5,q:`Giá trị nhỏ nhất của $y=\\dfrac{5}{3}x^3+\\dfrac{5}{2}x^2-10x-17$ trên $[-4;3]$ bằng`,
+   opts:['$\\underset{[-4;3]}{\\min y}=\\dfrac{41}{2}$','$\\underset{[-4;3]}{\\min y}=\\dfrac{385}{6}$','$\\underset{[-4;3]}{\\min y}=-\\dfrac{134}{3}$','$\\underset{[-4;3]}{\\min y}=-\\dfrac{131}{3}$'],ans:3,
+   exp:`$y'=5x^2+5x-10=0\\Leftrightarrow x=-2$ hoặc $x=1$. $y(-4)=-\\dfrac{131}{3}$ là nhỏ nhất.`},
+  {id:6,q:`Số đường tiệm cận của $y=\\dfrac{6x+8}{x^2-2x-48}$ là`,
+   opts:['$3$','$4$','$1$','$0$'],ans:0,
+   exp:`2 tiệm cận đứng ($x=8,x=-6$) + 1 tiệm cận ngang ($y=0$) = 3 đường.`},
+  {id:7,q:`Tiệm cận xiên của $y=-x+8+\\dfrac{7}{6x+9}$ có phương trình`,
+   opts:['$y=x-8$','$y=9-x$','$y=x-7$','$y=8-x$'],ans:3,
+   exp:`$\\lim_{x\\to+\\infty}[y-(8-x)]=\\lim\\dfrac{7}{6x+9}=0$ → tiệm cận xiên $y=8-x$.`},
+  {id:8,q:`$\\lim_{x\\to+\\infty}f(x)=6$ hoặc $\\lim_{x\\to-\\infty}f(x)=6$. Khẳng định nào <b>đúng</b>?`,
+   opts:['Giới hạn là $f(6)=2$','Đồ thị có tiệm cận ngang $y=6$','Đồ thị có tiệm cận đứng $x=6$','Giới hạn là $6$'],ans:1,
+   exp:`Theo định nghĩa, đường thẳng $y=6$ là tiệm cận ngang.`},
+  {id:9,q:`Đồ thị hàm số nào có dạng như hình vẽ?<div class="svg-wrap" data-svg="dt9"></div>`,
+   opts:['$y=x^3-3x^2+2$','$y=-x^3-3x-3$','$y=x^3+3x+3$','$y=-x^3+3x^2-2$'],ans:0,
+   exp:`Nhánh phải đi lên → $a>0$. Cực đại $(0,2)$, cực tiểu $(2,-2)$ → $y=x^3-3x^2+2$.`},
+  {id:10,q:`Đồ thị $y=\\dfrac{4x-4}{5-7x}$ có tâm đối xứng $I(h;k)$. Tính $P=2h-9k$`,
+   opts:['$\\dfrac{67}{7}$','$\\dfrac{39}{7}$','$\\dfrac{60}{7}$','$\\dfrac{46}{7}$'],ans:3,
+   exp:`$I\\!\\left(\\dfrac{5}{7};-\\dfrac{4}{7}\\right)$. $P=\\dfrac{10}{7}+\\dfrac{36}{7}=\\dfrac{46}{7}$.`},
+  {id:11,q:`$\\displaystyle\\int\\dfrac{20x+9}{4x}\\,\\mathrm{d}x$ bằng`,
+   opts:['$5x+\\dfrac{7}{4}\\ln|4x|+C$','$5x+3\\ln|4x|+C$','$5x+\\dfrac{5}{2}\\ln|4x|+C$','$5x+\\dfrac{9}{4}\\ln|4x|+C$'],ans:3,
+   exp:`$\\int\\!\\left(5+\\dfrac{9}{4x}\\right)dx=5x+\\dfrac{9}{4}\\ln|4x|+C$.`},
+  {id:12,q:`Nguyên hàm của $y=2e^x$ là`,
+   opts:['$2e^x+C$','$e^x+C$','$3e^x+C$','$\\dfrac{e^x}{2}+C$'],ans:0,
+   exp:`$\\int 2e^x\\,dx=2e^x+C$.`},
+  {id:13,q:`Nguyên hàm $F(x)$ của $f(x)=e^x+7\\sin x$ thỏa $F(0)=16$ là`,
+   opts:['$e^x+7\\cos x+8$','$e^x-7\\cos x+21$','$e^x-7\\cos x+22$','$e^x-7\\cos x+23$'],ans:2,
+   exp:`$F(x)=e^x-7\\cos x+C$. $F(0)=1-7+C=16\\Rightarrow C=22$.`},
+  {id:14,q:`$\\displaystyle\\int_0^4 5e^x\\,\\mathrm{d}x$ bằng`,
+   opts:['$5e^4+5$','$10e^4-5$','$5e^4-5$','$-5e^4+5$'],ans:2,
+   exp:`$5e^x\\Big|_0^4=5(e^4-1)=5e^4-5$.`},
+  {id:15,q:`$F(x)=e^x$ là nguyên hàm của $f(x)$. Tính $\\displaystyle\\int_0^1[7+f(x)]\\,dx$`,
+   opts:['$7+e$','$9+e$','$6+e$','$5+e$'],ans:2,
+   exp:`$7x\\Big|_0^1+F(x)\\Big|_0^1=7+(e-1)=6+e$.`}
+];
+
+// ── STATE ────────────────────────────────────────────────
+let questions=[],answered=new Array(15).fill(false),userAns=new Array(15).fill(-1);
+let submitted=false,timeLeft=45*60,timerID=null;
+let studentName='',studentClass='';
+let shuffledOptIdx=[];  // per question: mapping newIdx→origIdx
+
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+// ── START ────────────────────────────────────────────────
+function startQuiz(){
+  const n=document.getElementById('inp-name').value.trim();
+  const c=document.getElementById('inp-class').value.trim();
+  if(!n){document.getElementById('inp-name').focus();
+    document.getElementById('inp-name').style.borderColor='var(--rust)';return;}
+  studentName=n;studentClass=c||'–';
+  document.getElementById('screen-name').style.display='none';
+  document.getElementById('screen-quiz').style.display='block';
+  document.getElementById('disp-name').textContent=studentName;
+  document.getElementById('disp-class').textContent=studentClass;
+  questions=shuffle(ALL_QUESTIONS);
+  answered=new Array(15).fill(false);
+  userAns=new Array(15).fill(-1);
+  submitted=false;
+  shuffledOptIdx=[];
+  renderQuiz();
+  startTimer();
+}
+
+// ── RENDER ───────────────────────────────────────────────
+function injectSVGs(root){root.querySelectorAll('[data-svg]').forEach(div=>{const k=div.dataset.svg;if(SVG_MAP[k])div.innerHTML=SVG_MAP[k]();});}
+
+function renderQuiz(){
+  const wrap=document.getElementById('quiz-wrap');wrap.innerHTML='';
+  const labels=['A','B','C','D'];
+  shuffledOptIdx=[];
+  questions.forEach((q,qi)=>{
+    const idxs=shuffle([0,1,2,3]);
+    shuffledOptIdx.push(idxs);
+    const newCorrect=idxs.indexOf(q.ans);
+    const card=document.createElement('div');
+    card.className='q-card';card.style.animationDelay=`${qi*0.04}s`;
+    card.dataset.correct=newCorrect;
+    let optsHTML='';
+    idxs.forEach((origIdx,newIdx)=>{
+      optsHTML+=`<label class="opt" id="opt-${qi}-${newIdx}" onclick="selectOpt(${qi},${newIdx},this)">
+        <input type="radio" name="q${qi}" value="${newIdx}">
+        <span class="opt-label">${labels[newIdx]}</span>
+        <span class="opt-text">${q.opts[origIdx]}</span>
+      </label>`;
+    });
+    card.innerHTML=`<div class="q-head"><span class="q-num">Câu ${qi+1}</span><div class="q-text">${q.q}</div></div>
+      <div class="options">${optsHTML}</div>
+      <div class="solution" id="sol-${qi}"><div class="solution-title">📘 Lời giải</div>${q.exp}</div>`;
+    wrap.appendChild(card);injectSVGs(card);
+  });
+  updateProgress();
+  if(window.MathJax)MathJax.typesetPromise([wrap]);
+}
+
+function selectOpt(qi,optIdx,labelEl){
+  if(submitted)return;
+  const card=labelEl.closest('.q-card');
+  card.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
+  labelEl.classList.add('selected');
+  userAns[qi]=optIdx;
+  if(!answered[qi])answered[qi]=true;
+  updateProgress();
+}
+
+function updateProgress(){
+  const n=answered.filter(Boolean).length,total=questions.length;
+  document.getElementById('prog-label').textContent=`${n} / ${total} câu đã trả lời`;
+  document.getElementById('prog-fill').style.width=`${(n/total)*100}%`;
+}
+
+// ── TIMER ────────────────────────────────────────────────
+function startTimer(){
+  clearInterval(timerID);timeLeft=45*60;
+  timerID=setInterval(()=>{
+    timeLeft--;
+    const m=Math.floor(timeLeft/60),s=timeLeft%60;
+    const el=document.getElementById('timer');
+    el.textContent=`${m}:${s<10?'0':''}${s}`;
+    if(timeLeft<=300)el.classList.add('warning');
+    if(timeLeft<=0){clearInterval(timerID);submitQuiz();}
+  },1000);
+}
+
+// ── SUBMIT ───────────────────────────────────────────────
+function submitQuiz(){
+  if(submitted)return;
+  submitted=true;clearInterval(timerID);
+  let score=0;
+  const wrongQuestions=[];
+  questions.forEach((q,qi)=>{
+    const correctIdx=parseInt(document.querySelector(`.q-card:nth-child(${qi+1})`).dataset.correct);
+    const ua=userAns[qi];
+    document.getElementById(`opt-${qi}-${correctIdx}`).classList.add('correct','locked');
+    if(ua!==-1&&ua!==correctIdx){document.getElementById(`opt-${qi}-${ua}`).classList.add('wrong','locked');}
+    document.querySelectorAll(`.q-card:nth-child(${qi+1}) .opt`).forEach(o=>o.classList.add('locked'));
+    document.getElementById(`sol-${qi}`).style.display='block';
+    if(ua===correctIdx)score++;else wrongQuestions.push(qi+1);
+  });
+
+  const total=questions.length;
+  const diem=(score/total*10).toFixed(1);
+  const ring=document.getElementById('score-ring');
+  ring.textContent=diem;
+  ring.style.borderColor=score>=total*0.8?'var(--teal)':score>=total*0.5?'var(--gold)':'var(--rust)';
+  ring.style.color=ring.style.borderColor;
+  const elapsed=45*60-timeLeft;
+  const mm=Math.floor(elapsed/60),ss=elapsed%60;
+  const thoiGian=`${mm}:${ss<10?'0':''}${ss}`;
+  document.getElementById('score-detail').innerHTML=
+    `Họ tên: <b>${studentName}</b> &nbsp;·&nbsp; Lớp: <b>${studentClass}</b><br>
+     Số câu đúng: <b>${score}/${total}</b> &nbsp;·&nbsp; Điểm: <b>${diem}/10</b> &nbsp;·&nbsp; Thời gian: <b>${thoiGian}</b>`;
+
+  const banner=document.getElementById('result-banner');
+  banner.style.display='block';banner.scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('submit-btn').disabled=true;
+  document.getElementById('submit-btn').textContent='Đã nộp bài';
+
+  // Gửi lên Google Sheets
+  sendScore({
+    name:studentName,lop:studentClass,
+    score,total,diem,thoiGian,
+    wrongQuestions:wrongQuestions.join(', ')||'Không có',
+    timestamp:new Date().toLocaleString('vi-VN')
+  });
+
+  if(window.MathJax)MathJax.typesetPromise();
+}
+
+// ── GỬI ĐIỂM LÊN GOOGLE SHEETS ──────────────────────────
+function sendScore(data){
+  const statusEl=document.getElementById('send-status');
+  statusEl.style.display='block';
+  statusEl.className='send-status';
+  statusEl.textContent='⏳ Đang gửi điểm lên hệ thống...';
+
+  if(GOOGLE_SCRIPT_URL.includes('REPLACE_WITH_YOUR_SCRIPT_ID')){
+    statusEl.className='send-status send-err';
+    statusEl.textContent='⚠️ Chưa cấu hình Google Sheets URL. Xem file setup.md để thiết lập.';
+    return;
+  }
+
+  const url=GOOGLE_SCRIPT_URL+'?'+new URLSearchParams(data).toString();
+  fetch(url,{method:'GET',mode:'no-cors'})
+    .then(()=>{
+      statusEl.className='send-status send-ok';
+      statusEl.textContent='✅ Đã gửi điểm thành công lên Google Sheets!';
+    })
+    .catch(()=>{
+      statusEl.className='send-status send-err';
+      statusEl.textContent='❌ Không gửi được. Kiểm tra kết nối mạng hoặc cấu hình URL.';
+    });
+}
+
+// ── RESTART ──────────────────────────────────────────────
+function reset(){
+  submitted=false;answered=new Array(15).fill(false);userAns=new Array(15).fill(-1);
+  document.getElementById('result-banner').style.display='none';
+  document.getElementById('submit-btn').disabled=false;
+  document.getElementById('submit-btn').textContent='✓ Nộp bài';
+  document.getElementById('timer').classList.remove('warning');
+  document.getElementById('send-status').style.display='none';
+  startTimer();
+}
+function shuffleAndRestart(){questions=shuffle(ALL_QUESTIONS);reset();renderQuiz();window.scrollTo({top:0,behavior:'smooth'});}
+function restartSame(){reset();renderQuiz();window.scrollTo({top:0,behavior:'smooth'});}
+</script>
+</body>
+</html>
