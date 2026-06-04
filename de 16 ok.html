@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐỀ ÔN TẬP THI TỐT NGHIỆP THPT QUỐC GIA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        body {
+            background-color: #ffffff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #212529;
+            padding-bottom: 60px;
+        }
+        .header-title {
+            color: #0d6efd;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-size: 1.8rem;
+        }
+        .header-subtitle {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #495057;
+        }
+        .student-info {
+            background-color: #f8f9fa;
+            border: 1px dashed #0d6efd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .part-title {
+            color: #0d6efd;
+            font-weight: bold;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            border-left: 5px solid #0d6efd;
+            padding-left: 10px;
+            text-transform: uppercase;
+        }
+        .question-box {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .option-label {
+            cursor: pointer;
+            padding: 10px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            display: block;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            background-color: #fff;
+        }
+        .option-label:hover {
+            background-color: #f1f3f5;
+            border-color: #6c757d;
+        }
+        .option-input {
+            margin-right: 10px;
+            transform: scale(1.1);
+            vertical-align: middle;
+        }
+        .option-text {
+            vertical-align: middle;
+        }
+        .true-false-table th, .true-false-table td {
+            vertical-align: middle;
+            text-align: center;
+            padding: 10px;
+        }
+        .true-false-table td:nth-child(1) {
+            text-align: left;
+        }
+        .tf-radio {
+            cursor: pointer;
+            width: 1.15rem;
+            height: 1.15rem;
+        }
+        .short-ans-input {
+            width: 100%;
+            max-width: 280px;
+            font-weight: 600;
+        }
+        .explanation {
+            display: none;
+            background-color: #f0f7ff;
+            border-left: 4px solid #0dcaf0;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 6px 6px 0;
+        }
+        .correct-ans {
+            background-color: #d1e7dd !important;
+            border-color: #a3cfbb !important;
+            color: #0f5132;
+        }
+        .wrong-ans {
+            background-color: #f8d7da !important;
+            border-color: #f1aeb5 !important;
+            color: #842029;
+        }
+        .timer-container {
+            position: sticky;
+            top: 15px;
+            background: #0d6efd;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            width: fit-content;
+            margin: 0 auto 25px auto;
+        }
+        .anti-cheat-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #fff;
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        @media (max-width: 768px) {
+            .anti-cheat-badge {
+                position: static;
+                display: block;
+                text-align: center;
+                margin-bottom: 15px;
+                width: 100%;
+            }
+        }
+        .score-display {
+            display: none;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #198754;
+            padding: 20px;
+            border: 2px dashed #198754;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            background-color: #f4fbf7;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 35px;
+            flex-wrap: wrap;
+        }
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container position-relative tex2jax_process">
+        <div class="anti-cheat-badge">Làm bài nghiêm túc, không dùng AI</div>
+        
+        <h1 class="header-title">ĐỀ ÔN TẬP THI TỐT NGHIỆP THPT QUỐC GIA</h1>
+        <div class="header-subtitle">MÔN: TOÁN</div>
+        
+        <div class="timer-container" id="timerDisplay">Thời gian còn lại: 90:00</div>
+
+        <div class="student-info">
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <label for="studentName" class="form-label fw-bold">Họ và tên: __________</label>
+                    <input type="text" class="form-control" id="studentName" placeholder="Nhập họ và tên của bạn...">
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label for="className" class="form-label fw-bold">Lớp: __________</label>
+                    <input type="text" class="form-control" id="className" placeholder="Nhập lớp của bạn...">
+                </div>
+            </div>
+        </div>
+
+        <div id="scoreDisplay" class="score-display"></div>
+
+        <form id="examForm">
+            <div id="examContent"></div>
+
+            <div class="action-buttons">
+                <button type="button" class="btn btn-primary btn-lg px-5 fw-bold" id="btnSubmit">NỘP BÀI</button>
+                <button type="button" class="btn btn-success btn-lg px-5 fw-bold" id="btnShowAnswers" style="display: none;">XEM ĐÁP ÁN CHI TIẾT</button>
+                <button type="button" class="btn btn-secondary btn-lg px-4" id="btnPrint">IN ĐỀ THI</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const examData = {
+            part1: [
+                {
+                    id: "p1_c1",
+                    text: "Phương trình $\\cot x =- \\dfrac{\\sqrt{3}}{3}$ có nghiệm là",
+                    options: [
+                        { text: "$x=k2 \\pi, k \\in \\mathbb{Z}$", isCorrect: false },
+                        { text: "$x=- \\dfrac{\\pi}{3}+k \\pi, k \\in \\mathbb{Z}$", isCorrect: true },
+                        { text: "$x=- \\dfrac{7 \\pi}{12}+k \\pi, k \\in \\mathbb{Z}$", isCorrect: false },
+                        { text: "$x=- \\dfrac{\\pi}{2}+k2 \\pi, k \\in \\mathbb{Z}$", isCorrect: false }
+                    ],
+                    explanation: "Ta có <br>$\\cot x =- \\dfrac{\\sqrt{3}}{3} \\Leftrightarrow  \\cot x = \\cot \\left( - \\dfrac{\\pi}{3} \\right) \\Leftrightarrow  x=- \\dfrac{\\pi}{3}+k \\pi, k \\in \\mathbb{Z}$."
+                },
+                {
+                    id: "p1_c2",
+                    text: "Cho ba số $8 - 4 x, 4 x + 6$ và $3 x - 6$. Giá trị của $x$ để ba số theo thứ tự lập thành một cấp số cộng là",
+                    options: [
+                        { text: "$x=\\dfrac{8}{9}$", isCorrect: false },
+                        { text: "$x=- \\dfrac{37}{9}$", isCorrect: false },
+                        { text: "$x=- \\dfrac{10}{9}$", isCorrect: true },
+                        { text: "$x=- \\dfrac{19}{9}$", isCorrect: false }
+                    ],
+                    explanation: "Ba số theo thứ tự lập thành một cấp số cộng khi <br>$8 - 4 x+(3 x - 6)=2(4 x + 6) \\Leftrightarrow  x=- \\dfrac{10}{9}$."
+                },
+                {
+                    id: "p1_c3",
+                    text: "Tập nghiệm của bất phương trình $\\log_3(2x-7)\\geq 3$ là",
+                    options: [
+                        { text: "$\\left[\\dfrac{7}{2};+\\infty\\right)$", isCorrect: false },
+                        { text: "$\\left(\\dfrac{7}{2};17\\right]$", isCorrect: false },
+                        { text: "$\\left[17;+\\infty\\right)$", isCorrect: true },
+                        { text: "$\\left(17;+\\infty\\right)$", isCorrect: false }
+                    ],
+                    explanation: "Điều kiện $x>\\dfrac{7}{2}$.<br>Ta có $\\log_3(2x-7)\\geq 3\\Leftrightarrow 2x-7 \\geq 27 \\Leftrightarrow x\\geq 17$.<br>Kết hợp với điều kiện suy ra $\\begin{cases}x>\\dfrac{7}{2}\\\\x\\geq 17\\end{cases}\\Leftrightarrow x\\geq 17$.<br>Vậy tập nghiệm của bất phương trình là $\\left[17;+\\infty\\right)$."
+                },
+                {
+                    id: "p1_c4",
+                    text: "Cho hình chóp $S.HBC$ có cạnh $SH$ vuông góc với đáy. Góc giữa đường thẳng $SB$ và mặt phẳng đáy là góc giữa hai đường thẳng nào dưới đây? <br>" +
+                           `<div class="text-center my-3">
+                               <svg width="240" height="220" viewBox="0 0 240 220" style="background:#fff;">
+                                   <line x1="60" y1="170" x2="210" y2="170" stroke="#000" stroke-width="1.5" stroke-dasharray="4,4" />
+                                   <line x1="60" y1="30" x2="60" y2="170" stroke="#000" stroke-width="1.5" />
+                                   <line x1="60" y1="170" x2="110" y2="210" stroke="#000" stroke-width="1.5" />
+                                   <line x1="60" y1="30" x2="110" y2="210" stroke="#000" stroke-width="1.5" />
+                                   <line x1="110" y1="210" x2="210" y2="170" stroke="#000" stroke-width="1.5" />
+                                   <line x1="60" y1="30" x2="210" y2="170" stroke="#000" stroke-width="1.5" />
+                                   <path d="M 60 155 L 75 155 L 75 170" fill="none" stroke="#000" stroke-width="1" />
+                                   <text x="60" y="22" font-size="14" font-style="italic" text-anchor="middle">S</text>
+                                   <text x="48" y="175" font-size="14" font-style="italic" text-anchor="middle">H</text>
+                                   <text x="110" y="224" font-size="14" font-style="italic" text-anchor="middle">B</text>
+                                   <text x="220" y="175" font-size="14" font-style="italic" text-anchor="middle">C</text>
+                               </svg>
+                           </div>`,
+                    options: [
+                        { text: "$SB$ và $SC$", isCorrect: false },
+                        { text: "$SH$ và $SB$", isCorrect: false },
+                        { text: "$SB$ và $BC$", isCorrect: false },
+                        { text: "$SB$ và $HB$", isCorrect: true }
+                    ],
+                    explanation: "Ta có: Hình chiếu của $SB$ trên mặt phẳng $(HBC)$ là $HB$ nên góc giữa đường thẳng $SB$ và mặt phẳng đáy là góc giữa hai đường thẳng $SB$ và $HB$."
+                },
+                {
+                    id: "p1_c5",
+                    text: "Cho hàm số $y=f(x)$ có đồ thị như hình vẽ bên. Điểm cực đại của hàm số là <br>" +
+                           `<div class="text-center my-3">
+                               <svg width="260" height="220" viewBox="0 0 260 220" style="background:#fff;">
+                                   <line x1="20" y1="110" x2="240" y2="110" stroke="#000" stroke-width="1.2" />
+                                   <line x1="240" y1="110" x2="232" y2="105" stroke="#000" stroke-width="1.2" />
+                                   <line x1="240" y1="110" x2="232" y2="115" stroke="#000" stroke-width="1.2" />
+                                   <text x="245" y="115" font-size="12">x</text>
+                                   <line x1="90" y1="200" x2="90" y2="20" stroke="#000" stroke-width="1.2" />
+                                   <line x1="90" y1="20" x2="85" y2="28" stroke="#000" stroke-width="1.2" />
+                                   <line x1="90" y1="20" x2="95" y2="28" stroke="#000" stroke-width="1.2" />
+                                   <text x="85" y="15" font-size="12">y</text>
+                                   <text x="78" y="122" font-size="12">O</text>
+                                   <line x1="180" y1="110" x2="180" y2="170" stroke="#666" stroke-width="1" stroke-dasharray="3,3" />
+                                   <line x1="90" y1="170" x2="180" y2="170" stroke="#666" stroke-width="1" stroke-dasharray="3,3" />
+                                   <text x="180" y="125" font-size="12" text-anchor="middle">2</text>
+                                   <text x="78" y="54" font-size="12">2</text>
+                                   <text x="70" y="174" font-size="12">-2</text>
+                                   <path d="M 50 120 C 75 40, 75 50, 90 50 C 115 50, 115 110, 135 110 C 155 110, 155 170, 180 170 C 195 170, 205 140, 215 90" fill="none" stroke="#0d6efd" stroke-width="2" />
+                               </svg>
+                           </div>`,
+                    options: [
+                        { text: "$y=-2$", isCorrect: false },
+                        { text: "$x=0$", isCorrect: true },
+                        { text: "$y=2$", isCorrect: false },
+                        { text: "$x=2$", isCorrect: false }
+                    ],
+                    explanation: "Từ đồ thị ta thấy điểm cực đại của hàm số là $x=0$."
+                },
+                {
+                    id: "p1_c6",
+                    text: "Tiệm cận xiên của đồ thị hàm số $y=- 4 x + 7 - \\dfrac{7}{9 x - 3}$ là đường thẳng có phương trình",
+                    options: [
+                        { text: "$y=4 x - 7$", isCorrect: false },
+                        { text: "$y=4 x - 6$", isCorrect: false },
+                        { text: "$y=8 - 4 x$", isCorrect: false },
+                        { text: "$y=7 - 4 x$", isCorrect: true }
+                    ],
+                    explanation: "Ta có <br>$\\underset{x\\to +\\infty }{\\mathop{\\lim }} \\left[ y- (7 - 4 x) \\right]=\\underset{x\\to +\\infty }{\\mathop{\\lim }} \\left( - \\dfrac{7}{9 x - 3} \\right)=0$.<br>Nên tiệm cận xiên của đồ thị hàm số đã cho là đường thẳng $y=7 - 4 x$."
+                },
+                {
+                    id: "p1_c7",
+                    text: "Khối lượng (gam) của $31$ quả măng cụt trong một cửa hàng được cho trong bảng số liệu sau" +
+                           `<div class="table-responsive my-2">
+                               <table class="table table-bordered text-center align-middle" style="min-width: 400px;">
+                                   <tr class="table-light"><th>Khối lượng (gam)</th><td>$[70; 76)$</td><td>$[76; 82)$</td><td>$[82; 88)$</td><td>$[88; 94)$</td><td>$[94; 100]$</td></tr>
+                                   <tr><th>Số quả</th><td>$3$</td><td>$10$</td><td>$7$</td><td>$9$</td><td>$2$</td></tr>
+                               </table>
+                           </div>` +
+                           "Khoảng tứ phân vị của mẫu số liệu là",
+                    options: [
+                        { text: "$\\Delta_Q=\\dfrac{559}{60}$", isCorrect: false },
+                        { text: "$\\Delta_Q=\\dfrac{859}{60}$", isCorrect: false },
+                        { text: "$\\Delta_Q=\\dfrac{679}{60}$", isCorrect: true },
+                        { text: "$\\Delta_Q=\\dfrac{739}{60}$", isCorrect: false }
+                    ],
+                    explanation: "Cỡ mẫu $n=31$. Giả sử $x_1, x_2, ..., x_{31}$ là khối lượng của $31$ quả măng cụt và giả sử dãy số liệu gốc này được sắp xếp theo thứ tự tăng dần.<br>" +
+                                 "Vì $n=31$ nên tứ phân vị thứ nhất của mẫu số liệu là $x_{8}$ thuộc nhóm $[76;82)$.<br>" +
+                                 "Do đó, tứ phân vị thứ nhất là: $Q_1=76+\\dfrac{\\dfrac{31}{4}-3}{10} \\cdot 6=\\dfrac{1577}{20}$.<br>" +
+                                 "Vì $n=31$ nên tứ phân vị thứ ba của mẫu số liệu là $x_{24}$ thuộc nhóm $[88;94)$.<br>" +
+                                 "Do đó, tứ phân vị thứ ba là: $Q_3=88+\\dfrac{\\dfrac{3 \\cdot 31}{4}-20}{9} \\cdot 6=\\dfrac{541}{6}$.<br>" +
+                                 "Vậy khoảng tứ phân vị của mẫu số liệu là: $\\Delta_Q=Q_3-Q_1=\\dfrac{541}{6}-\\dfrac{1577}{20}=\\dfrac{679}{60}$."
+                },
+                {
+                    id: "p1_c8",
+                    text: "$\\displaystyle \\int{\\left(5^x+7^x\\right)^2 \\text{d}x}$ bằng",
+                    options: [
+                        { text: "$\\dfrac{25^x}{\\ln 25}+2\\cdot\\dfrac{7^x}{\\ln 7}+\\dfrac{49^x}{\\ln 49}+\\text{C}$", isCorrect: false },
+                        { text: "$\\dfrac{25^x}{\\ln 25}+2\\cdot\\dfrac{35^x}{\\ln 35}+\\dfrac{49^x}{\\ln 49}+\\text{C}$", isCorrect: true },
+                        { text: "$\\dfrac{25^x}{\\ln 25}+2\\cdot\\dfrac{35^x}{\\ln 35}+\\dfrac{7^x}{\\ln 7}+\\text{C}$", isCorrect: false },
+                        { text: "$\\dfrac{5^x}{\\ln 5}+2\\cdot\\dfrac{35^x}{\\ln 35}+\\dfrac{49^x}{\\ln 49}+\\text{C}$", isCorrect: false }
+                    ],
+                    explanation: "Ta có:<br>$\\displaystyle \\int{\\left(5^x+7^x\\right)^2 \\text{d}x}=\\displaystyle \\int{ \\left[\\left(5^x\\right)^2+2\\cdot5^x\\cdot7^x+\\left(7^x\\right)^2\\right] \\text{d}x}$<br>" +
+                                 "$=\\displaystyle \\int{ \\left(25^x+2\\cdot35^x+49^x\\right) \\text{d}x}=\\dfrac{25^x}{\\ln 25}+2\\cdot\\dfrac{35^x}{\\ln 35}+\\dfrac{49^x}{\\ln 49}+\\text{C}$."
+                },
+                {
+                    id: "p1_c9",
+                    text: "Tính thể tích $V$ của phần vật thể giới hạn bởi hai mặt phẳng $x=2$ và $x=5$, biết rằng khi cắt vật thể bởi mặt phẳng vuông góc với trục $Ox$ tại điểm có hoành độ $x$ ($2 \\le x \\le 5$) thì được thiết diện là một hình chữ nhật có độ dài hai cạnh là $2x$ và $\\sqrt{2x^2 - 5}$.",
+                    options: [
+                        { text: "$- \\sqrt{3} + 45 \\sqrt{5}$", isCorrect: true },
+                        { text: "$- \\sqrt{3} + \\dfrac{1}{2} + 45 \\sqrt{5}$", isCorrect: false },
+                        { text: "$- \\sqrt{3} - \\dfrac{1}{2} + 45 \\sqrt{5}$", isCorrect: false },
+                        { text: "$- \\sqrt{3} + 1 + 45 \\sqrt{5}$", isCorrect: false }
+                    ],
+                    explanation: "Diện tích thiết diện là: $S(x) = 2x \\cdot \\sqrt{2x^2 - 5}$.<br>Thể tích vật thể là: $V = \\int_{2}^{5} 2x \sqrt{2x^2 - 5} \\text{d}x = - \\sqrt{3} + 45 \\sqrt{5}$."
+                },
+                {
+                    id: "p1_c10",
+                    text: "Cho hình lập phương $ABCD.A'B'C'D'$ có cạnh $4$. Đặt $\\vec{u} = \\vec{A'C'} - \\vec{A'A}$. Độ dài của vectơ $\\vec{u}$ bằng",
+                    options: [
+                        { text: "$1 + 4 \\sqrt{2}$", isCorrect: false },
+                        { text: "$4$", isCorrect: false },
+                        { text: "$4 \\sqrt{2}$", isCorrect: false },
+                        { text: "$4 \\sqrt{3}$", isCorrect: true }
+                    ],
+                    explanation: "Ta có $\\vec{u} = \\vec{A'C'} - \\vec{A'A} = \\vec{AC'}$. Đây là vectơ đường chéo của hình lập phương.<br>Do đó, độ dài của vectơ $\\vec{u}$ là: $|\\vec{u}| = |\\vec{AC'}| = 4\\sqrt{3}$."
+                },
+                {
+                    id: "p1_c11",
+                    text: "Trong không gian với hệ trục tọa độ $Oxyz$, tọa độ một vectơ pháp tuyến của mặt phẳng có phương trình $- 2 x + 9 y + z - 3=0$ là",
+                    options: [
+                        { text: "$(8;-9;-5)$", isCorrect: false },
+                        { text: "$(-2;9;1)$", isCorrect: true },
+                        { text: "$(-2;9;-1)$", isCorrect: false },
+                        { text: "$(-2;-9;1)$", isCorrect: false }
+                    ],
+                    explanation: "Mặt phẳng có phương trình $- 2 x + 9 y + z - 3=0$ có một vectơ pháp tuyến có tọa độ là $(-2;9;1)$."
+                },
+                {
+                    id: "p1_c12",
+                    text: "Trong không gian với hệ tọa độ $Oxyz$, mặt cầu tâm $I(-1;2;-5)$ và đường kính bằng $16$ có phương trình là",
+                    options: [
+                        { text: "$(x+1)^2+(y-2)^2+(z+5)^2=256$", isCorrect: false },
+                        { text: "$(x-1)^2+(y+2)^2+(z-5)^2=64$", isCorrect: false },
+                        { text: "$(x-1)^2+(y+2)^2+(z-5)^2=256$", isCorrect: false },
+                        { text: "$(x+1)^2+(y-2)^2+(z+5)^2=64$", isCorrect: true }
+                    ],
+                    explanation: "Bán kính của mặt cầu là $R=\\dfrac{16}{2}=8$.<br>Do đó phương trình mặt cầu cần tìm là: $(x+1)^2+(y-2)^2+(z+5)^2=64$."
+                }
+            ],
+            part2: [
+                {
+                    id: "p2_c1",
+                    text: "Cho hàm số $y=\\dfrac{x^{2}-3x+6}{x-1}$.",
+                    statements: [
+                        { text: "Đường tiệm cận xiên của đồ thị hàm số là đường thẳng $y=ax+b$. Khi đó $a-2b=5$", isTrue: true },
+                        { text: "Đường thẳng đi qua 2 điểm cực trị của đồ thị hàm số có phương trình là $y=2x-3$", isTrue: true },
+                        { text: "Gọi $A,B$ lần lượt là các điểm cực đại, cực tiểu của đồ thị hàm số và $O$ là gốc tọa độ. Diện tích tam giác $OAB$ bằng 6", isTrue: true },
+                        { text: "Hàm số nghịch biến trên khoảng $(-1;3)$", isTrue: false }
+                    ],
+                    explanation: "Tập xác định: $D = \\mathbb{R} \\setminus \\{1\\}$.<br>" +
+                                 "a) **Đúng.** Ta có $y = \\dfrac{x^{2}-3x+6}{x-1} = x - 2 + \\dfrac{4}{x-1}$. Suy ra đường tiệm cận xiên của đồ thị hàm số là đường thẳng $y = x - 2$. Khi đó $a = 1, b = -2 \\Rightarrow a - 2b = 1 - 2(-2) = 5$.<br>" +
+                                 "b) **Đúng.** Ta có $y' = \\dfrac{x^2-2x-3}{(x-1)^2}$. Cho $y' = 0 \\Leftrightarrow \\begin{cases}x = -1 \\Rightarrow y = -5 \\\\ x = 3 \\Rightarrow y = 3\\end{cases}$. Tọa độ hai điểm cực trị là $A(-1;-5)$ và $B(3;3)$. Phương trình đường thẳng $AB$ là $y = 2x-3$. Cách nhanh: $y = \\dfrac{u'}{v'} = \\dfrac{2x-3}{1} = 2x - 3$.<br>" +
+                                 "c) **Đúng.** Từ câu b, ta có điểm cực đại $A(-1;-5)$ và cực tiểu $B(3;3)$. Diện tích tam giác $OAB$ là: $S_{OAB} = \\dfrac{1}{2}|x_A y_B - x_B y_A| = \\dfrac{1}{2}|(-1)\\cdot 3 - 3\\cdot (-5)| = 6$.<br>" +
+                                 "d) **Sai.** Hàm số nghịch biến trên các khoảng $(-1;1)$ và $(1;3)$. Việc gộp thành khoảng $(-1;3)$ là sai vì hàm số bị gián đoạn tại $x=1$."
+                },
+                {
+                    id: "p2_c2",
+                    text: "Khảo sát thời gian hoàn thành một đề thi thử môn Tiếng Anh (đơn vị: phút) của một nhóm học sinh tại cơ sở Trí Đức, ta thu được kết quả thống kê bởi bảng sau:" +
+                           `<div class="table-responsive my-2">
+                               <table class="table table-bordered text-center align-middle" style="min-width: 450px;">
+                                   <tr class="table-light"><th>Thời gian (phút)</th><td>$[40;50)$</td><td>$[50;60)$</td><td>$[60;70)$</td><td>$[70;80)$</td><td>$[80;90]$</td><th>Tổng cộng</th></tr>
+                                   <tr><th>Số học sinh</th><td>$4$</td><td>$8$</td><td>$16$</td><td>$8$</td><td>$4$</td><td>$n = 40$</td></tr>
+                               </table>
+                           </div>` +
+                           "Gọi $Q_1, Q_3$ lần lượt là các tứ phân vị thứ nhất và tứ phân vị thứ ba của mẫu số liệu ghép nhóm trên.",
+                    statements: [
+                        { text: "Khoảng biến thiên của mẫu số liệu ghép nhóm trên là $50$", isTrue: true },
+                        { text: "Chọn ngẫu nhiên một học sinh trong nhóm, xác suất để học sinh đó hoàn thành bài thi từ $70$ phút trở lên là $40\\%$", isTrue: false },
+                        { text: "Có khoảng $25\\%$ số học sinh được khảo sát có thời gian làm bài không vượt quá $57,5$ phút", isTrue: true },
+                        { text: "If một học sinh làm bài mất $96$ phút thì thời gian này được xem là một giá trị ngoại lệ", isTrue: true }
+                    ],
+                    explanation: "a) **Đúng.** Khoảng biến thiên là $R = 90 - 40 = 50$.<br>" +
+                                 "b) **Sai.** Số học sinh hoàn thành từ $70$ phút trở lên là: $8 + 4 = 12$. Xác suất là $P = \\dfrac{12}{40} = 30\\%$.<br>" +
+                                 "c) **Đúng.** Cỡ mẫu $n = 40$, $\\dfrac{n}{4} = 10$. Tứ phân vị thứ nhất $Q_1$ thuộc nhóm $[50;60)$. Ta có $Q_1 = 50 + \\dfrac{10 - 4}{8} \\cdot 10 = 57,5$ phút.<br>" +
+                                 "d) **Đúng.** Ta có $\\dfrac{3n}{4} = 30 \\Rightarrow Q_3$ thuộc nhóm $[70;80)$, $Q_3 = 70 + \\dfrac{30 - 28}{8} \\cdot 10 = 72,5$. Khoảng tứ phân vị $\\Delta_Q = 72,5 - 57,5 = 15$. Giá trị ngoại lệ phía trên là lớn hơn $Q_3 + 1,5 \\cdot \\Delta_Q = 72,5 + 1,5 \\cdot 15 = 95$. Do $96 > 95$ nên là giá trị ngoại lệ."
+                },
+                {
+                    id: "p2_c3",
+                    text: "Chuyển động của một cabin cáp treo được mô phỏng trong không gian $Oxyz$ (đơn vị trên mỗi trục tọa độ là mét). Cabin xuất phát từ điểm $A(10; 12; 15)$ và chuyển động thẳng theo hướng của vectơ $\\vec{u} = (2; 3; 6)$. Biết rằng vận tốc của cabin cáp treo thay đổi theo thời gian với phương trình $v(t) = 1,4t + 7$ (m/s), trong đó $t$ là thời gian tính bằng giây kể từ lúc xuất phát.",
+                    statements: [
+                        { text: "Vận tốc của cáp treo tại thời điểm $t = 5$ giây là $14$ m/s", isTrue: true },
+                        { text: "Quãng đường cáp treo di chuyển được sau $10$ giây đầu tiên là $150$ mét", isTrue: false },
+                        { text: "Tại thời điểm $t=10$ giây, vectơ vận tốc của cáp treo là $\\vec{v} = (6; 9; 18)$", isTrue: true },
+                        { text: "Sau $10$ giây kể từ lúc xuất phát, độ cao của cabin cáp treo (khoảng cách đến mặt phẳng $Oxy$) lớn hơn $140$ mét", isTrue: false }
+                    ],
+                    explanation: "a) **Đúng.** Thay $t=5$ vào ta có $v(5) = 1,4 \\cdot 5 + 7 = 14$ m/s.<br>" +
+                                 "b) **Sai.** Quãng đường $s = \\int_{0}^{10} (1,4t + 7) \\text{d}t = \\left. (0,7t^2 + 7t) \\right|_{0}^{10} = 140$ m.<br>" +
+                                 "c) **Đúng.** Độ dài $|\\vec{u}| = 7 \\Rightarrow \\vec{e} = \\left(\\dfrac{2}{7}; \\dfrac{3}{7}; \\dfrac{6}{7}\\right)$. Tại $t=10, v(10)=21 \\Rightarrow \\vec{v} = 21 \\cdot \\vec{e} = (6; 9; 18)$.<br>" +
+                                 "d) **Sai.** Vectơ độ dời $\\vec{d} = 140 \\cdot \\vec{e} = (40; 60; 120) \\Rightarrow M = A + \\vec{d} = (50; 72; 135)$. Độ cao chính là cao độ $z_M = 135 < 140$ m."
+                },
+                {
+                    id: "p2_c4",
+                    text: "Một vật trang trí có dạng một khối tròn xoay được tạo thành khi quay miền $(R)$ (miền gạch sọc trong hình vẽ) quanh trục $MN$. Biết rằng $ABCD$ là hình chữ nhật với $AB=6\\text{ cm}$, $AD=10\\text{ cm}$ và $M,N$ lần lượt là trung điểm của $AB,CD$. Hai đường cong là đường Elip có hình chữ nhật cơ sở là $ABCD$ và đường tròn tiếp xúc với hai cạnh $AD$ và $BC$. Gắn hệ tọa độ $Oxy$ (đơn vị trên mỗi trục là $1\\text{ cm}$) như hình vẽ." +
+                           `<div class="text-center my-3">
+                               <svg width="280" height="180" viewBox="0 0 280 180" style="background:#fff;">
+                                   <defs>
+                                       <pattern id="diagonalHatch" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                                           <line x1="0" y1="0" x2="0" y2="10" stroke="#aaa" stroke-width="1.2" />
+                                       </pattern>
+                                   </defs>
+                                   <rect x="40" y="30" width="200" height="120" fill="none" stroke="#000" stroke-width="1.5" />
+                                   <path d="M 40,90 A 100,60 0 1,1 240,90 A 100,60 0 1,1 40,90 Z M 80,90 A 60,60 0 1,0 200,90 A 60,60 0 1,0 80,90 Z" fill="url(#diagonalHatch)" fill-rule="evenodd" />
+                                   <ellipse cx="140" cy="90" rx="100" ry="60" fill="none" stroke="#000" stroke-width="1.5" />
+                                   <circle cx="140" cy="90" r="60" fill="none" stroke="#000" stroke-width="1.5" />
+                                   <line x1="20" y1="90" x2="260" y2="90" stroke="#000" stroke-width="1" />
+                                   <line x1="140" y1="15" x2="140" y2="165" stroke="#000" stroke-width="1" />
+                                   <text x="35" y="25" font-size="12">A</text>
+                                   <text x="35" y="162" font-size="12">B</text>
+                                   <text x="245" y="162" font-size="12">C</text>
+                                   <text x="245" y="25" font-size="12">D</text>
+                                   <text x="25" y="94" font-size="11">M</text>
+                                   <text x="248" y="94" font-size="11">N</text>
+                                   <text x="145" y="102" font-size="11">O</text>
+                                   <text x="144" y="26" font-size="10">3</text>
+                                   <text x="144" y="160" font-size="10">-3</text>
+                                   <text x="238" y="85" font-size="10">5</text>
+                                   <text x="42" y="85" font-size="10">-5</text>
+                                   <text x="200" y="85" font-size="10">3</text>
+                                   <text x="82" y="85" font-size="10">-3</text>
+                               </svg>
+                           </div>`,
+                    statements: [
+                        { text: "Đường tròn tâm $O$ tiếp xúc với hai cạnh $AD,BC$ có phương trình là $x^{2}+y^{2}=9$", isTrue: true },
+                        { text: "Phương trình của đường Elip có hình chữ nhật cơ sở là $ABCD$ là $\\dfrac{x^{2}}{5}+\\dfrac{y^{2}}{3}=1$", isTrue: false },
+                        { text: "Diện tích miền gạch sọc là $S=\\displaystyle\\int\\limits_{-5}^5 \\sqrt{9\\left(1-\\dfrac{x^{2}}{25} \\right)}\\text{d}x -\\displaystyle\\int\\limits_{-3}^3 \\sqrt{9-x^{2}}\\text{d}x $", isTrue: false },
+                        { text: "Thể tích của vật trang trí đó (kết quả làm tròn đến hàng phần chục) là $75,4\\text{ cm}^{3}$", isTrue: true }
+                    ],
+                    explanation: "Gắn hệ trục tọa độ $O(0;0)$ là tâm hình chữ nhật $ABCD$. Có $a=5, b=3$.<br>" +
+                                 "a) **Đúng.** Đường tròn có bán kính $R = \\dfrac{AB}{2} = 3 \\Rightarrow x^2 + y^2 = 9$.<br>" +
+                                 "b) **Sai.** Phương trình Elip là $\\dfrac{x^2}{25} + \\dfrac{y^2}{9} = 1$.<br>" +
+                                 "c) **Sai.** Thiếu hệ số số 2 ở trước do tính đối xứng qua trục hoành.<br>" +
+                                 "d) **Đúng.** Thể tích vật thể tròn xoay: $V = V_{elip} - V_{cau} = 60\\pi - 36\\pi = 24\\pi \\approx 75,398 \\approx 75,4\\text{ cm}^3$."
+                }
+            ],
+            part3: [
+                {
+                    id: "p3_c1",
+                    text: "Trong đợt kiểm tra sức khoẻ, có một loại bệnh X mà tỉ lệ người mắc bệnh là $0,3\\%$ và một loại xét nghiệm Y mà ai mắc bệnh X khi xét nghiệm Y cũng có phản ứng dương tính. Tuy nhiên, có $8\\%$ những người không bị bệnh X lại có phản ứng dương tính với xét nghiệm Y. Chọn ngẫu nhiên $1$ người trong đợt kiểm tra sức khoẻ đó. Giả sử người đó có phản ứng dương tính với xét nghiệm Y. Xác suất người đó bị bệnh X là bao nhiêu (kết quả làm tròn đến hàng phần trăm)? <br>" +
+                           `<div class="text-center my-3">
+                               <svg width="380" height="200" viewBox="0 0 380 200" style="background:#fff; font-size:11px;">
+                                   <line x1="80" y1="100" x2="180" y2="50" stroke="#333" stroke-width="1.2" />
+                                   <line x1="80" y1="100" x2="180" y2="150" stroke="#333" stroke-width="1.2" />
+                                   <line x1="200" y1="50" x2="280" y2="25" stroke="#333" stroke-width="1.2" />
+                                   <line x1="200" y1="50" x2="280" y2="75" stroke="#333" stroke-width="1.2" />
+                                   <line x1="200" y1="150" x2="280" y2="125" stroke="#333" stroke-width="1.2" />
+                                   <line x1="200" y1="150" x2="280" y2="175" stroke="#333" stroke-width="1.2" />
+                                   <rect x="5" y="85" width="80" height="30" rx="4" fill="#f8f9fa" stroke="#ccc" />
+                                   <text x="45" y="104" text-anchor="middle">Chọn 1 người</text>
+                                   <text x="190" y="54" font-weight="bold">B</text>
+                                   <text x="190" y="154" font-weight="bold">B̅</text>
+                                   <text x="290" y="29" font-weight="bold">A</text>
+                                   <text x="290" y="79" font-weight="bold">A̅</text>
+                                   <text x="290" y="129" font-weight="bold">A</text>
+                                   <text x="290" y="179" font-weight="bold">A̅</text>
+                                   <text x="125" y="66" font-size="9" fill="#0d6efd">P(B)=0,003</text>
+                                   <text x="125" y="136" font-size="9" fill="#0d6efd">P(B̅)=0,997</text>
+                                   <text x="235" y="32" font-size="9" fill="#198754">P(A|B)=1</text>
+                                   <text x="235" y="68" font-size="9" fill="#198754">P(A̅|B)=0</text>
+                                   <text x="235" y="132" font-size="9" fill="#198754">P(A|B̅)=0,08</text>
+                                   <text x="235" y="168" font-size="9" fill="#198754">P(A̅|B̅)=0,92</text>
+                               </svg>
+                           </div>`,
+                    correctAnswer: 0.04,
+                    explanation: "Áp dụng công thức Bayes:<br>$\\mathrm{P}(A)=\\mathrm{P}(B)\\cdot\\mathrm{P}(A|B)+\\mathrm{P}(\\overline{B})\\cdot\\mathrm{P}(A|\\overline{B})=0,003\\cdot 1+0,997\\cdot 0,08=\\dfrac{2069}{25000}$.<br>" +
+                                 "$\\mathrm{P}(B|A)=\\dfrac{\\mathrm{P}(B\\cap A)}{\\mathrm{P}(A)}=\\dfrac{0,003}{\\dfrac{2069}{25000}}\\approx 0,04$."
+                },
+                {
+                    id: "p3_c2",
+                    text: "Năm 2016, trong chiến dịch mang tên “Niềm tự hào cuối cùng của loài người”, kỳ thủ cờ vây số một thế giới Lee Sedol đã có trận đấu lịch sử với trí tuệ nhân tạo AlphaGo. Một trò chơi mô phỏng trận đấu này có luật như sau: Điểm khởi đầu của kỳ thủ là $2$. Trong mỗi ván đấu, nếu thắng kỳ thủ được cộng $1$ điểm, nếu hoà điểm số không thay đổi, nếu thua bị trừ $1$ điểm. Trận đấu kết thúc ngay khi kỳ thủ đạt $3$ điểm (giành chiến thắng) hoặc $0$ điểm (thất bại). Giả sử xác suất mỗi ván thắng, hoà, thua của kỳ thủ lần lượt là $\\dfrac{1}{4};\\dfrac{1}{4};\\dfrac{1}{2}$ và kết quả các ván đấu là độc lập với nhau. Xác suất để trận đấu kết thúc sau đúng 6 ván và kỳ thủ là người giành chiến thắng là $p$. Tính $4096p$.",
+                    correctAnswer: 41,
+                    explanation: "Để trận đấu kết thúc sau đúng $6$ ván và thắng, ván 6 bắt buộc thắng và điểm sau ván 5 phải là 2. Đồng thời các ván trước không được chạm 0 hoặc 3.<br>" +
+                                 "Xét các trường hợp trong 5 ván đầu để đạt 2 điểm:<br>" +
+                                 "- TH1: 5 ván đều hoà $\\Rightarrow p_1 = (\\dfrac{1}{4})^5 = \\dfrac{1}{1024}$.<br>" +
+                                 "- TH2: 1 ván thua, 1 ván thắng, 3 ván hoà (thua trước thắng) $\\Rightarrow p_2 = 10 \\cdot \\dfrac{1}{2} \\cdot \\dfrac{1}{4} \\cdot (\\dfrac{1}{4})^3 = \\dfrac{5}{256}$.<br>" +
+                                 "- TH3: 2 ván thua, 2 ván thắng, 1 ván hoà (theo thứ tự hợp lệ) $\\Rightarrow p_3 = 5 \\cdot (\\dfrac{1}{2})^2 \\cdot (\\dfrac{1}{4})^2 \\cdot \\dfrac{1}{4} = \\dfrac{5}{256}$.<br>" +
+                                 "Xác suất tổng hợp: $p = (p_1 + p_2 + p_3) \\cdot \\dfrac{1}{4} = \\dfrac{41}{4096} \\Rightarrow 4096p = 41$."
+                },
+                {
+                    id: "p3_c3",
+                    text: "Cho hình chóp $S.ABC$ có đáy $ABC$ là tam giác đều cạnh bằng $6$, cạnh bên $SA$ vuông góc với mặt phẳng đáy, góc giữa $SA$ và mặt phẳng $(SBC)$ bằng $45^\\circ$. Thể tích khối chóp $S.ABC$ bằng bao nhiêu (làm tròn kết quả đến hàng phần chục)? <br>" +
+                           `<div class="text-center my-3">
+                               <svg width="240" height="220" viewBox="0 0 240 220" style="background:#fff;">
+                                   <line x1="80" y1="160" x2="80" y2="30" stroke="#000" stroke-width="1.5" stroke-dasharray="4,4" />
+                                   <line x1="80" y1="160" x2="30" y2="195" stroke="#000" stroke-width="1.5" stroke-dasharray="4,4" />
+                                   <line x1="80" y1="160" x2="190" y2="180" stroke="#000" stroke-width="1.5" stroke-dasharray="4,4" />
+                                   <line x1="80" y1="160" x2="110" y2="187" stroke="#000" stroke-width="1.5" stroke-dasharray="4,4" />
+                                   <line x1="80" y1="160" x2="98" y2="122" stroke="#000" stroke-width="1" stroke-dasharray="3,3" />
+                                   <line x1="80" y1="30" x2="30" y2="195" stroke="#000" stroke-width="1.5" />
+                                   <line x1="80" y1="30" x2="190" y2="180" stroke="#000" stroke-width="1.5" />
+                                   <line x1="30" y1="195" x2="190" y2="180" stroke="#000" stroke-width="1.5" />
+                                   <line x1="80" y1="30" x2="110" y2="187" stroke="#000" stroke-width="1.5" />
+                                   <text x="80" y="24" font-size="13" font-style="italic" text-anchor="middle">S</text>
+                                   <text x="70" y="164" font-size="13" font-style="italic">A</text>
+                                   <text x="20" y="200" font-size="13" font-style="italic">B</text>
+                                   <text x="198" y="184" font-size="13" font-style="italic">C</text>
+                                   <text x="112" y="198" font-size="13" font-style="italic">M</text>
+                                   <text x="104" y="120" font-size="13" font-style="italic">H</text>
+                               </svg>
+                           </div>`,
+                    correctAnswer: 27.0,
+                    explanation: "Gọi $M$ là trung điểm $BC \\Rightarrow AM \\perp BC$ và $SA \\perp BC \\Rightarrow BC \\perp (SAM)$. Kẻ $AH \\perp SM \\Rightarrow AH \\perp (SBC)$.<br>" +
+                                 "Góc giữa $SA$ và $(SBC)$ bằng $\\widehat{ASH} = \\widehat{ASM} = 45^\\circ \\Rightarrow \\Delta SAM$ vuông cân tại $A$.<br>" +
+                                 "Chiều cao $SA = AM = \\dfrac{6\\sqrt{3}}{2} = 3\\sqrt{3}$. Diện tích đáy $S_{ABC} = \\dfrac{6^2\\sqrt{3}}{4} = 9\\sqrt{3}$.<br>" +
+                                 "Thể tích: $V = \\dfrac{1}{3} \\cdot SA \\cdot S_{ABC} = \\dfrac{1}{3} \\cdot 3\\sqrt{3} \\cdot 9\\sqrt{3} = 27 = 27,0$."
+                },
+                {
+                    id: "p3_c4",
+                    text: "Tập đoàn cơ khí EuroRide (Đức) độc quyền phân phối một dòng xe đạp điện cao cấp tại thị trường châu Âu. Chi phí sản xuất và vận chuyển mỗi chiếc xe là $500$ USD. Hiện tại, hãng đang niêm yết giá bán là $1200$ USD/chiếc, với lượng tiêu thụ trung bình đạt $2000$ chiếc/tháng. Bộ phận khảo sát thị trường của EuroRide nhận thấy rằng: cứ tăng giá bán thêm $1$ USD thì số lượng xe bán ra trong tháng sẽ giảm đi $5$ chiếc (và ngược lại, nếu giảm giá $1$ USD thì lượng xe bán ra tăng $5$ chiếc). Ủy ban thương mại dự định áp thuế bảo vệ môi trường là $t$ (USD) trên mỗi chiếc xe đạp điện bán ra ($0 < t < 1100$). Biết ban giám đốc EuroRide luôn điều chỉnh giá bán $p$ (USD) sao cho lợi nhuận thu về (sau khi trừ thuế) là cao nhất. Hỏi cơ quan quản lý cần quy định mức thuế $t$ bằng bao nhiêu (USD/chiếc) để tổng số tiền thuế thu được mỗi tháng là lớn nhất?",
+                    correctAnswer: 550,
+                    explanation: "Mối liên hệ giữa lượng bán $Q$ và giá $p$: $Q(p) = 2000 - 5(p - 1200) = 8000 - 5p$.<br>" +
+                                 "Lợi nhuận sau thuế: $L(p) = (p - 500 - t)(8000 - 5p)$. Đây là parabol đạt cực đại tại đỉnh: $p^*(t) = \\dfrac{(500+t)+1600}{2} = \\dfrac{t+2100}{2}$.<br>" +
+                                 "Khi đó lượng bán: $Q^*(t) = 8000 - 5 \\cdot \\dfrac{t+2100}{2} = \\dfrac{5500 - 5t}{2}$.<br>" +
+                                 "Tổng tiền thuế thu được: $T(t) = t \\cdot Q^*(t) = \\dfrac{-5}{2}t^2 + 2750t$. Hàm số đạt giá trị lớn nhất tại đỉnh $t = \\dfrac{-2750}{2 \\cdot (-2,5)} = 550$ USD/chiếc."
+                }
+            ]
+        };
+
+        // --- HÀM TRỘN NGẪU NHIÊN ---
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // --- RENDER ĐỀ THI ---
+        function buildExam() {
+            let html = "";
+
+            // PHẦN I
+            html += `<h4 class="part-title">PHẦN I. Câu hỏi trắc nghiệm nhiều phương án lựa chọn</h4>`;
+            html += `<p class="fw-semibold text-muted ps-2">Thí sinh trả lời từ câu 1 đến câu 12. Mỗi câu hỏi thí sinh chỉ chọn một phương án. (Mỗi câu đúng được 0.25 điểm)</p>`;
+            let p1Shuffled = shuffle([...examData.part1]);
+            p1Shuffled.forEach((q, index) => {
+                let optsShuffled = shuffle([...q.options]);
+                html += `<div class="question-box" id="box_${q.id}">
+                            <div class="fw-bold mb-2">Câu ${index + 1}. <span class="fw-normal">${q.text}</span></div>
+                            <div class="row">`;
+                optsShuffled.forEach((opt, oIdx) => {
+                    let letter = String.fromCharCode(65 + oIdx);
+                    html += `<div class="col-md-6">
+                                <label class="option-label" id="lbl_${q.id}_${oIdx}">
+                                    <input type="radio" name="${q.id}" value="${opt.isCorrect}" class="option-input">
+                                    <span class="fw-bold">${letter}.</span> <span class="option-text">${opt.text}</span>
+                                </label>
+                             </div>`;
+                });
+                html += `   </div>
+                            <div class="explanation" id="exp_${q.id}"></div>
+                         </div>`;
+            });
+
+            // PHẦN II
+            html += `<h4 class="part-title">PHẦN II. Câu hỏi trắc nghiệm đúng sai</h4>`;
+            html += `<p class="fw-semibold text-muted ps-2">Thí sinh trả lời từ câu 1 đến câu 4. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.</p>`;
+            let p2Shuffled = shuffle([...examData.part2]);
+            p2Shuffled.forEach((q, index) => {
+                html += `<div class="question-box" id="box_${q.id}">
+                            <div class="fw-bold mb-3">Câu ${index + 1}. <span class="fw-normal">${q.text}</span></div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered true-false-table align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Các phát biểu / ý hỏi</th>
+                                            <th style="width: 90px;">Đúng</th>
+                                            <th style="width: 90px;">Sai</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
+                q.statements.forEach((st, sIdx) => {
+                    let letters = ['a', 'b', 'c', 'd'];
+                    html += `<tr id="tr_${q.id}_${sIdx}">
+                                <td><span class="fw-bold">${letters[sIdx]})</span> ${st.text}</td>
+                                <td><input type="radio" name="${q.id}_${sIdx}" value="true" data-correct="${st.isTrue}" class="tf-radio form-check-input"></td>
+                                <td><input type="radio" name="${q.id}_${sIdx}" value="false" data-correct="${!st.isTrue}" class="tf-radio form-check-input"></td>
+                             </tr>`;
+                });
+                html += `           </tbody>
+                                </table>
+                            </div>
+                            <div class="explanation" id="exp_${q.id}"></div>
+                         </div>`;
+            });
+
+            // PHẦN III
+            html += `<h4 class="part-title">PHẦN III. Câu trắc nghiệm trả lời ngắn</h4>`;
+            html += `<p class="fw-semibold text-muted ps-2">Thí sinh trả lời từ câu 1 đến câu 4. Điền đáp án dạng số vào ô trống. (Mỗi câu đúng được 0.5 điểm)</p>`;
+            let p3Shuffled = shuffle([...examData.part3]);
+            p3Shuffled.forEach((q, index) => {
+                html += `<div class="question-box" id="box_${q.id}">
+                            <div class="fw-bold mb-2">Câu ${index + 1}. <span class="fw-normal">${q.text}</span></div>
+                            <div class="mt-2">
+                                <input type="text" class="form-control short-ans-input" name="${q.id}" data-answer="${q.correctAnswer}" placeholder="Nhập đáp án số...">
+                            </div>
+                            <div class="explanation" id="exp_${q.id}"></div>
+                         </div>`;
+            });
+
+            document.getElementById("examContent").innerHTML = html;
+            if (window.MathJax && window.MathJax.typeset) {
+                window.MathJax.typeset();
+            }
+        }
+
+        // --- ĐỒNG HỒ ĐẾM NGƯỢC ---
+        let timeRemaining = 90 * 60;
+        const timerDisplay = document.getElementById("timerDisplay");
+        let countdown = setInterval(() => {
+            timeRemaining--;
+            let mins = Math.floor(timeRemaining / 60);
+            let secs = timeRemaining % 60;
+            timerDisplay.innerText = `Thời gian còn lại: ${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeRemaining <= 0) {
+                clearInterval(countdown);
+                alert("Hết giờ làm bài! Hệ thống tự động nộp bài.");
+                processSubmission(true);
+            }
+        }, 1000);
+
+        // --- CHỐNG GIAN LẬN (CHUYỂN TAB) ---
+        let tabViolations = 0;
+        let lastViolationTime = 0;
+        let isSubmitted = false;
+        let completedAtLeastHalf = false;
+
+        function handleViolation() {
+            if (isSubmitted) return;
+            let now = Date.now();
+            if (now - lastViolationTime < 1000) return; // Chống nháy sự kiện liên tục
+            lastViolationTime = now;
+            
+            tabViolations++;
+            
+            if (tabViolations > 5) {
+                alert("Bạn đã chuyển tab quá số lần cho phép. Bài thi bị nộp tự động và điểm bị giảm 50%.");
+                processSubmission(true, true);
+            } else if (tabViolations >= 4) {
+                alert(`CẢNH BÁO ĐỎ: Bạn đã rời khỏi trang thi ${tabViolations} lần! Vượt quá 5 lần sẽ bị thu bài và trừ 50% số điểm.`);
+            } else {
+                alert(`Cảnh báo: Bạn không được chuyển tab hoặc rời khỏi trang thi. (Vi phạm: ${tabViolations}/5 lần)`);
+            }
+        }
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) handleViolation();
+        });
+
+        window.addEventListener("blur", () => {
+            handleViolation();
+        });
+
+        // --- XỬ LÝ CHẤM ĐIỂM TỰ ĐỘNG VÀ HIỂN THỊ KẾT QUẢ ---
+        function processSubmission(force = false, isPenalty = false) {
+            let totalQuestionsCount = 12 + 4 + 4; // Tổng câu lớn
+            let answeredCount = 0;
+
+            // Kiểm tra tiến độ làm bài
+            examData.part1.forEach(q => {
+                if (document.querySelector(`input[name="${q.id}"]:checked`)) answeredCount++;
+            });
+            examData.part2.forEach(q => {
+                let done = false;
+                for (let i = 0; i < 4; i++) {
+                    if (document.querySelector(`input[name="${q.id}_${i}"]:checked`)) done = true;
+                }
+                if (done) answeredCount++;
+            });
+            examData.part3.forEach(q => {
+                if (document.querySelector(`input[name="${q.id}"]`).value.trim() !== "") answeredCount++;
+            });
+
+            if (!force && answeredCount < (totalQuestionsCount / 2)) {
+                alert(`Bạn mới làm được ${answeredCount}/${totalQuestionsCount} câu. Cần hoàn thành tối thiểu 50% số câu (10 câu) để nộp bài.`);
+                return;
+            }
+
+            completedAtLeastHalf = true;
+            isSubmitted = true;
+            clearInterval(countdown);
+
+            let scoreP1 = 0;
+            let scoreP2 = 0;
+            let scoreP3 = 0;
+
+            // Chấm phần I
+            examData.part1.forEach(q => {
+                let selected = document.querySelector(`input[name="${q.id}"]:checked`);
+                if (selected && selected.value === "true") {
+                    scoreP1 += 0.25;
+                }
+            });
+
+            // Chấm phần II
+            examData.part2.forEach(q => {
+                let correctSubCount = 0;
+                for (let i = 0; i < 4; i++) {
+                    let selected = document.querySelector(`input[name="${q.id}_${i}"]:checked`);
+                    if (selected && selected.getAttribute('data-correct') === "true") {
+                        correctSubCount++;
+                    }
+                }
+                if (correctSubCount === 1) scoreP2 += 0.1;
+                else if (correctSubCount === 2) scoreP2 += 0.25;
+                else if (correctSubCount === 3) scoreP2 += 0.5;
+                else if (correctSubCount === 4) scoreP2 += 1.0;
+            });
+
+            // Chấm phần III
+            examData.part3.forEach(q => {
+                let inputVal = document.querySelector(`input[name="${q.id}"]`).value.trim();
+                if (inputVal !== "") {
+                    let userNum = parseFloat(inputVal.replace(',', '.'));
+                    let correctNum = parseFloat(q.correctAnswer);
+                    if (!isNaN(userNum) && Math.abs(userNum - correctNum) < 0.001) {
+                        scoreP3 += 0.5;
+                    }
+                }
+            });
+
+            let finalScore = scoreP1 + scoreP2 + scoreP3;
+            let maxScore = 9.0; // 12*0.25 + 4*1 + 4*0.5
+
+            if (isPenalty) {
+                finalScore = finalScore / 2;
+            }
+
+            // Hiển thị điểm số
+            let scoreDisplay = document.getElementById("scoreDisplay");
+            scoreDisplay.innerHTML = `KẾT QUẢ BÀI LÀM: <span class="text-danger">${finalScore.toFixed(2)}</span> / ${maxScore.toFixed(2)} điểm.${isPenalty ? '<br><small class="text-danger">Đã bị trừ 50% điểm do vi phạm chuyển tab.</small>' : ''}<br>` +
+                                     `<small class="text-muted">(Phần I: ${scoreP1.toFixed(2)}đ | Phần II: ${scoreP2.toFixed(2)}đ | Phần III: ${scoreP3.toFixed(2)}đ)</small>`;
+            scoreDisplay.style.display = "block";
+
+            // Khóa toàn bộ form
+            document.querySelectorAll('input').forEach(el => el.disabled = true);
+            document.getElementById("btnSubmit").style.display = "none";
+            document.getElementById("btnShowAnswers").style.display = "inline-block";
+
+            // Gửi dữ liệu về Google Sheets
+            let sName = document.getElementById("studentName").value.trim() || "Thí sinh ẩn danh";
+            let cName = document.getElementById("className").value.trim() || "Tự do";
+            
+            let timeUsedSeconds = 90 * 60 - timeRemaining;
+            let durationMinutes = Math.round(timeUsedSeconds / 60);
+
+            let payload = {
+                timestamp: new Date().toLocaleString('vi-VN'),
+                student_name: sName,
+                class_name: cName,
+                score_p1: scoreP1.toFixed(2),
+                score_p2: scoreP2.toFixed(2),
+                score_p3: scoreP3.toFixed(2),
+                score: finalScore.toFixed(2),
+                total_score: finalScore.toFixed(2),
+                max_score: maxScore.toFixed(2),
+                percent: ((finalScore / maxScore) * 100).toFixed(1) + "%",
+                tab_violation: tabViolations,
+                duration: durationMinutes + " phút"
+            };
+
+            let scriptURL = "https://script.google.com/macros/s/AKfycbzZhRAFuNNXaqS_HDhXkCJGdfAkgPWlk0cy36kgHAJWVe1fiN2_oh3LT4wiKmADWTiSuQ/exec"; 
+            fetch(scriptURL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams(payload)
+            }).then(() => console.log("Gửi phản hồi dữ liệu Google Sheet thành công!"))
+              .catch(err => console.error("Lỗi gửi dữ liệu Google Sheet: ", err));
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.getElementById("btnSubmit").addEventListener("click", () => {
+            processSubmission(false);
+        });
+
+        // --- HIỂN THỊ ĐÁP ÁN CHI TIẾT ---
+        document.getElementById("btnShowAnswers").addEventListener("click", () => {
+            if (!completedAtLeastHalf) return;
+
+            examData.part1.forEach(q => {
+                document.getElementById(`exp_${q.id}`).innerHTML = q.explanation;
+                document.getElementById(`exp_${q.id}`).style.display = "block";
+                
+                let radios = document.getElementsByName(q.id);
+                radios.forEach((r, idx) => {
+                    let lbl = document.getElementById(`lbl_${q.id}_${idx}`);
+                    if (r.value === "true") {
+                        lbl.classList.add("correct-ans");
+                    } else if (r.checked) {
+                        lbl.classList.add("wrong-ans");
+                    }
+                });
+            });
+
+            examData.part2.forEach(q => {
+                document.getElementById(`exp_${q.id}`).innerHTML = q.explanation;
+                document.getElementById(`exp_${q.id}`).style.display = "block";
+
+                for (let i = 0; i < 4; i++) {
+                    let checkedRadio = document.querySelector(`input[name="${q.id}_${i}"]:checked`);
+                    let tr = document.getElementById(`tr_${q.id}_${i}`);
+                    if (checkedRadio) {
+                        if (checkedRadio.getAttribute('data-correct') === "true") {
+                            tr.classList.add("table-success");
+                        } else {
+                            tr.classList.add("table-danger");
+                        }
+                    } else {
+                        tr.classList.add("table-light");
+                    }
+                }
+            });
+
+            examData.part3.forEach(q => {
+                document.getElementById(`exp_${q.id}`).innerHTML = q.explanation + `<br><strong class="text-success">Đáp án chuẩn: ${q.correctAnswer.toString().replace('.', ',')}</strong>`;
+                document.getElementById(`exp_${q.id}`).style.display = "block";
+
+                let inputEl = document.querySelector(`input[name="${q.id}"]`);
+                let userVal = inputEl.value.trim().replace(',', '.');
+                if (parseFloat(userVal) === parseFloat(q.correctAnswer)) {
+                    inputEl.classList.add("is-valid");
+                } else {
+                    inputEl.classList.add("is-invalid");
+                }
+            });
+
+            if (window.MathJax && window.MathJax.typeset) {
+                window.MathJax.typeset();
+            }
+            document.getElementById("btnShowAnswers").disabled = true;
+        });
+
+        // --- IN ĐỀ THI ---
+        document.getElementById("btnPrint").addEventListener("click", () => {
+            window.print();
+        });
+
+        // Tự động khởi tạo
+        window.onload = buildExam;
+    </script>
+</body>
+</html>
