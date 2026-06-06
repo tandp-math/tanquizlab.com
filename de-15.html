@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐỀ ÔN TẬP THI TỐT NGHIỆP THPT QUỐC GIA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+        }
+        body {
+            background-color: #ffffff;
+            color: #333;
+            user-select: none;
+        }
+        .header-title {
+            color: var(--primary-color);
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .section-title {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 30px;
+        }
+        .question-block {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        /* Style cho phần đáp án A B C D dàn hàng ngang */
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        @media (min-width: 768px) {
+            .options-container {
+                grid-template-columns: 1fr 1fr; /* Dàn 2 cột (A, B trên C, D dưới) */
+            }
+        }
+        @media (min-width: 992px) {
+            .options-container.short-options {
+                grid-template-columns: 1fr 1fr 1fr 1fr; /* Dàn 4 cột nếu nội dung ngắn */
+            }
+        }
+        .options-container .form-check {
+            padding-left: 1.8em;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+        }
+        .options-container .form-check-input {
+            margin-top: 0;
+            margin-left: -1.8em;
+            cursor: pointer;
+        }
+        .options-container .form-check-label {
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .solution-block {
+            display: none;
+            background-color: #f8f9fa;
+            border-left: 4px solid #198754;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+        .timer-container {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        #login-screen, #result-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f4f6f9;
+        }
+        #exam-screen {
+            display: none;
+            padding-top: 60px;
+        }
+        .warning-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            z-index: 2000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .bbt {
+            width: 100%;
+            max-width: 600px;
+            border-collapse: collapse;
+            text-align: center;
+            margin: 15px auto;
+            background-color: white;
+        }
+        .bbt th, .bbt td {
+            border: 1px solid #000;
+            padding: 8px;
+        }
+        .bbt-y-row {
+            height: 70px;
+        }
+        .true-false-table th, .true-false-table td {
+            vertical-align: middle;
+        }
+        .tf-radio-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        .tf-radio-group .form-check {
+            margin-bottom: 0;
+            padding-left: 1.5em;
+        }
+        .tf-radio-group .form-check-input {
+            cursor: pointer;
+            margin-left: -1.5em;
+        }
+        .tf-radio-group .form-check-label {
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .short-ans-input {
+            width: 150px;
+            display: inline-block;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            #exam-screen { display: block !important; padding-top: 0; }
+            .question-block { border: none; box-shadow: none; margin-bottom: 10px; break-inside: avoid; }
+            body { user-select: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="warning-overlay" class="warning-overlay">
+        <h1 id="warning-title">CẢNH BÁO GIAN LẬN!</h1>
+        <p id="warning-text" class="fs-4"></p>
+        <button class="btn btn-light mt-3" onclick="closeWarning()">Tôi đã hiểu</button>
+    </div>
+
+    <div id="login-screen" class="container-fluid no-print">
+        <div class="card p-4 shadow" style="max-width: 500px; width: 100%;">
+            <h3 class="text-center mb-4 text-primary">THÔNG TIN THÍ SINH</h3>
+            <div class="mb-3">
+                <label class="form-label">Họ và tên:</label>
+                <input type="text" id="student_name" class="form-control" required placeholder="Nhập họ và tên...">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Lớp:</label>
+                <input type="text" id="class_name" class="form-control" required placeholder="Nhập lớp...">
+            </div>
+            <button class="btn btn-primary w-100" onclick="startExam()">BẮT ĐẦU LÀM BÀI</button>
+        </div>
+    </div>
+
+    <div id="exam-screen" class="container">
+        <div class="timer-container no-print" id="timer">80:00</div>
+        
+        <h2 class="header-title">ĐỀ ÔN TẬP THI TỐT NGHIỆP THPT QUỐC GIA</h2>
+        <div class="row mb-4">
+            <div class="col-md-6"><strong>Họ và tên:</strong> <span id="display_name">__________</span></div>
+            <div class="col-md-6"><strong>Lớp:</strong> <span id="display_class">__________</span></div>
+        </div>
+
+        <h4 class="section-title">PHẦN I. Câu hỏi trắc nghiệm nhiều phương án lựa chọn (Mỗi câu 0.25 điểm)</h4>
+        <div id="part1-container">
+            
+            <div class="question-block p1-q" data-id="p1-1">
+                <p><strong>Câu 1:</strong> Phương trình \(\cot x =-1\) có nghiệm là</p>
+                <div class="options-container">
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-1" value="A"><label class="form-check-label">\(x=- \dfrac{5 \pi}{12}+k2 \pi, k \in \mathbb{Z}\)</label></div>
+                    <div class="form-check" data-correct="true"><input class="form-check-input" type="radio" name="p1-1" value="B"><label class="form-check-label">\(x=- \dfrac{\pi}{4}+k \pi, k \in \mathbb{Z}\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-1" value="C"><label class="form-check-label">\(x=\dfrac{\pi}{12}+k2 \pi, k \in \mathbb{Z}\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-1" value="D"><label class="form-check-label">\(x=- \dfrac{\pi}{2}+k \pi, k \in \mathbb{Z}\)</label></div>
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Ta có:<br>
+                    \(\cot x =-1 \Leftrightarrow \cot x = \cot \left( - \dfrac{\pi}{4} \right) \Leftrightarrow x=- \dfrac{\pi}{4}+k \pi, k \in \mathbb{Z}\).
+                </div>
+            </div>
+
+            <div class="question-block p1-q" data-id="p1-2">
+                <p><strong>Câu 2:</strong> Cho cấp số nhân \((u_n)\) với \(u_1=-8\) và \(u_2=24\). Công bội của cấp số nhân đã cho bằng</p>
+                <div class="options-container short-options">
+                    <div class="form-check" data-correct="true"><input class="form-check-input" type="radio" name="p1-2" value="A"><label class="form-check-label">\(-3\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-2" value="B"><label class="form-check-label">\(-1\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-2" value="C"><label class="form-check-label">\(1\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-2" value="D"><label class="form-check-label">\(-2\)</label></div>
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Ta có công bội của cấp số nhân \(q = \dfrac{u_2}{u_1} = \dfrac{24}{-8} = -3\).
+                </div>
+            </div>
+
+            <div class="question-block p1-q" data-id="p1-3">
+                <p><strong>Câu 3:</strong> Một lớp học \(47\) học sinh gồm có \(16\) học sinh nam giỏi Toán và \(6\) học sinh nữ giỏi Văn. Chọn ngẫu nhiên một học sinh. Xác suất để chọn được một nam sinh giỏi Toán hoặc một nữ sinh giỏi Văn là</p>
+                <div class="options-container short-options">
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-3" value="A"><label class="form-check-label">\(\dfrac{25}{47}\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-3" value="B"><label class="form-check-label">\(\dfrac{11}{47}\)</label></div>
+                    <div class="form-check" data-correct="true"><input class="form-check-input" type="radio" name="p1-3" value="C"><label class="form-check-label">\(\dfrac{22}{47}\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-3" value="D"><label class="form-check-label">\(\dfrac{6}{47}\)</label></div>
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Gọi \(A\) là biến cố "chọn một nam sinh giỏi Toán", \(B\) là biến cố "chọn một nữ sinh giỏi Văn".<br>
+                    Ta thấy \(A\) và \(B\) là 2 biến cố xung khắc.<br>
+                    Số phần tử không gian mẫu: \(n(\Omega) = 47\).<br>
+                    Suy ra: \(P(A) = \dfrac{16}{47}\) và \(P(B) = \dfrac{6}{47}\).<br>
+                    Vậy xác suất cần tính là: \(P(A \cup B) = P(A) + P(B) = \dfrac{16}{47} + \dfrac{6}{47} = \dfrac{22}{47}\).
+                </div>
+            </div>
+
+            <div class="question-block p1-q" data-id="p1-4">
+                <p><strong>Câu 4:</strong> Cho hàm số \(y=\dfrac{x^{2} - x + 91}{x - 6}\). Hàm số đồng biến trên khoảng nào dưới đây?</p>
+                <div class="options-container">
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-4" value="A"><label class="form-check-label">\(\left(6;17 \right)\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-4" value="B"><label class="form-check-label">\(\left(-5;6 \right)\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-4" value="C"><label class="form-check-label">\(\left(-5;17 \right)\)</label></div>
+                    <div class="form-check" data-correct="true"><input class="form-check-input" type="radio" name="p1-4" value="D"><label class="form-check-label">\((-\infty;-6)\)</label></div>
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Tập xác định \(\mathscr{D} = \mathbb{R} \setminus \{6\}\).<br>
+                    Ta có \(y' = \dfrac{x^{2} - 12x - 85}{(x - 6)^{2}}\).<br>
+                    \(y' = 0 \Leftrightarrow \begin{cases} x = -5 \\ x = 17 \end{cases}\)<br>
+                    Bảng biến thiên:
+                    <table class="bbt">
+                        <tr>
+                            <td style="width: 10%;">\(x\)</td>
+                            <td>\(-\infty\)</td>
+                            <td></td>
+                            <td>\(-5\)</td>
+                            <td></td>
+                            <td>\(6\)</td>
+                            <td></td>
+                            <td>\(17\)</td>
+                            <td></td>
+                            <td>\(+\infty\)</td>
+                        </tr>
+                        <tr>
+                            <td>\(y'\)</td>
+                            <td></td>
+                            <td>\(+\)</td>
+                            <td>\(0\)</td>
+                            <td>\(-\)</td>
+                            <td style="border-left: 1px solid #000; border-right: 1px solid #000; padding: 0;">||</td>
+                            <td>\(-\)</td>
+                            <td>\(0\)</td>
+                            <td>\(+\)</td>
+                            <td></td>
+                        </tr>
+                        <tr class="bbt-y-row">
+                            <td>\(y\)</td>
+                            <td style="vertical-align: bottom;">\(-\infty\)</td>
+                            <td style="vertical-align: middle;">\(\nearrow\)</td>
+                            <td style="vertical-align: top;">\(-11\)</td>
+                            <td style="vertical-align: middle;">\(\searrow\)</td>
+                            <td style="padding: 0;">
+                                <div style="display: flex; justify-content: space-between; height: 100%;">
+                                    <div style="vertical-align: bottom; display: flex; align-items: flex-end; padding: 5px;">\(-\infty\)</div>
+                                    <div style="border-left: 1px solid #000; border-right: 1px solid #000; width: 4px;"></div>
+                                    <div style="vertical-align: top; display: flex; align-items: flex-start; padding: 5px;">\(+\infty\)</div>
+                                </div>
+                            </td>
+                            <td style="vertical-align: middle;">\(\searrow\)</td>
+                            <td style="vertical-align: bottom;">\(33\)</td>
+                            <td style="vertical-align: middle;">\(\nearrow\)</td>
+                            <td style="vertical-align: top;">\(+\infty\)</td>
+                        </tr>
+                    </table>
+                    Hàm số đồng biến trên \((-\infty;-5)\) và \((17;+\infty)\). Khoảng \((-\infty;-6) \subset (-\infty;-5)\) nên hàm số đồng biến.
+                </div>
+            </div>
+
+            <div class="question-block p1-q" data-id="p1-5">
+                <p><strong>Câu 5:</strong> Hàm số nào có bảng biến thiên như sau?</p>
+                <table class="bbt">
+                    <tr>
+                        <td style="width: 10%;">\(x\)</td>
+                        <td>\(-\infty\)</td>
+                        <td></td>
+                        <td>\(-1\)</td>
+                        <td></td>
+                        <td>\(4\)</td>
+                        <td></td>
+                        <td>\(+\infty\)</td>
+                    </tr>
+                    <tr>
+                        <td>\(y'\)</td>
+                        <td></td>
+                        <td>\(-\)</td>
+                        <td>\(0\)</td>
+                        <td>\(+\)</td>
+                        <td>\(0\)</td>
+                        <td>\(-\)</td>
+                        <td></td>
+                    </tr>
+                    <tr class="bbt-y-row">
+                        <td>\(y\)</td>
+                        <td style="vertical-align: top;">\(+\infty\)</td>
+                        <td style="vertical-align: middle;">\(\searrow\)</td>
+                        <td style="vertical-align: bottom;">\(-18\)</td>
+                        <td style="vertical-align: middle;">\(\nearrow\)</td>
+                        <td style="vertical-align: top;">\(107\)</td>
+                        <td style="vertical-align: middle;">\(\searrow\)</td>
+                        <td style="vertical-align: bottom;">\(-\infty\)</td>
+                    </tr>
+                </table>
+                <div class="options-container">
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-5" value="A"><label class="form-check-label">\(y=x^{4} + 2 x^{2} + 2\)</label></div>
+                    <div class="form-check" data-correct="true"><input class="form-check-input" type="radio" name="p1-5" value="B"><label class="form-check-label">\(y=- 2 x^{3} + 9 x^{2} + 24 x - 5\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-5" value="C"><label class="form-check-label">\(y=2 x^{3} - 9 x^{2} - 24 x + 5\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-5" value="D"><label class="form-check-label">\(y=- x^{4} - 2 x^{2} - 2\)</label></div>
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Từ BBT ta thấy đây là đồ thị của hàm số bậc ba dạng \(y=ax^3+bx^2+cx+d\) với \(a \ne 0\).<br>
+                    Khoảng ngoài cùng bên phải nghịch biến nên hệ số \(a<0\). Kiểm tra cực đại cực tiểu ta thấy phương án đúng là \(y = -2x^3 + 9x^2 + 24x - 5\).
+                </div>
+            </div>
+
+            <div class="question-block p1-q" data-id="p1-6">
+                <p><strong>Câu 6:</strong> Đồ thị hàm số \(y=\dfrac{2 x^{2} - 8 x + 9}{x - 5}\) có tâm đối xứng là \(I(h;k)\). Giá trị của biểu thức \(P=-2h+2k\) bằng</p>
+                <div class="options-container short-options">
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-6" value="A"><label class="form-check-label">\(P=11\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-6" value="B"><label class="form-check-label">\(P=12\)</label></div>
+                    <div class="form-check" data-correct="true"><input class="form-check-input" type="radio" name="p1-6" value="C"><label class="form-check-label">\(P=14\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-6" value="D"><label class="form-check-label">\(P=13\)</label></div>
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Ta có \(a = \lim_{x\to+\infty} \dfrac{y}{x} = 2\).<br>
+                    \(b = \lim_{x\to+\infty} [y - 2x] = 2\).<br>
+                    Do đó đồ thị hàm số có tiệm cận xiên là \(y=2x+2\). Mặt khác, \(x=5\) là tiệm cận đứng.<br>
+                    Tâm đối xứng là giao điểm của TCX và TCĐ \(\Rightarrow I(5;12)\).<br>
+                    Vậy \(P = -2(5) + 2(12) = 14\).
+                </div>
+            </div>
+
+            <div class="question-block p1-q" data-id="p1-7">
+                <p><strong>Câu 7:</strong> Mức thưởng tết (triệu đồng) cho \(181\) nhân viên của một công ty được cho trong bảng số liệu sau. Khoảng biến thiên của mẫu số liệu là</p>
+                <table class="table table-bordered text-center align-middle" style="max-width: 600px; margin: 10px auto;">
+                    <thead class="table-light">
+                        <tr><td>Mức thưởng</td><td>[9; 29)</td><td>[29; 49)</td><td>[49; 69)</td><td>[69; 89)</td><td>[89; 109]</td></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Số nhân viên</td><td>44</td><td>34</td><td>28</td><td>44</td><td>31</td></tr>
+                    </tbody>
+                </table>
+                <div class="options-container short-options">
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-7" value="A"><label class="form-check-label">\(R=95\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-7" value="B"><label class="form-check-label">\(R=90\)</label></div>
+                    <div class="form-check" data-correct="true"><input class="form-check-input" type="radio" name="p1-7" value="C"><label class="form-check-label">\(R=100\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-7" value="D"><label class="form-check-label">\(R=110\)</label></div>
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Ta có \(u_{k+1}=109\) và \(u_1=9\).<br>
+                    Khoảng biến thiên là \(R = u_{k+1} - u_1 = 109 - 9 = 100\) triệu đồng.
+                </div>
+            </div>
+
+            <div class="question-block p1-q" data-id="p1-8">
+                <p><strong>Câu 8:</strong> Biết \(F(x)=\displaystyle \int{\left(7x^2+\dfrac{13}{x}\right) \mathrm{d}x}\) và thoả mãn \(F(1)=\dfrac{13}{3}\). Khi đó \(F(x)\) là hàm số nào trong các hàm số sau?</p>
+                <div class="options-container">
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-8" value="A"><label class="form-check-label">\(F(x)=\dfrac{7}{3}x^3+13\ln|x|+4\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-8" value="B"><label class="form-check-label">\(F(x)=\dfrac{7}{3}x^3-13\ln|x|+1\)</label></div>
+                    <div class="form-check" data-correct="true"><input class="form-check-input" type="radio" name="p1-8" value="C"><label class="form-check-label">\(F(x)=\dfrac{7}{3}x^3+13\ln|x|+2\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-8" value="D"><label class="form-check-label">\(F(x)=7x^3+13\ln|x|+2\)</label></div>
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Ta có \(\displaystyle \int{\left(7x^2+\dfrac{13}{x}\right) \mathrm{d}x} = \dfrac{7}{3}x^3+13\ln|x|+C\).<br>
+                    Theo bài ra: \(F(1)=\dfrac{13}{3} \Leftrightarrow \dfrac{7}{3}(1)^3 + 13\ln|1| + C = \dfrac{13}{3} \Leftrightarrow C = 2\).<br>
+                    Vậy \(F(x)=\dfrac{7}{3}x^3+13\ln|x|+2\).
+                </div>
+            </div>
+
+            <div class="question-block p1-q" data-id="p1-9">
+                <p><strong>Câu 9:</strong> Cho tứ diện đều \(ABCD\) có độ dài cạnh bằng \(1\), gọi \(M, N\) là trung điểm cạnh \(AB\) và \(AC\). Tích vô hướng \(\overrightarrow{AB} \cdot \overrightarrow{MN}\) bằng</p>
+                <div class="options-container short-options">
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-9" value="A"><label class="form-check-label">\(-1\)</label></div>
+                    <div class="form-check" data-correct="true"><input class="form-check-input" type="radio" name="p1-9" value="B"><label class="form-check-label">\(- \dfrac{1}{4}\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-9" value="C"><label class="form-check-label">\(\dfrac{1}{2}\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-9" value="D"><label class="form-check-label">\(- \dfrac{3}{4}\)</label></div>
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Ta có góc giữa \(\overrightarrow{AB}\) và \(\overrightarrow{MN}\) là \(120^\circ\) và \(MN=\dfrac{1}{2}\).<br>
+                    \(\overrightarrow{AB} \cdot \overrightarrow{MN} = |\overrightarrow{AB}| \cdot |\overrightarrow{MN}| \cdot \cos 120^\circ = 1 \cdot \dfrac{1}{2} \cdot \left(-\dfrac{1}{2}\right) = -\dfrac{1}{4}\).
+                </div>
+            </div>
+
+            <div class="question-block p1-q" data-id="p1-10">
+                <p><strong>Câu 10:</strong> Trong không gian \(Oxyz\), cho \(\vec{b}=3 \vec{i} -2 \vec{j} +9 \vec{k}\). Tọa độ vectơ \(\vec{b}\) là</p>
+                <div class="options-container short-options">
+                    <div class="form-check" data-correct="true"><input class="form-check-input" type="radio" name="p1-10" value="A"><label class="form-check-label">\((3;-2;9)\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-10" value="B"><label class="form-check-label">\((3;-4;9)\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-10" value="C"><label class="form-check-label">\((3;-3;9)\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-10" value="D"><label class="form-check-label">\((3;-2;10)\)</label></div>
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    \(\vec{b}=3 \vec{i} -2 \vec{j} +9 \vec{k} \Leftrightarrow \vec{b}=(3;-2;9)\).
+                </div>
+            </div>
+
+            <div class="question-block p1-q" data-id="p1-11">
+                <p><strong>Câu 11:</strong> Trong không gian \(Oxyz\), phương trình tham số của đường thẳng \(\Delta\) đi qua điểm \(A(-4;1;-1)\) và vuông với mặt phẳng \((Oyz)\) là</p>
+                <div class="options-container">
+                    <div class="form-check" data-correct="true"><input class="form-check-input" type="radio" name="p1-11" value="A"><label class="form-check-label">\(\begin{cases} x=-4+t \\ y=1 \\ z=-1 \end{cases}\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-11" value="B"><label class="form-check-label">\(\begin{cases} x=-4+t \\ y=1 \\ z=-1+t \end{cases}\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-11" value="C"><label class="form-check-label">\(\begin{cases} x=-4+t \\ y=1+t \\ z=-1+t \end{cases}\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-11" value="D"><label class="form-check-label">\(\begin{cases} x=-4 \\ y=1 \\ z=-1+t \end{cases}\)</label></div>
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Vì đường thẳng \(\Delta\) vuông góc với \((Oyz)\), suy ra \(\Delta\) có một vectơ chỉ phương là \(\vec{u}=(1;0;0)\).<br>
+                    Đường thẳng \(\Delta\) đi qua \(A(-4;1;-1)\) có phương trình là \(\begin{cases} x=-4+t \\ y=1 \\ z=-1 \end{cases}\).
+                </div>
+            </div>
+
+            <div class="question-block p1-q" data-id="p1-12">
+                <p><strong>Câu 12:</strong> Nếu \(\displaystyle \int_{-1}^{9} f(x)\mathrm{d}x=-32\) và \(\displaystyle \int_{-1}^{11} f(x)\mathrm{d}x=-31\) thì \(\displaystyle \int_{9}^{11} f(x)\mathrm{d}x\) bằng</p>
+                <div class="options-container short-options">
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-12" value="A"><label class="form-check-label">\(-59\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-12" value="B"><label class="form-check-label">\(2\)</label></div>
+                    <div class="form-check" data-correct="true"><input class="form-check-input" type="radio" name="p1-12" value="C"><label class="form-check-label">\(1\)</label></div>
+                    <div class="form-check" data-correct="false"><input class="form-check-input" type="radio" name="p1-12" value="D"><label class="form-check-label">\(-60\)</label></div>
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Ta có \(\displaystyle \int_{-1}^{11} f(x)\mathrm{d}x = \displaystyle \int_{-1}^{9} f(x)\mathrm{d}x + \displaystyle \int_{9}^{11} f(x)\mathrm{d}x\).<br>
+                    Suy ra \(\displaystyle \int_{9}^{11} f(x)\mathrm{d}x = -31 - (-32) = 1\).
+                </div>
+            </div>
+
+        </div>
+
+        <h4 class="section-title">PHẦN II. Câu trắc nghiệm đúng sai (Điểm: 1đ=0.1, 2đ=0.25, 3đ=0.5, 4đ=1.0)</h4>
+        <div id="part2-container">
+            
+            <div class="question-block p2-q" data-id="p2-1">
+                <p><strong>Câu 1:</strong> Qua khảo sát, thời gian tự học tại nhà trong một ngày (đơn vị: phút) của một số học sinh trường Z được ghi lại ở bảng sau:</p>
+                <table class="table table-bordered text-center align-middle" style="max-width: 600px; margin: 10px auto;">
+                    <thead class="table-light">
+                        <tr><td>Thời gian (phút)</td><td>[30;40)</td><td>[40;50)</td><td>[50;60)</td><td>[60;70)</td><td>[70;80]</td></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Số học sinh</td><td>8</td><td>12</td><td>20</td><td>15</td><td>5</td></tr>
+                    </tbody>
+                </table>
+                <table class="table table-sm true-false-table mt-3">
+                    <tr data-ans="true">
+                        <td width="5%">a)</td>
+                        <td>Khoảng biến thiên của mẫu số liệu trên bằng 50</td>
+                        <td width="25%">
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-1-a" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-1-a" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-ans="false">
+                        <td>b)</td>
+                        <td>Trung vị của mẫu số liệu trên bằng 50</td>
+                        <td>
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-1-b" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-1-b" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-ans="true">
+                        <td>c)</td>
+                        <td>Phương sai của mẫu số liệu trên bằng 131,4</td>
+                        <td>
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-1-c" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-1-c" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-ans="false">
+                        <td>d)</td>
+                        <td>Số học sinh có thời gian tự học từ 60 phút trở lên chiếm tỉ lệ 30%</td>
+                        <td>
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-1-d" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-1-d" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Tổng số học sinh được khảo sát là \(n = 60\).<br>
+                    a) Đúng. Khoảng biến thiên \(R = 80 - 30 = 50\).<br>
+                    b) Sai. Trung vị thuộc nhóm \([50; 60)\). \(M_e = 50 + \dfrac{\frac{60}{2} - 20}{20} \cdot 10 = 55\).<br>
+                    c) Đúng. Số trung bình \(\overline{x} = 54,5\). Phương sai \(s^2 \approx 131,4\).<br>
+                    d) Sai. Tỉ lệ là \(\dfrac{20}{60} \cdot 100\% \approx 33,3\% \neq 30\%\).
+                </div>
+            </div>
+
+            <div class="question-block p2-q" data-id="p2-2">
+                <p><strong>Câu 2:</strong> Giả sử lợi nhuận cận biên (tính theo triệu đồng trên tấn) của cơ sở ước lượng bởi công thức \(P'(x)=25-0,04x\). Biết cơ sở lỗ 30 triệu đồng nếu không bán được sản phẩm nào.</p>
+                <table class="table table-sm true-false-table">
+                    <tr data-ans="true">
+                        <td width="5%">a)</td>
+                        <td>Nếu bán được 1 tấn sản phẩm thì cơ sở vẫn đang bị lỗ</td>
+                        <td width="25%">
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-2-a" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-2-a" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-ans="true">
+                        <td>b)</td>
+                        <td>Lợi nhuận cơ sở thu được khi bán 50 tấn là 1 tỉ 170 triệu đồng</td>
+                        <td>
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-2-b" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-2-b" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-ans="false">
+                        <td>c)</td>
+                        <td>Công thức lợi nhuận là \(P(x)=25x-0,02x^2+C\) với \(C\) là hằng số bất kỳ</td>
+                        <td>
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-2-c" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-2-c" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-ans="true">
+                        <td>d)</td>
+                        <td>Phương trình \(P'(x)=0\) có tập nghiệm \(S=\{625\}\)</td>
+                        <td>
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-2-d" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-2-d" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Ta có \(P(x) = \int (25 - 0,04x) \mathrm{d}x = 25x - 0,02x^2 + C\).<br>
+                    Vì \(P(0) = -30 \Rightarrow C = -30\). Công thức chính xác là \(P(x) = -0,02x^2 + 25x - 30\).<br>
+                    a) Đúng. \(P(1) = -5,02 < 0\).<br>
+                    b) Đúng. \(P(50) = 1170\) triệu.<br>
+                    c) Sai. \(C = -30\) cố định, không phải hằng số bất kỳ.<br>
+                    d) Đúng. \(25 - 0,04x = 0 \Leftrightarrow x = 625\).
+                </div>
+            </div>
+
+            <div class="question-block p2-q" data-id="p2-3">
+                <p><strong>Câu 3:</strong> Vận tốc \(v(t) = at + b\). Quãng đường di chuyển trong giây thứ \(n\) là \(u_n = \int_{n-1}^{n} v(t) \mathrm{d}t\). Dữ liệu ghi nhận giây thứ nhất là 3m, giây thứ hai là 7m.</p>
+                <table class="table table-sm true-false-table">
+                    <tr data-ans="true">
+                        <td width="5%">a)</td>
+                        <td>Dãy số \((u_n)\) tạo thành một cấp số cộng với công sai \(d=4\)</td>
+                        <td width="25%">
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-3-a" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-3-a" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-ans="false">
+                        <td>b)</td>
+                        <td>Gia tốc chuyển động của vật thể là \(2 \text{ m/s}^2\)</td>
+                        <td>
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-3-b" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-3-b" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-ans="true">
+                        <td>c)</td>
+                        <td>Vận tốc ban đầu của vật thể (tại \(t=0\)) là \(1 \text{ m/s}\)</td>
+                        <td>
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-3-c" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-3-c" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-ans="false">
+                        <td>d)</td>
+                        <td>Tổng quãng đường vật di chuyển trong 10 giây đầu là 200m</td>
+                        <td>
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-3-d" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-3-d" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Ta có \(u_n = a \cdot n + \left(b - \dfrac{a}{2}\right)\). Đây là cấp số cộng có công sai \(d = a\).<br>
+                    \(u_1 = 3, u_2 = 7 \Rightarrow d = 7 - 3 = 4\). (Mệnh đề a Đúng).<br>
+                    Gia tốc \(a = v'(t) = d = 4 \text{ m/s}^2\). (Mệnh đề b Sai).<br>
+                    \(u_1 = a \cdot 1 + b - \dfrac{a}{2} = 3 \Leftrightarrow 4 + b - 2 = 3 \Rightarrow b = 1\). \(v(0) = 1\). (Mệnh đề c Đúng).<br>
+                    Tổng 10s: \(S_{10} = 5(2(3) + 9(4)) = 210\)m. (Mệnh đề d Sai).
+                </div>
+            </div>
+
+            <div class="question-block p2-q" data-id="p2-4">
+                <p><strong>Câu 4:</strong> Cho đường thẳng \(\Delta: \dfrac{x-4}{1}=\dfrac{y-4}{4}=\dfrac{z+3}{-7}\) và mặt phẳng \((P):4x+4y+5z-1=0\). Xét các vectơ \(\vec{u}=(1;4;-7), \vec{n}=(4;4;5)\).</p>
+                <table class="table table-sm true-false-table">
+                    <tr data-ans="true">
+                        <td width="5%">a)</td>
+                        <td>\(\vec{n}\) là một VTPT của \((P)\)</td>
+                        <td width="25%">
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-4-a" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-4-a" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-ans="false">
+                        <td>b)</td>
+                        <td>\(\vec{u}\) không là một VTCP của \(\Delta\)</td>
+                        <td>
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-4-b" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-4-b" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-ans="false">
+                        <td>c)</td>
+                        <td>\(\vec{n} \cdot \vec{u} = -14\)</td>
+                        <td>
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-4-c" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-4-c" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-ans="true">
+                        <td>d)</td>
+                        <td>Góc giữa \(\Delta\) và \((P)\) bằng khoảng \(14^\circ\)</td>
+                        <td>
+                            <div class="tf-radio-group">
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-4-d" value="true"><label class="form-check-label">Đúng</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="p2-4-d" value="false"><label class="form-check-label">Sai</label></div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    a) Đúng. \((P)\) có VTPT \(\vec{n}=(4;4;5)\).<br>
+                    b) Sai. \(\vec{u}=(1;4;-7)\) chính là VTCP của \(\Delta\).<br>
+                    c) Sai. \(\vec{n} \cdot \vec{u} = 4(1) + 4(4) + 5(-7) = -15\).<br>
+                    d) Đúng. \(\sin(\Delta, P) = \dfrac{|-15|}{\sqrt{57} \cdot \sqrt{66}} \Rightarrow\) Góc \(\approx 14^\circ\).
+                </div>
+            </div>
+
+        </div>
+
+        <h4 class="section-title">PHẦN III. Câu trắc nghiệm trả lời ngắn (Mỗi câu 0.5 điểm)</h4>
+        <div id="part3-container">
+            
+            <div class="question-block p3-q" data-id="p3-1">
+                <p><strong>Câu 1:</strong> Cho hình lăng trụ đứng \(ABC.A'B'C'\) có \(AB=15, BC=9, CA=17\). Khoảng cách giữa hai đường thẳng \(AA'\) và \(BC\) bằng bao nhiêu? (làm tròn kết quả đến hàng phần mười).</p>
+                <div class="text-center my-3">
+                    <svg width="250" height="250" viewBox="0 0 250 250">
+                        <line x1="50" y1="200" x2="150" y2="170" stroke="black" stroke-width="1.5" stroke-dasharray="5,5"/> <line x1="150" y1="170" x2="150" y2="70" stroke="black" stroke-width="1.5" stroke-dasharray="5,5"/> <line x1="200" y1="200" x2="150" y2="170" stroke="black" stroke-width="1.5" stroke-dasharray="5,5"/> <line x1="150" y1="170" x2="110" y2="200" stroke="red" stroke-width="2" stroke-dasharray="4,4"/> <text x="110" y="215" fill="red" font-weight="bold">H</text>
+                        
+                        <line x1="50" y1="200" x2="200" y2="200" stroke="black" stroke-width="1.5"/> <line x1="50" y1="100" x2="200" y2="100" stroke="black" stroke-width="1.5"/> <line x1="200" y1="100" x2="150" y2="70" stroke="black" stroke-width="1.5"/> <line x1="150" y1="70" x2="50" y2="100" stroke="black" stroke-width="1.5"/> <line x1="50" y1="200" x2="50" y2="100" stroke="black" stroke-width="1.5"/> <line x1="200" y1="200" x2="200" y2="100" stroke="black" stroke-width="1.5"/> <text x="145" y="165" font-weight="bold">A</text>
+                        <text x="35" y="210" font-weight="bold">B</text>
+                        <text x="205" y="210" font-weight="bold">C</text>
+                        <text x="145" y="60" font-weight="bold">A'</text>
+                        <text x="35" y="95" font-weight="bold">B'</text>
+                        <text x="205" y="95" font-weight="bold">C'</text>
+                    </svg>
+                </div>
+                <div class="mt-2 text-center">
+                    <input type="text" class="form-control short-ans-input text-center" data-ans="15.0" placeholder="Đáp án...">
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Dựng \(AH\) là đường cao hạ từ đỉnh \(A\) của tam giác \(ABC\). Khi đó \(AH\) là đường vuông góc chung của \(AA'\) và \(BC\).<br>
+                    Ta có khoảng cách cần tìm là \(d = AH\).<br>
+                    Nửa chu vi tam giác \(p = \dfrac{15+9+17}{2} = \dfrac{41}{2}\).<br>
+                    Diện tích \(S = \sqrt{p(p-15)(p-9)(p-17)} = \dfrac{\sqrt{72611}}{4}\).<br>
+                    Mặt khác \(S = \dfrac{1}{2} AH \cdot BC \Rightarrow AH = \dfrac{2S}{9} = \dfrac{\sqrt{72611}}{18} \approx 15,0\).
+                </div>
+            </div>
+
+            <div class="question-block p3-q" data-id="p3-2">
+                <p><strong>Câu 2:</strong> Một hàng rào \(CD\) cao 2,5 m được đặt song song với toà nhà và cách tòa nhà một đoạn \(ED=1,5\) m. Tìm chiều dài ngắn nhất của thang \(AB\) được đặt từ mặt đất qua đỉnh hàng rào đến tường (kết quả làm tròn đến hàng phần trăm của mét).</p>
+                <div class="text-center my-3">
+                    <svg width="300" height="180" viewBox="0 0 300 180">
+                        <rect x="200" y="20" width="40" height="120" fill="#a8c0d8" stroke="#333" stroke-width="1.5"/>
+                        <line x1="40" y1="140" x2="260" y2="140" stroke="black" stroke-width="2"/>
+                        
+                        <rect x="165" y="90" width="10" height="50" fill="#8b5a2b" stroke="#333" stroke-width="1"/>
+                        
+                        <line x1="128" y1="140" x2="200" y2="54.28" stroke="#d35400" stroke-width="4"/>
+                        
+                        <text x="205" y="52" font-weight="bold">A</text>
+                        <text x="115" y="155" font-weight="bold">B</text>
+                        <text x="150" y="85" font-weight="bold">C</text>
+                        <text x="175" y="155" font-weight="bold">D</text>
+                        <text x="205" y="155" font-weight="bold">E</text>
+                        
+                        <line x1="170" y1="145" x2="200" y2="145" stroke="#333" stroke-width="1" stroke-dasharray="3,3"/>
+                        <text x="175" y="160" font-size="12">1.5m</text>
+                        
+                        <line x1="160" y1="90" x2="160" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="3,3"/>
+                        <text x="130" y="120" font-size="12">2.5m</text>
+                    </svg>
+                </div>
+                <div class="mt-2 text-center">
+                    <input type="text" class="form-control short-ans-input text-center" data-ans="5.60" placeholder="Đáp án...">
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Đặt \(BD=x > 0\). Khi đó \(EB=x+1,5\).<br>
+                    \(\Delta BCD \sim \Delta BAE \Rightarrow \dfrac{AE}{CD} = \dfrac{EB}{BD} \Rightarrow AE = \dfrac{(x+1,5) \cdot 2,5}{x}\).<br>
+                    Hàm số cần tìm GTNN là \(f(x) = AB^2 = AE^2 + EB^2 = \dfrac{6,25(x+1,5)^2}{x^2} + (x+1,5)^2\).<br>
+                    Bảng biến thiên của \(f(x)\):
+                    <table class="bbt" style="height: 100px;">
+                        <tr>
+                            <td style="width: 15%;">\(x\)</td>
+                            <td>\(0\)</td>
+                            <td></td>
+                            <td>\(x_2 \approx 2,1086\)</td>
+                            <td></td>
+                            <td>\(+\infty\)</td>
+                        </tr>
+                        <tr>
+                            <td>\(f'(x)\)</td>
+                            <td style="border-left: 1px solid #000; border-right: 1px solid #000; padding: 0;">||</td>
+                            <td>\(-\)</td>
+                            <td>\(0\)</td>
+                            <td>\(+\)</td>
+                            <td></td>
+                        </tr>
+                        <tr class="bbt-y-row">
+                            <td>\(f(x)\)</td>
+                            <td style="vertical-align: top;">\(+\infty\)</td>
+                            <td style="vertical-align: middle;">\(\searrow\)</td>
+                            <td style="vertical-align: bottom;">\(f(x_2)\)</td>
+                            <td style="vertical-align: middle;">\(\nearrow\)</td>
+                            <td style="vertical-align: top;">\(+\infty\)</td>
+                        </tr>
+                    </table>
+                    Thay số ta tính được độ dài ngắn nhất là \(\sqrt{f(x_2)} \approx 5,60\) m.
+                </div>
+            </div>
+
+            <div class="question-block p3-q" data-id="p3-3">
+                <p><strong>Câu 3:</strong> Tại một thời điểm, ô tô đang chạy dọc trục \(Oy\) cách \(O\) là \(4\) km với tốc độ \(10\) km/h. Drone bay ngang độ cao \(12\) km dọc trục \(Ox\) có hình chiếu cách \(O\) là \(3\) km, tốc độ \(30\) km/h. Hỏi khoảng cách đường chim bay giữa drone và ô tô đang tăng với tốc độ bao nhiêu km/h?</p>
+                <div class="mt-2 text-center">
+                    <input type="text" class="form-control short-ans-input text-center" data-ans="10" placeholder="Đáp án...">
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Tọa độ ô tô \(C(0; y; 0)\) và drone \(D(x; 0; 12)\).<br>
+                    Khoảng cách \(S^2 = x^2 + y^2 + 144\).<br>
+                    Đạo hàm 2 vế theo thời gian \(t\): \(2S \cdot S' = 2x \cdot x' + 2y \cdot y'\).<br>
+                    Tại thời điểm hiện tại: \(x=3, y=4 \Rightarrow S = \sqrt{3^2 + 4^2 + 12^2} = 13\).<br>
+                    \(13 \cdot S' = 3(30) + 4(10) \Rightarrow 13 \cdot S' = 130 \Rightarrow S' = 10\) (km/h).
+                </div>
+            </div>
+
+            <div class="question-block p3-q" data-id="p3-4">
+                <p><strong>Câu 4:</strong> Cường độ động đất \(M = \log A - \log A_0\). Biên độ \(A\) tỉ lệ nghịch bình phương khoảng cách \(d\). Tại trạm \(P(2; 2; 1)\), \(M=6,5\). Hỏi tại trạm \(Q(-4; 4; 2)\) cường độ là bao nhiêu độ Richter? (Làm tròn đến hàng phần mười).</p>
+                <div class="mt-2 text-center">
+                    <input type="text" class="form-control short-ans-input text-center" data-ans="5.9" placeholder="Đáp án...">
+                </div>
+                <div class="solution-block">
+                    <strong>Lời giải chi tiết:</strong><br>
+                    Khoảng cách \(d_P = \sqrt{2^2+2^2+1^2} = 3\). Khoảng cách \(d_Q = \sqrt{(-4)^2+4^2+2^2} = 6\).<br>
+                    Vì \(A = \dfrac{k}{d^2}\) nên \(\dfrac{A_Q}{A_P} = \left(\dfrac{d_P}{d_Q}\right)^2 = \dfrac{1}{4} \Rightarrow A_Q = \dfrac{A_P}{4}\).<br>
+                    \(M_Q = \log A_Q - \log A_0 = \log\left(\dfrac{A_P}{4}\right) - \log A_0 = (\log A_P - \log A_0) - \log 4\).<br>
+                    \(M_Q = 6,5 - \log 4 \approx 5,9\).
+                </div>
+            </div>
+
+        </div>
+
+        <div class="text-center my-4 no-print">
+            <button class="btn btn-success btn-lg mx-2" id="btn-submit" onclick="submitExam()">NỘP BÀI</button>
+            <div id="btn-view-wrapper" class="d-inline-block mx-2 text-center">
+                <button class="btn btn-outline-primary btn-lg w-100" style="display:none;" id="btn-view" onclick="viewAnswers()">XEM ĐÁP ÁN CHI TIẾT</button>
+            </div>
+            <button class="btn btn-outline-secondary btn-lg mx-2" style="display:none;" id="btn-print" onclick="window.print()">IN ĐỀ</button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="resultModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">KẾT QUẢ BÀI THI</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <h2 id="final-score" class="text-success mb-3"></h2>
+                    <canvas id="scoreChart" width="300" height="300" class="mx-auto my-3" style="max-height:300px;"></canvas>
+                    <div id="score-feedback" class="mt-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Anti-cheat protections
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {
+                return false;
+            }
+        };
+
+        // Seeded PRNG implementation
+        function cyrb128(str) {
+            let h1 = 1779033703, h2 = 3144134277, h3 = 1013904242, h4 = 2773480762;
+            for (let i = 0, k; i < str.length; i++) {
+                k = str.charCodeAt(i);
+                h1 = h2 ^ Math.imul(h1 ^ k, 597399067);
+                h2 = h3 ^ Math.imul(h2 ^ k, 2869860233);
+                h3 = h4 ^ Math.imul(h3 ^ k, 951274213);
+                h4 = h1 ^ Math.imul(h4 ^ k, 2716044179);
+            }
+            h1 = Math.imul(h3 ^ (h1 >>> 18), 597399067);
+            h2 = Math.imul(h4 ^ (h2 >>> 22), 2869860233);
+            h3 = Math.imul(h1 ^ (h3 >>> 17), 2716044179);
+            h4 = Math.imul(h2 ^ (h4 >>> 19), 951274213);
+            return [(h1^h2^h3^h4)>>>0, (h2^h1)>>>0, (h3^h1)>>>0, (h4^h1)>>>0];
+        }
+        function sfc32(a, b, c, d) {
+            return function() {
+                a >>>= 0; b >>>= 0; c >>>= 0; d >>>= 0; 
+                var t = (a + b) | 0;
+                a = b ^ b >>> 9;
+                b = c + (c << 3) | 0;
+                c = (c << 21 | c >>> 11);
+                d = d + 1 | 0;
+                t = t + d | 0;
+                c = c + t | 0;
+                return (t >>> 0) / 4294967296;
+            }
+        }
+
+        let prng = Math.random;
+
+        function shuffleDOM(containerId, itemClass) {
+            const container = document.getElementById(containerId);
+            const items = Array.from(container.querySelectorAll(`.${itemClass}`));
+            for (let i = items.length - 1; i > 0; i--) {
+                const j = Math.floor(prng() * (i + 1));
+                [items[i], items[j]] = [items[j], items[i]];
+            }
+            items.forEach(item => container.appendChild(item));
+        }
+
+        function shuffleOptions(questionBlock) {
+            const container = questionBlock.querySelector('.options-container');
+            if(!container) return;
+            const options = Array.from(container.querySelectorAll('.form-check'));
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(prng() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            const labels = ['A', 'B', 'C', 'D'];
+            options.forEach((opt, idx) => {
+                container.appendChild(opt);
+                const input = opt.querySelector('input');
+                input.value = labels[idx];
+            });
+        }
+
+        let timerInterval;
+        let timeLeft = 80 * 60; 
+        let isSubmitted = false;
+        let cheatCount = 0;
+        let studentData = { name: '', class: '' };
+        
+        let p1Count = 0;
+        let p2Count = 0;
+        let p3Count = 0;
+        let totalItems = 0;
+        let maxScore = 0;
+
+        function updateTimer() {
+            let m = Math.floor(timeLeft / 60);
+            let s = timeLeft % 60;
+            document.getElementById('timer').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                if(!isSubmitted) submitExam();
+            }
+            timeLeft--;
+            if(timeLeft % 5 === 0) {
+                localStorage.setItem('timeLeft', timeLeft);
+            }
+        }
+
+        function initExam() {
+            p1Count = document.querySelectorAll('.p1-q').length;
+            p2Count = document.querySelectorAll('.p2-q').length;
+            p3Count = document.querySelectorAll('.p3-q').length;
+            
+            totalItems = p1Count + (p2Count * 4) + p3Count; 
+            maxScore = (p1Count * 0.25) + (p2Count * 1.0) + (p3Count * 0.5);
+
+            const seed = cyrb128(studentData.name + studentData.class);
+            prng = sfc32(seed[0], seed[1], seed[2], seed[3]);
+
+            shuffleDOM('part1-container', 'p1-q');
+            shuffleDOM('part2-container', 'p2-q');
+            shuffleDOM('part3-container', 'p3-q');
+
+            document.querySelectorAll('.p1-q').forEach(q => shuffleOptions(q));
+
+            document.querySelectorAll('.p1-q').forEach((q, idx) => q.querySelector('strong').innerText = `Câu ${idx+1}:`);
+            document.querySelectorAll('.p2-q').forEach((q, idx) => q.querySelector('strong').innerText = `Câu ${idx+1}:`);
+            document.querySelectorAll('.p3-q').forEach((q, idx) => q.querySelector('strong').innerText = `Câu ${idx+1}:`);
+
+            document.querySelectorAll('input[type="radio"]').forEach(el => {
+                el.addEventListener('change', saveState);
+            });
+            document.querySelectorAll('input[type="text"]').forEach(el => {
+                el.addEventListener('input', saveState);
+            });
+
+            restoreState();
+
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('exam-screen').style.display = 'block';
+
+            timerInterval = setInterval(updateTimer, 1000);
+            MathJax.typesetPromise();
+        }
+
+        function startExam() {
+            const n = document.getElementById('student_name').value.trim();
+            const c = document.getElementById('class_name').value.trim();
+            if (!n || !c) return alert("Vui lòng nhập đầy đủ thông tin!");
+            
+            studentData.name = n;
+            studentData.class = c;
+            
+            document.getElementById('display_name').innerText = n;
+            document.getElementById('display_class').innerText = c;
+            
+            localStorage.setItem('student_name', n);
+            localStorage.setItem('class_name', c);
+
+            initExam();
+        }
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('blur', handleVisibilityChange);
+
+        function handleVisibilityChange() {
+            if ((document.hidden || !document.hasFocus()) && !isSubmitted && document.getElementById('exam-screen').style.display === 'block') {
+                cheatCount++;
+                localStorage.setItem('cheatCount', cheatCount);
+                if (cheatCount >= 3) {
+                    showWarning();
+                }
+            }
+        }
+
+        function showWarning() {
+            const overlay = document.getElementById('warning-overlay');
+            const text = document.getElementById('warning-text');
+            overlay.style.display = 'flex';
+            
+            if (cheatCount === 3) {
+                text.innerText = `Cảnh báo vi phạm! Bạn đã chuyển tab/thu nhỏ màn hình 3 lần. Vui lòng tập trung làm bài!`;
+                overlay.style.background = 'rgba(255, 193, 7, 0.95)';
+                text.style.color = 'black';
+            } else if (cheatCount === 4 || cheatCount === 5) {
+                text.innerText = `CẢNH BÁO LẦN ${cheatCount - 2}! BẠN SẼ BỊ NỘP BÀI VÀ TRỪ 50% SỐ ĐIỂM NẾU TIẾP TỤC VI PHẠM.`;
+                overlay.style.background = 'rgba(220, 53, 69, 0.95)';
+                text.style.color = 'white';
+            } else {
+                overlay.style.display = 'none';
+                alert("Bạn đã chuyển tab quá số lần cho phép. Bài thi bị nộp tự động và điểm bị giảm 50%.");
+                submitExam(true);
+            }
+        }
+
+        function closeWarning() {
+            document.getElementById('warning-overlay').style.display = 'none';
+        }
+
+        function saveState() {
+            if(isSubmitted) return;
+            const answers = {
+                p1: {},
+                p2: [],
+                p3: {}
+            };
+            
+            document.querySelectorAll('.p1-q').forEach(q => {
+                const checked = q.querySelector('input[type="radio"]:checked');
+                if(checked) answers.p1[q.dataset.id] = checked.value;
+            });
+            
+            document.querySelectorAll('.p2-q').forEach(q => {
+                const rowVals = [];
+                q.querySelectorAll('tr[data-ans]').forEach((row) => {
+                    const checked = row.querySelector('input[type="radio"]:checked');
+                    rowVals.push(checked ? checked.value : null);
+                });
+                answers.p2.push({id: q.dataset.id, vals: rowVals});
+            });
+            
+            document.querySelectorAll('.p3-q').forEach(q => {
+                answers.p3[q.dataset.id] = q.querySelector('input').value;
+            });
+            
+            localStorage.setItem('examState', JSON.stringify(answers));
+        }
+
+        function restoreState() {
+            const savedTime = localStorage.getItem('timeLeft');
+            if(savedTime) timeLeft = parseInt(savedTime);
+            
+            const savedCheat = localStorage.getItem('cheatCount');
+            if(savedCheat) cheatCount = parseInt(savedCheat);
+
+            const stateStr = localStorage.getItem('examState');
+            if(!stateStr) return;
+            
+            const state = JSON.parse(stateStr);
+            
+            document.querySelectorAll('.p1-q').forEach(q => {
+                const val = state.p1[q.dataset.id];
+                if(val) {
+                    const el = q.querySelector(`input[value="${val}"]`);
+                    if(el) el.checked = true;
+                }
+            });
+
+            document.querySelectorAll('.p2-q').forEach(q => {
+                const saved = state.p2.find(x => x.id === q.dataset.id);
+                if(saved && saved.vals) {
+                    q.querySelectorAll('tr[data-ans]').forEach((row, idx) => {
+                        const val = saved.vals[idx];
+                        if(val) {
+                            const el = row.querySelector(`input[type="radio"][value="${val}"]`);
+                            if(el) el.checked = true;
+                        }
+                    });
+                }
+            });
+
+            document.querySelectorAll('.p3-q').forEach(q => {
+                const val = state.p3[q.dataset.id];
+                if(val) q.querySelector('input').value = val;
+            });
+        }
+
+        window.onload = () => {
+            const n = localStorage.getItem('student_name');
+            const c = localStorage.getItem('class_name');
+            if(n && c) {
+                document.getElementById('student_name').value = n;
+                document.getElementById('class_name').value = c;
+            }
+        };
+
+        function submitExam(forced = false) {
+            if(!forced && !confirm("Bạn có chắc chắn muốn nộp bài?")) return;
+            
+            isSubmitted = true;
+            clearInterval(timerInterval);
+            document.getElementById('timer').style.display = 'none';
+            
+            let score = 0;
+            let answeredCount = 0;
+
+            document.querySelectorAll('.p1-q').forEach(q => {
+                const checked = q.querySelector('input:checked');
+                if(checked) {
+                    answeredCount++;
+                    if(checked.closest('.form-check').dataset.correct === "true") score += 0.25;
+                }
+            });
+
+            document.querySelectorAll('.p2-q').forEach(q => {
+                let correctItems = 0;
+                q.querySelectorAll('tr[data-ans]').forEach(row => {
+                    const checked = row.querySelector('input[type="radio"]:checked');
+                    if(checked) {
+                        answeredCount++;
+                        if(checked.value === row.dataset.ans) correctItems++;
+                    }
+                });
+                if(correctItems === 1) score += 0.1;
+                else if(correctItems === 2) score += 0.25;
+                else if(correctItems === 3) score += 0.5;
+                else if(correctItems === 4) score += 1.0;
+            });
+
+            document.querySelectorAll('.p3-q').forEach(q => {
+                const input = q.querySelector('input').value.trim().replace(',', '.');
+                if(input !== '') answeredCount++;
+                const correctAns = parseFloat(q.querySelector('input').dataset.ans);
+                const userAns = parseFloat(input);
+                if(!isNaN(userAns) && Math.abs(userAns - correctAns) < 0.001) {
+                    score += 0.5;
+                }
+            });
+
+            let finalScore = score;
+            if(cheatCount > 5) finalScore = score * 0.5;
+
+            document.getElementById('btn-submit').style.display = 'none';
+            
+            let percentAnswered = (answeredCount / totalItems) * 100;
+            let percentScore = (finalScore / maxScore) * 100;
+            
+            if(percentAnswered >= 50) {
+                document.getElementById('btn-view').style.display = 'inline-block';
+            } else {
+                let msg = document.createElement('div');
+                msg.className = "text-danger mt-2 fw-bold text-center";
+                msg.innerText = `Bạn chỉ mới làm ${answeredCount}/${totalItems} câu (${percentAnswered.toFixed(1)}%). Yêu cầu làm ít nhất 50% để được xem đáp án!`;
+                document.getElementById('btn-view-wrapper').appendChild(msg);
+            }
+            
+            document.getElementById('btn-print').style.display = 'inline-block';
+
+            // Chart Render
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Điểm Đạt', 'Điểm Mất'],
+                    datasets: [{
+                        data: [finalScore, maxScore - finalScore],
+                        backgroundColor: ['#198754', '#dc3545']
+                    }]
+                },
+                options: { maintainAspectRatio: false }
+            });
+
+            document.getElementById('final-score').innerText = `Điểm của bạn: ${finalScore.toFixed(2)} / ${maxScore.toFixed(2)}`;
+            
+            // Generate dynamic feedback
+            let feedbackElement = document.getElementById('score-feedback');
+            if(percentScore >= 80) {
+                feedbackElement.innerHTML = `<div class='alert alert-success fs-5 fw-bold'>Bạn làm bài rất xuất sắc! Xin chúc mừng!</div>`;
+            } else if(percentScore < 45) {
+                feedbackElement.innerHTML = `<div class='alert alert-warning fs-5 fw-bold'>Điểm của bạn chưa đạt mức trung bình. Hãy cố gắng ôn tập nhiều hơn nữa nhé!</div>`;
+            } else {
+                feedbackElement.innerHTML = `<div class='alert alert-info fs-5 fw-bold'>Bài làm khá tốt, tiếp tục phát huy nhé!</div>`;
+            }
+
+            const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+            resultModal.show();
+
+            fetch('https://script.google.com/macros/s/AKfycbzn55q_-KpH2MhOD_4s81ZVrPoyA09wdM24Ty-87sQS_8yWiiZK_UwbNP7wyffLtehv/exec', {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                    student_name: studentData.name,
+                    class_name: studentData.class,
+                    score: finalScore,
+                    max_score: maxScore,
+                    percent: percentScore,
+                    tab_violation: cheatCount,
+                    duration: (80 * 60) - timeLeft
+                })
+            }).catch(e => console.error(e));
+
+            localStorage.removeItem('examState');
+            localStorage.removeItem('timeLeft');
+            localStorage.removeItem('cheatCount');
+        }
+
+        function viewAnswers() {
+            document.querySelectorAll('.solution-block').forEach(el => {
+                el.style.display = 'block';
+            });
+            
+            document.querySelectorAll('.p1-q .form-check').forEach(el => {
+                if(el.dataset.correct === "true") {
+                    el.style.backgroundColor = '#d1e7dd';
+                    el.style.borderRadius = '5px';
+                }
+            });
+            
+            document.querySelectorAll('.p2-q tr[data-ans]').forEach(row => {
+                const correct = row.dataset.ans === 'true' ? 'Đúng' : 'Sai';
+                const div = document.createElement('div');
+                div.className = 'mt-1 text-center text-success';
+                div.innerHTML = `<small><strong>Đ/A: ${correct}</strong></small>`;
+                row.querySelector('td:last-child').appendChild(div);
+            });
+            
+            document.querySelectorAll('.p3-q input.short-ans-input').forEach(input => {
+                const correct = input.dataset.ans;
+                const div = document.createElement('div');
+                div.innerHTML = `<h5 class="text-success fw-bold mt-2 d-block">Đáp án đúng: ${correct}</h5>`;
+                input.parentNode.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
