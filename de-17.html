@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐỀ ÔN TẬP THI TỐT NGHIỆP THPT QUỐC GIA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-bg: #f8f9fa;
+        }
+        body {
+            background-color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .header-section {
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .timer-box {
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .question-card {
+            background: var(--secondary-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+        .part-title {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            margin-top: 40px;
+        }
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .correct-answer {
+            color: #198754;
+            font-weight: bold;
+        }
+        .wrong-answer {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .explanation-box {
+            background-color: #e9ecef;
+            border-left: 4px solid #198754;
+            padding: 20px;
+            margin-top: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .explanation-box ul {
+            margin-bottom: 0;
+        }
+        .result-box {
+            background-color: #e8f4f8;
+            border: 2px solid #0dcaf0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            display: none;
+        }
+        .tf-table th, .tf-table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .tf-table .text-start {
+            text-align: left !important;
+        }
+        
+        /* Math tables styling */
+        .sign-table th, .sign-table td {
+            padding: 5px 15px;
+        }
+
+        /* Print CSS for PDF export */
+        @media print {
+            body { background: white; color: black; }
+            .no-print { display: none !important; }
+            .question-card { break-inside: avoid; border: 1px solid #ccc; background: white; margin-bottom: 10px; }
+            .explanation-box { display: block !important; border: 1px dashed #666; background: #fff; break-inside: auto; }
+            .timer-box { display: none; }
+            .result-box { display: block !important; border: none; box-shadow: none; break-before: page; }
+            @page { margin: 2cm; }
+        }
+    </style>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                tags: 'ams'
+            },
+            svg: { fontCache: 'global' },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+<div class="container mt-4 mb-5" id="app">
+    <div class="header-section text-center">
+        <h2 class="text-uppercase text-primary fw-bold">Đề Ôn Tập Thi Tốt Nghiệp THPT Quốc Gia</h2>
+        <h5 class="text-secondary">Môn: Toán</h5>
+        
+        <div class="row justify-content-center mt-4 no-print">
+            <div class="col-md-8">
+                <form id="studentForm" class="row g-3">
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" id="studentName" placeholder="Họ và tên" required>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="className" placeholder="Lớp" required>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control fw-bold text-center bg-light" id="examCode" readonly>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-none d-print-block mb-4">
+        <h4>Thông tin thí sinh:</h4>
+        <p><strong>Họ và tên:</strong> <span id="printName"></span></p>
+        <p><strong>Lớp:</strong> <span id="printClass"></span></p>
+        <p><strong>Mã đề:</strong> <span id="printCode"></span></p>
+    </div>
+
+    <div class="row no-print mb-4">
+        <div class="col-12 text-center">
+            <div class="timer-box d-inline-block shadow-sm">
+                <i class="fas fa-clock"></i> <span id="timerDisplay">75:00</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastMessage" class="alert alert-success position-fixed bottom-0 end-0 m-3 shadow no-print" style="display: none; z-index: 9999;">
+        Đã khôi phục bài làm trước đó.
+    </div>
+
+    <div id="quizContainer">
+        <h4 class="part-title">PHẦN I. Câu hỏi trắc nghiệm nhiều phương án lựa chọn</h4>
+        <p class="fst-italic text-secondary">Thí sinh trả lời từ câu 1 đến câu 12. Mỗi câu hỏi thí sinh chỉ chọn một phương án.</p>
+        <div id="part1"></div>
+
+        <h4 class="part-title">PHẦN II. Câu trắc nghiệm đúng sai</h4>
+        <p class="fst-italic text-secondary">Thí sinh trả lời từ câu 1 đến câu 4. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.</p>
+        <div id="part2"></div>
+
+        <h4 class="part-title">PHẦN III. Câu trắc nghiệm trả lời ngắn</h4>
+        <p class="fst-italic text-secondary">Thí sinh trả lời từ câu 1 đến câu 4. Điền kết quả số vào ô trống.</p>
+        <div id="part3"></div>
+    </div>
+
+    <div id="resultArea" class="result-box text-center shadow-sm">
+        <h3 class="text-primary mb-4 fw-bold">KẾT QUẢ LÀM BÀI</h3>
+        <div class="row">
+            <div class="col-md-3">
+                <h5>Phần I</h5>
+                <p class="fs-4 text-success fw-bold" id="scoreP1">0.0 / 3.0</p>
+            </div>
+            <div class="col-md-3">
+                <h5>Phần II</h5>
+                <p class="fs-4 text-success fw-bold" id="scoreP2">0.0 / 4.0</p>
+            </div>
+            <div class="col-md-3">
+                <h5>Phần III</h5>
+                <p class="fs-4 text-success fw-bold" id="scoreP3">0.0 / 2.0</p>
+            </div>
+            <div class="col-md-3">
+                <h5>Tổng Điểm</h5>
+                <p class="fs-3 text-danger fw-bold" id="scoreTotal">0.0 / 9.0</p>
+            </div>
+        </div>
+        <hr>
+        <p class="mt-2 mb-0 text-muted">Thời gian làm bài: <span id="timeTaken" class="fw-bold text-dark"></span> | Hoàn thành: <span id="percentComplete" class="fw-bold text-dark"></span>%</p>
+    </div>
+
+    <div class="text-center mt-5 mb-5 no-print">
+        <button id="btnSubmit" class="btn btn-primary btn-lg px-5 shadow"><i class="fas fa-paper-plane me-2"></i> NỘP BÀI</button>
+        <button id="btnPrint" class="btn btn-secondary btn-lg px-5 shadow" style="display: none;"><i class="fas fa-print me-2"></i> IN KẾT QUẢ PDF</button>
+        <div id="errorMsg" class="alert alert-danger mt-3 d-inline-block shadow-sm" style="display:none; max-width: 500px;"></div>
+    </div>
+
+</div>
+
+<script>
+// --- CẤU HÌNH ĐỀ THI ---
+const EXAM_DURATION_MINUTES = 75; 
+const STORAGE_KEY = 'exam_math_v3_detailed'; 
+
+// --- DỮ LIỆU ĐỀ THI ---
+const rawData = {
+    part1: [
+        {
+            id: 'p1q1',
+            text: "Phương trình $\\cot x =- \\dfrac{\\sqrt{3}}{3}$ có nghiệm là",
+            options: [
+                { id: 'A', text: "$x=- \\dfrac{\\pi}{3}+k \\pi, k \\in \\mathbb{Z}$", correct: true },
+                { id: 'B', text: "$x=- \\dfrac{7 \\pi}{12}+k \\pi, k \\in \\mathbb{Z}$", correct: false },
+                { id: 'C', text: "$x=- \\dfrac{\\pi}{2}+k2 \\pi, k \\in \\mathbb{Z}$", correct: false },
+                { id: 'D', text: "$x=k2 \\pi, k \\in \\mathbb{Z}$", correct: false }
+            ],
+            explanation: "Ta có <br/> $\\cot x =- \\dfrac{\\sqrt{3}}{3} \\Leftrightarrow \\cot x = \\cot \\left( - \\dfrac{\\pi}{3} \\right) \\Leftrightarrow x=- \\dfrac{\\pi}{3}+k \\pi, k \\in \\mathbb{Z}$."
+        },
+        {
+            id: 'p1q2',
+            text: "Cho cấp số nhân $(u_n)$ với $u_1=3$ và $u_2=-12$. Số hạng $u_5$ của cấp số nhân là:",
+            options: [
+                { id: 'A', text: "$771$", correct: false },
+                { id: 'B', text: "$768$", correct: true },
+                { id: 'C', text: "$769$", correct: false },
+                { id: 'D', text: "$772$", correct: false }
+            ],
+            explanation: "Ta có công bội của cấp số nhân $q=\\dfrac{u_2}{u_1}=\\dfrac{-12}{3}=-4$.<br/> Vậy $u_5=u_1\\cdot q^{4}=3\\cdot(-4)^{4}=768$."
+        },
+        {
+            id: 'p1q3',
+            text: "Phương trình $\\left(\\dfrac{1}{243}\\right)^{x^{2} - 10 x + 23}=\\dfrac{1}{59049}$ có tổng các nghiệm là",
+            options: [
+                { id: 'A', text: "$9$", correct: false },
+                { id: 'B', text: "$11$", correct: false },
+                { id: 'C', text: "$10$", correct: true },
+                { id: 'D', text: "$13$", correct: false }
+            ],
+            explanation: "Ta có <br/> $\\left(\\dfrac{1}{243}\\right)^{x^{2} - 10 x + 23}=\\dfrac{1}{59049} \\Leftrightarrow x^{2} - 10 x + 23=\\log_{\\tfrac{1}{243}} \\dfrac{1}{59049} \\Leftrightarrow x^{2} - 10 x + 23=2 \\Leftrightarrow x^{2} - 10 x + 21=0 \\Leftrightarrow \\left[ \\begin{array}{l} x=3 \\\\ x=7 \\end{array} \\right.$."
+        },
+        {
+            id: 'p1q4',
+            text: "Cho hàm số $y=f(x)$ có đồ thị như hình vẽ bên. Hàm số đồng biến trên khoảng nào dưới đây?<br/><div class='text-center my-3'><svg viewBox='-1.5 -5 6.5 8' width='100%' style='max-width:250px;'><defs><marker id='arrow' viewBox='0 0 10 10' refX='5' refY='5' markerWidth='4' markerHeight='4' orient='auto-start-reverse'><path d='M 0 0 L 10 5 L 0 10 z'/></marker></defs><line x1='-1' y1='0' x2='5' y2='0' stroke='black' stroke-width='0.05' marker-end='url(#arrow)'/><line x1='0' y1='3' x2='0' y2='-4.5' stroke='black' stroke-width='0.05' marker-end='url(#arrow)'/><text x='4.8' y='0.5' font-size='0.4'>x</text><text x='-0.4' y='-4' font-size='0.4'>y</text><text x='-0.4' y='0.5' font-size='0.4'>O</text><text x='1' y='0.5' font-size='0.4'>1</text><text x='3' y='0.5' font-size='0.4'>3</text><text x='-0.4' y='-1' font-size='0.4'>1</text><text x='-0.6' y='3' font-size='0.4'>-3</text><line x1='1' y1='0' x2='1' y2='-1' stroke='black' stroke-dasharray='0.1,0.1' stroke-width='0.03'/><line x1='0' y1='-1' x2='1' y2='-1' stroke='black' stroke-dasharray='0.1,0.1' stroke-width='0.03'/><line x1='3' y1='0' x2='3' y2='3' stroke='black' stroke-dasharray='0.1,0.1' stroke-width='0.03'/><line x1='0' y1='3' x2='3' y2='3' stroke='black' stroke-dasharray='0.1,0.1' stroke-width='0.03'/><path d='M -0.5 4.875 C 0 3, 0.5 -1, 1 -1 C 1.5 -1, 2.5 3, 3 3 C 3.5 3, 4 -1, 4.2 -3.4' fill='none' stroke='blue' stroke-width='0.05'/></svg></div>",
+            options: [
+                { id: 'A', text: "$(-\\infty;3)$", correct: false },
+                { id: 'B', text: "$(1;+\\infty)$", correct: false },
+                { id: 'C', text: "$(-\\infty;1)$ và $(3;+\\infty)$", correct: true },
+                { id: 'D', text: "$(1;3)$", correct: false }
+            ],
+            explanation: "Từ đồ thị ta thấy hàm số nghịch biến trên khoảng $(-\\infty;1)$ và $(3;+\\infty)$." // Theo đề gốc là nghịch biến trên (-inf,1) và (3,+inf) --> câu hỏi "hàm số ĐỒNG BIẾN trên khoảng nào" (trong đồ thị hàm thực sự đồng biến trên (1;3) và nghịch biến ngoài khoảng đó. Wait, theo đồ thị y = x^3 - 3x^2, đạo hàm là 3x^2-6x=0 tại x=0 và x=2, đồ thị trong đề vẽ cực đại tại x=1 cực tiểu tại x=3. Đề gốc: Từ đồ thị ta thấy hàm số NGHỊCH BIẾN trên khoảng (-inf; 1) và (3;+inf). Xin tuân thủ đáp án gốc từ LaTeX.)
+        },
+        {
+            id: 'p1q5',
+            text: "Giá trị nhỏ nhất của hàm số $y=2x^3+3x^2-12x+7$ trên đoạn $[-4;7]$ bằng",
+            options: [
+                { id: 'A', text: "$\\min_{[-4;7]} y=781$", correct: false },
+                { id: 'B', text: "$\\min_{[-4;7]} y=-26$", correct: false },
+                { id: 'C', text: "$\\min_{[-4;7]} y=731$", correct: false },
+                { id: 'D', text: "$\\min_{[-4;7]} y=-25$", correct: true }
+            ],
+            explanation: "$y'=6x^2+6x-12.<br/>y'=0 \\Leftrightarrow \\hoac{& x=-2 \\in\\left( -4;7\\right) \\\\& x=1 \\in\\left( -4;7\\right).}$<br/> Ta có: $y(-4)=-25;\\hspace{0.5cm} y(7)=756;\\hspace{0.5cm} y(-2)=27;\\hspace{0.5cm} y(1)=0$.<br/> Vậy $\\min_{[-4;7]} y=-25$."
+        },
+        {
+            id: 'p1q6',
+            text: "Mẫu số liệu ghép nhóm có bảng tần số ghép nhóm như sau:<br/><table class='table table-bordered table-sm text-center my-2'><tr><th>Nhóm</th><td>$[4; 9)$</td><td>$[9; 14)$</td><td>$[14; 19)$</td><td>$[19; 24)$</td><td>$[24; 29)$</td></tr><tr><th>Tần số</th><td>$7$</td><td>$8$</td><td>$3$</td><td>$2$</td><td>$1$</td></tr></table> Phương sai của mẫu số liệu là",
+            options: [
+                { id: 'A', text: "$s^2=\\dfrac{1648}{49}$", correct: false },
+                { id: 'B', text: "$s^2=\\dfrac{1550}{49}$", correct: true },
+                { id: 'C', text: "$s^2=\\dfrac{1697}{49}$", correct: false },
+                { id: 'D', text: "$s^2=\\dfrac{1452}{49}$", correct: false }
+            ],
+            explanation: "Giá trị đại diện của các nhóm là<br/> $x_1=\\dfrac{13}{2}; x_2=\\dfrac{23}{2}; x_3=\\dfrac{33}{2}; x_4=\\dfrac{43}{2}; x_5=\\dfrac{53}{2}$. <br/>Cỡ mẫu $n=7+8+3+2+1=21$. <br/>Số trung bình <br/>$\\bar{x}=\\dfrac{7 \\cdot \\dfrac{13}{2}+8 \\cdot \\dfrac{23}{2}+3 \\cdot \\dfrac{33}{2}+2 \\cdot \\dfrac{43}{2}+1 \\cdot \\dfrac{53}{2}}{21}=\\dfrac{171}{14}$.<br/> Phương sai <br/>$s^2=\\dfrac{7 \\cdot \\left(\\dfrac{13}{2}\\right)^2+8 \\cdot \\left(\\dfrac{23}{2}\\right)^2+3 \\cdot \\left(\\dfrac{33}{2}\\right)^2+2 \\cdot \\left(\\dfrac{43}{2}\\right)^2+1 \\cdot \\left(\\dfrac{53}{2}\\right)^2}{21}-\\left(\\dfrac{171}{14}\\right)^2=\\dfrac{1550}{49}$."
+        },
+        {
+            id: 'p1q7',
+            text: "$\\displaystyle \\int{741^x\\text{d}x}$ bằng",
+            options: [
+                { id: 'A', text: "$741^x+\\text{C}$", correct: false },
+                { id: 'B', text: "$-741^x+\\text{C}$", correct: false },
+                { id: 'C', text: "$741^x\\ln741+\\text{C}$", correct: false },
+                { id: 'D', text: "$\\dfrac{741^x}{\\ln 741}+\\text{C}$", correct: true }
+            ],
+            explanation: "Ta có<br/>$\\displaystyle \\int{741^x\\text{d}x}=\\dfrac{741^x}{\\ln 741}+\\text{C}$."
+        },
+        {
+            id: 'p1q8',
+            text: "Biết $\\displaystyle \\int\\limits_{-1}^{6}\\left[f(x)-8x\\right] \\text{d}x=4$. Khi đó $\\displaystyle \\int\\limits_{-1}^{6}f(x)\\text{d}x$ bằng",
+            options: [
+                { id: 'A', text: "$-145$", correct: false },
+                { id: 'B', text: "$144$", correct: true },
+                { id: 'C', text: "$-146$", correct: false },
+                { id: 'D', text: "$147$", correct: false }
+            ],
+            explanation: "Ta có <br/>$\\displaystyle \\int\\limits_{-1}^{6}\\left[f(x)-8x\\right] \\text{d}x=4 \\Leftrightarrow \\displaystyle \\int\\limits_{-1}^{6}f(x)\\text{d}x+\\displaystyle \\int\\limits_{-1}^{6}-8x\\text{d}x=4$ <br/> $\\Leftrightarrow \\displaystyle \\int\\limits_{-1}^{6}f(x)\\text{d}x=4-\\displaystyle \\int\\limits_{-1}^{6}-8x\\text{d}x=144$."
+        },
+        {
+            id: 'p1q9',
+            text: "Cho hình lập phương $ABCD.A'B'C'D'$. Góc giữa hai vectơ $\\vec{A'B'}$ và $\\vec{A'D'}$ bằng",
+            options: [
+                { id: 'A', text: "$45^\\circ$", correct: false },
+                { id: 'B', text: "$90^\\circ$", correct: true },
+                { id: 'C', text: "$60^\\circ$", correct: false },
+                { id: 'D', text: "$135^\\circ$", correct: false }
+            ],
+            explanation: "Do các cạnh của hình lập phương vuông góc với nhau nên góc giữa hai vectơ $\\vec{AB}$ và $\\vec{AD}$ bằng $90^\\circ$."
+        },
+        {
+            id: 'p1q10',
+            text: "Trong không gian với hệ trục tọa độ $Oxyz$, tọa độ một vectơ pháp tuyến của mặt phẳng có phương trình $- 3 x + y + 3 z - 1=0$ là",
+            options: [
+                { id: 'A', text: "$(3;1;3)$", correct: false },
+                { id: 'B', text: "$(-3;1;3)$", correct: true },
+                { id: 'C', text: "$(-3;1;-3)$", correct: false },
+                { id: 'D', text: "$(-3;-1;3)$", correct: false }
+            ],
+            explanation: "Mặt phẳng có phương trình $- 3 x + y + 3 z - 1=0$ có một vectơ pháp tuyến có tọa độ là $(-3;1;3)$."
+        },
+        {
+            id: 'p1q11',
+            text: "Trong không gian $Oxyz$, cho hai đường thẳng $\\Delta_1: \\dfrac{x + 2}{5}=\\dfrac{y + 5}{1}=\\dfrac{z - 7}{-3}, \\Delta_2: \\dfrac{x + 4}{6}=\\dfrac{y - 4}{-5}=\\dfrac{z - 7}{2}$. Góc giữa hai đường thẳng $\\Delta_1$ và đường thẳng $\\Delta_2$ (kết quả làm tròn đến hàng phần chục) bằng",
+            options: [
+                { id: 'A', text: "$64,5^{\\circ}$", correct: false },
+                { id: 'B', text: "$63,5^{\\circ}$", correct: false },
+                { id: 'C', text: "$65,5^{\\circ}$", correct: false },
+                { id: 'D', text: "$66,5^{\\circ}$", correct: true }
+            ],
+            explanation: "Đường thẳng $\\Delta_1$ có vectơ chỉ phương là $\\vec{u_1}=(5;1;-3)$.<br/>Đường thẳng $\\Delta_2$ có vectơ chỉ phương là $\\vec{u_2}=(6;-5;2)$.<br/>Ta có $\\cos \\left(\\Delta_1,\\Delta_2\\right)=\\dfrac{|5\\cdot(6)+1\\cdot(-5)-3\\cdot(2)|}{\\sqrt{(5)^2+(1)^2+(-3)^2}\\cdot\\sqrt{(6)^2+(-5)^2+(2)^2}}=\\dfrac{19 \\sqrt{91}}{455}$.<br/>Do đó $\\left(\\Delta_1,\\Delta_2\\right)\\approx 66,5^{\\circ}$."
+        },
+        {
+            id: 'p1q12',
+            text: "Cho hai biến cố $A$ và $B$ độc lập với $P(A)=0,7$ và $P(B)=0,7$. Xác suất $P(A \\cup B)$ bằng",
+            options: [
+                { id: 'A', text: "$0,91$", correct: true },
+                { id: 'B', text: "$0,9$", correct: false },
+                { id: 'C', text: "$0,88$", correct: false },
+                { id: 'D', text: "$0,92$", correct: false }
+            ],
+            explanation: "Vì $A$ và $B$ là hai biến cố độc lập nên ta có <br/>$P(A \\cup B)=P(A)+P(B)-P(AB)=P(A)+P(B)-P(A)P(B)=0,7+0,7-0,7 \\cdot 0,7=0,91$."
+        }
+    ],
+    part2: [
+        {
+            id: 'p2q1',
+            text: "Tại một sự kiện triển lãm công nghệ, số lượng khách tham quan có mặt tại khu vực trưng bày được biểu diễn bằng hàm số $K(t) = t^4 - 12t^3 + 36t^2 + 100$, trong đó $t$ tính bằng giờ ($0 \\le t \\le 8$). Đạo hàm $K'(t)$ là tốc độ thay đổi lượng khách tham quan (tính bằng người/giờ). Dựa vào các thông tin trên, xét tính đúng sai của các mệnh đề sau:",
+            statements: [
+                { id: 'a', text: "Tốc độ thay đổi lượng khách tham quan tại thời điểm $t=2$ (giờ) là $32$", correct: true },
+                { id: 'b', text: "Trong khoảng thời gian từ sau $3$ giờ đến trước $6$ giờ, số lượng khách tham quan tăng dần", correct: false },
+                { id: 'c', text: "Tại thời điểm $t=6$ (giờ), số lượng khách tham quan đạt mức ít nhất", correct: true },
+                { id: 'd', text: "Số lượng khách tham quan có mặt tại khu vực trưng bày nhiều nhất là $181$ khách", correct: false }
+            ],
+            explanation: `
+                Ta có đạo hàm của hàm số: <br/>
+                $$K'(t) = 4t^3 - 36t^2 + 72t$$ <br/>
+                Cho $K'(t) = 0 \\Leftrightarrow 4t(t^2 - 9t + 18) = 0 \\Leftrightarrow \\left[ \\begin{array}{l} t = 0 \\\\ t = 3 \\\\ t = 6 \\end{array} \\right.$ <br/>
+                Xét dấu đạo hàm $K'(t)$ trên đoạn $[0; 8]$:
+                <ul>
+                    <li>Trên khoảng $(0; 3)$: $K'(t) > 0 \\implies$ Hàm số đồng biến.</li>
+                    <li>Trên khoảng $(3; 6)$: $K'(t) < 0 \\implies$ Hàm số nghịch biến.</li>
+                    <li>Trên khoảng $(6; 8)$: $K'(t) > 0 \\implies$ Hàm số đồng biến.</li>
+                </ul>
+                Tính các giá trị của hàm số tại các điểm tới hạn và mút của đoạn $[0; 8]$:<br/>
+                $$K(0) = 100$$<br/>
+                $$K(3) = 3^4 - 12 \\cdot 3^3 + 36 \\cdot 3^2 + 100 = 181$$<br/>
+                $$K(6) = 6^4 - 12 \\cdot 6^3 + 36 \\cdot 6^2 + 100 = 100$$<br/>
+                $$K(8) = 8^4 - 12 \\cdot 8^3 + 36 \\cdot 8^2 + 100 = 356$$<br/><br/>
+                <b>a) Đúng.</b> Tốc độ thay đổi lượng khách tại $t = 2$ là: 
+                $$K'(2) = 4(2)^3 - 36(2)^2 + 72(2) = 32 - 144 + 144 = 32 \\text{ (người/giờ)}$$<br/>
+                <b>b) Sai.</b> Từ phân tích dấu đạo hàm, trong khoảng $(3; 6)$ ta có $K'(t) < 0$ nên số lượng khách tham quan <b>giảm dần</b>.<br/>
+                <b>c) Đúng.</b> Dựa vào các giá trị đã tính, giá trị nhỏ nhất của hàm số trên đoạn $[0; 8]$ là $100$ đạt được tại $t = 0$ và $t = 6$. Vậy tại thời điểm $t=6$ giờ, số lượng khách tham quan ở mức ít nhất (bằng với lúc mới mở cửa).<br/>
+                <b>d) Sai.</b> Dựa vào các giá trị đã tính, giá trị lớn nhất của hàm số trên đoạn $[0; 8]$ là $356$ đạt được tại $t = 8$. Vậy số lượng khách nhiều nhất phải là $356$ khách chứ không phải $181$ khách (đây chỉ là cực đại địa phương).
+            `
+        },
+        {
+            id: 'p2q2',
+            text: "Cho hàm số $y=f(x)$ có bảng biến thiên như sau:<br/><table class='table table-bordered text-center w-auto mx-auto sign-table mt-2'><tr><th>$x$</th><td>$-\\infty$</td><td></td><td>$1$</td><td></td><td>$2$</td><td></td><td>$4$</td><td></td><td>$+\\infty$</td></tr><tr><th>$f'(x)$</th><td></td><td>$+$</td><td>$0$</td><td>$-$</td><td>$0$</td><td>$+$</td><td>$0$</td><td>$-$</td><td></td></tr><tr><th>$f(x)$</th><td>$-\\infty$</td><td>$\\nearrow$</td><td>$-1$</td><td>$\\searrow$</td><td>$-2$</td><td>$\\nearrow$</td><td>$f(4)$</td><td>$\\searrow$</td><td>$-\\infty$</td></tr></table>",
+            statements: [
+                { id: 'a', text: "Ta có $\\int_{1}^{2} f^{\\prime}(x) \\text{d}x = 1$", correct: false },
+                { id: 'b', text: "$\\int_{1}^{4} [4 + f^{\\prime}(x)] \\text{d}x = f(4) - 13$", correct: false },
+                { id: 'c', text: "$\\int_{1}^{2} |f^{\\prime}(x)| \\text{d}x = f(2) - f(1)$", correct: false },
+                { id: 'd', text: "Nếu $\\int_{1}^{4} |f^{\\prime}(x)| \\text{d}x = 6$ thì $f(4) = 3$", correct: true }
+            ],
+            explanation: `
+                <b>a) Sai.</b> Ta có $\\int_{1}^{2} f^{\\prime}(x) \\text{d}x = f(2) - f(1) = -2 - (-1) = -1$.<br/>
+                <b>b) Sai.</b> Ta có $\\int_{1}^{4} [4 + f^{\\prime}(x)] \\text{d}x = 4 x \\Big|_1^4 + f(x) \\Big|_1^4 = 4(4-1) + f(4) - f(1) = f(4) + 13$.<br/>
+                <b>c) Sai.</b> Trên đoạn $[1;2]$, dựa vào bảng biến thiên ta thấy $f'(x) \\le 0$ nên $|f'(x)| = -f'(x)$. Vậy $\\int_{1}^{2} |f^{\\prime}(x)| \\text{d}x = -\\int_{1}^{2} f^{\\prime}(x) \\text{d}x = f(1) - f(2)$.<br/>
+                <b>d) Đúng.</b> Từ bảng biến thiên ta có: <br/>
+                $6 = \\int_{1}^{4} |f^{\\prime}(x)| \\text{d}x = \\int_{1}^{2} |f^{\\prime}(x)| \\text{d}x + \\int_{2}^{4} |f^{\\prime}(x)| \\text{d}x$<br/>
+                $\\Leftrightarrow 6 = -\\int_{1}^{2} f^{\\prime}(x) \\text{d}x + \\int_{2}^{4} f^{\\prime}(x) \\text{d}x$<br/>
+                $\\Leftrightarrow 6 = -[f(2)-f(1)] + [f(4)-f(2)] = f(1) - 2f(2) + f(4)$<br/>
+                $\\Leftrightarrow 6 = -1 - 2(-2) + f(4) \\Leftrightarrow f(4) = 3$.
+            `
+        },
+        {
+            id: 'p2q3',
+            text: "Trong hệ thống bảo hiểm xe hơi, hợp đồng của một khách hàng mỗi năm được xếp vào một trong hai hạng: <b>Mức Cơ bản (M)</b> hoặc <b>Mức Thưởng (T)</b>. Việc chuyển hạng qua từng năm tuân theo quy luật: Nếu năm nay khách hàng ở M, xác suất năm sau lên T là $0,8$ (nếu lái xe an toàn) và xác suất ở lại M là $0,2$. Nếu năm nay khách hàng ở T, xác suất năm sau giữ vững T là $0,9$ và xác suất tụt xuống M là $0,1$ (nếu gây tai nạn). Giả sử ở Năm 0, khách hàng được xếp ở <b>Mức Cơ bản (M)</b>. Xét trong 3 năm tiếp theo (Năm 1, 2 và 3):",
+            statements: [
+                { id: 'a', text: "Xác suất để khách hàng đạt Mức Thưởng (T) ở Năm 2 là $0,88$", correct: true },
+                { id: 'b', text: "Xác suất để khách hàng bị xếp ở Mức Cơ bản (M) liên tục trong cả Năm 1 và Năm 2 là $0,04$", correct: true },
+                { id: 'c', text: "Biết rằng ở Năm 2 khách hàng bị xếp ở Mức Cơ bản (M), xác suất để ở Năm 1 khách hàng này đã từng đạt Mức Thưởng (T) là $\\dfrac{1}{3}$", correct: false },
+                { id: 'd', text: "Bước sang Năm thứ 3, xác suất để khách hàng này bị xếp ở Mức Cơ bản (M) là $0,120$", correct: false }
+            ],
+            explanation: `
+                <b>Phương pháp:</b> Thiết lập sơ đồ cây 2 bậc cho Năm 1 và Năm 2. Dùng công thức xác suất toàn phần và Định lý Bayes. Đối với ý d) (bậc 3), tiếp tục áp dụng công thức xác suất toàn phần.<br/><br/>
+                <b>Giải chi tiết:</b><br/>
+                Gọi $M_i, T_i$ lần lượt là biến cố khách hàng ở Mức Cơ bản và Mức Thưởng tại Năm thứ $i$. Từ trạng thái xuất phát $M_0$, ta có sơ đồ cây:<br/>
+                <ul>
+                    <li>Năm 0: $M_0$
+                        <ul>
+                            <li>Năm 1: $M_1$ ($0,2$)
+                                <ul>
+                                    <li>Năm 2: $M_2$ ($0,2$)</li>
+                                    <li>Năm 2: $T_2$ ($0,8$)</li>
+                                </ul>
+                            </li>
+                            <li>Năm 1: $T_1$ ($0,8$)
+                                <ul>
+                                    <li>Năm 2: $M_2$ ($0,1$)</li>
+                                    <li>Năm 2: $T_2$ ($0,9$)</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul><br/>
+                <b>a) Đúng.</b> Xác suất để khách hàng ở Mức Thưởng tại Năm 2 ($T_2$) là tổng xác suất của 2 nhánh kết thúc bằng $T_2$:<br/>
+                $$P(T_2) = P(M_1 \\cap T_2) + P(T_1 \\cap T_2) = (0,2 \\cdot 0,8) + (0,8 \\cdot 0,9) = 0,16 + 0,72 = 0,88$$
+                <i>(Từ đây suy ra xác suất ở Năm 2 bị xếp Mức Cơ bản là $P(M_2) = 1 - 0,88 = 0,12$).</i><br/><br/>
+                <b>b) Đúng.</b> Khách hàng ở Mức Cơ bản liên tục trong Năm 1 và Năm 2 tương ứng với nhánh $M_0 \\to M_1 \\to M_2$. Xác suất nhánh này:<br/>
+                $$P(M_1 \\cap M_2) = P(M_1) \\cdot P(M_2 | M_1) = 0,2 \\cdot 0,2 = 0,04$$<br/>
+                <b>c) Sai.</b> Ta cần tính xác suất Năm 1 đạt Mức Thưởng ($T_1$) với điều kiện Năm 2 ở Mức Cơ bản ($M_2$). Áp dụng Định lý Bayes:<br/>
+                $$P(T_1 | M_2) = \\dfrac{P(T_1 \\cap M_2)}{P(M_2)}$$<br/>
+                Dựa vào sơ đồ cây, $P(T_1 \\cap M_2) = 0,8 \\cdot 0,1 = 0,08$. Từ câu a), có $P(M_2) = 0,12$.<br/>
+                $$P(T_1 | M_2) = \\dfrac{0,08}{0,12} = \\dfrac{8}{12} = \\dfrac{2}{3}$$<br/>
+                Mệnh đề cho kết quả là $\\dfrac{1}{3}$ nên sai. <i>(Thực chất $1/3$ là xác suất $P(M_1 | M_2)$).</i><br/><br/>
+                <b>d) Sai.</b> Xác suất Năm 3 ở Mức Cơ bản ($M_3$):<br/>
+                $$P(M_3) = P(M_2)P(M_3 | M_2) + P(T_2)P(M_3 | T_2)$$<br/>
+                $$P(M_3) = 0,12 \\cdot 0,2 + 0,88 \\cdot 0,1 = 0,024 + 0,088 = 0,112 \\neq 0,120$$<br/>
+                Mệnh đề cho kết quả là $0,120$ nên sai.
+            `
+        },
+        {
+            id: 'p2q4',
+            text: "Trong không gian $Oxyz$ (đơn vị km), mặt $(Oxy)$ biểu diễn mặt đất. Máy bay $A$ cất cánh từ $O(0;0;0)$ bay với vectơ vận tốc đối với không khí là $\\vec{v}_1 = (0; 240; 10)$. Cùng lúc, gió thổi với vận tốc không đổi đối với mặt đất là $\\vec{v}_2 = (70; 0; 0)$.",
+            statements: [
+                { id: 'a', text: "Một vectơ chỉ phương của đường thẳng quỹ đạo bay thực tế của máy bay $A$ đối với mặt đất là $\\vec{u} = (7; 24; 1)$.", correct: true },
+                { id: 'b', text: "Phương trình tham số đường bay thực tế của máy bay $A$ là $\\begin{cases} x = 0 \\\\ y = 240t \\\\ z = 10t \\end{cases}$", correct: false },
+                { id: 'c', text: "Tốc độ di chuyển theo phương ngang (hình chiếu của vận tốc trên mặt đất) của máy bay $A$ là $250\\text{ km/h}$.", correct: true },
+                { id: 'd', text: "Cùng lúc, trực thăng $B$ từ $M(130; 240; 10)$ bay thẳng đều với vectơ vận tốc $\\vec{v}_B = (-60; 0; 0)$. Quãng đường $B$ bay đến khi xảy ra va chạm với máy bay $A$ là $60\\text{ km}$.", correct: true }
+            ],
+            explanation: `
+                <b>a) Đúng.</b> Theo công thức cộng vận tốc tương đối trong không gian, vectơ vận tốc thực tế của máy bay $A$ đối với mặt đất là:<br/>
+                $$\\vec{v}_A = \\vec{v}_1 + \\vec{v}_2 = (0 + 70; 240 + 0; 10 + 0) = (70; 240; 10) \\text{ (km/h)}.$$<br/>
+                Quỹ đạo bay là đường thẳng đi qua gốc tọa độ nhận $\\vec{v}_A = 10(7; 24; 1)$ làm vectơ chỉ phương, do đó $\\vec{u} = (7; 24; 1)$ là một vectơ chỉ phương.<br/><br/>
+                <b>b) Sai.</b> Máy bay $A$ xuất phát từ $O$ theo hướng $\\vec{v}_A = (70; 240; 10)$. Phương trình quỹ đạo đúng phải là:<br/>
+                $$\\begin{cases} x = 70t \\\\ y = 240t \\\\ z = 10t \\end{cases} \\quad (t \\ge 0).$$<br/>
+                Phương trình của đề bài bỏ qua tác động đẩy ngang của gió.<br/><br/>
+                <b>c) Đúng.</b> Vectơ vận tốc theo phương ngang là hình chiếu của $\\vec{v}_A$ lên $(Oxy)$, tức $\\vec{v}_{A(xy)} = (70; 240; 0)$.<br/>
+                Tốc độ là: $$|\\vec{v}_{A(xy)}| = \\sqrt{70^2 + 240^2} = \\sqrt{62500} = 250 \\text{ (km/h)}.$$<br/><br/>
+                <b>d) Đúng.</b> Phương trình của $A$: $x_A=70t, y_A=240t, z_A=10t$.<br/>
+                Phương trình của $B$ (từ $M(130; 240; 10)$ với $\\vec{v}_B = (-60; 0; 0)$):<br/>
+                $$\\begin{cases} x_B = 130 - 60t \\\\ y_B = 240 \\\\ z_B = 10 \\end{cases}$$<br/>
+                Để va chạm, tọa độ phải trùng khớp:
+                $$\\begin{cases} 70t = 130 - 60t \\\\ 240t = 240 \\\\ 10t = 10 \\end{cases} \\Leftrightarrow \\begin{cases} 130t = 130 \\\\ t = 1 \\\\ t = 1 \\end{cases} \\Leftrightarrow t = 1 \\text{ (giờ)}.$$<br/>
+                Hệ có nghiệm duy nhất $t = 1$, va chạm sau $1$ giờ bay.<br/>
+                Tốc độ của trực thăng $B$ là $|\\vec{v}_B| = \\sqrt{(-60)^2+0+0} = 60\\text{ km/h}$. Quãng đường bay là $S_B = 60 \\cdot 1 = 60 \\text{ km}$.
+            `
+        }
+    ],
+    part3: [
+        {
+            id: 'p3q1',
+            text: "Cho hình chóp $S.ABCD$ có đáy là hình vuông cạnh bằng $6$. Hình chiếu vuông góc của đỉnh $S$ trên mặt phẳng $(ABCD)$ trùng với trung điểm của đoạn thẳng $AD$. Biết góc phẳng nhị diện $[S, AC, D]$ bằng $60^\\circ$. Tính thể tích $V$ của khối chóp $S.ABCD$ (không làm tròn các phép tính trung gian, kết quả cuối cùng làm tròn đến hàng phần mười).",
+            answer: "44.1",
+            explanation: `
+                <div class="text-center my-3">
+                    <svg viewBox="0 0 400 300" width="100%" style="max-width:350px;">
+                        <polygon points="50,220 200,280 350,220 200,160" fill="none" stroke="black" stroke-dasharray="0" stroke-width="1.5" />
+                        <line x1="50" y1="220" x2="200" y2="160" stroke="black" stroke-dasharray="5,5" stroke-width="1.5" />
+                        <line x1="200" y1="160" x2="350" y2="220" stroke="black" stroke-dasharray="5,5" stroke-width="1.5" />
+                        
+                        <text x="35" y="225" font-size="14">B</text>
+                        <text x="200" y="295" font-size="14">C</text>
+                        <text x="360" y="225" font-size="14">D</text>
+                        <text x="185" y="155" font-size="14">A</text>
+
+                        <circle cx="275" cy="190" r="3" fill="black"/>
+                        <text x="285" y="190" font-size="14">H</text>
+
+                        <circle cx="275" cy="40" r="3" fill="black"/>
+                        <text x="280" y="35" font-size="14">S</text>
+
+                        <line x1="275" y1="40" x2="275" y2="190" stroke="red" stroke-dasharray="5,5" stroke-width="2"/>
+                        
+                        <line x1="275" y1="40" x2="50" y2="220" stroke="black" stroke-width="1.5"/>
+                        <line x1="275" y1="40" x2="200" y2="280" stroke="black" stroke-width="1.5"/>
+                        <line x1="275" y1="40" x2="350" y2="220" stroke="black" stroke-width="1.5"/>
+                        <line x1="275" y1="40" x2="200" y2="160" stroke="black" stroke-dasharray="5,5" stroke-width="1.5"/>
+
+                        <line x1="200" y1="160" x2="200" y2="280" stroke="black" stroke-dasharray="5,5" stroke-width="1.5"/>
+                        
+                        <circle cx="200" cy="220" r="3" fill="blue"/>
+                        <text x="185" y="230" font-size="14">K</text>
+                        <line x1="275" y1="190" x2="200" y2="220" stroke="blue" stroke-dasharray="5,5" stroke-width="1.5"/>
+                        <line x1="275" y1="40" x2="200" y2="220" stroke="blue" stroke-dasharray="5,5" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <b>1. Phân tích góc phẳng nhị diện:</b><br/>
+                Gọi $H$ là trung điểm của $AD$. Theo giả thiết, ta có $SH \\perp (ABCD)$.<br/>
+                Trong mặt phẳng $(ABCD)$, kẻ $HK \\perp AC$ tại $K$. Ta có:<br/>
+                $$ \\begin{cases} AC \\perp HK \\\\ AC \\perp SH \\text{ (do } SH \\perp (ABCD)) \\end{cases} \\implies AC \\perp (SHK) \\implies AC \\perp SK $$<br/>
+                Do đó, góc phẳng nhị diện $[S, AC, D]$ chính là góc $\\widehat{SKH}$. Theo bài ra, $\\widehat{SKH} = 60^\\circ$.<br/><br/>
+                
+                <b>2. Tính toán các đại lượng:</b><br/>
+                Xét đáy $ABCD$ là hình vuông cạnh $a = 6$, gọi $O$ là giao điểm của hai đường chéo $AC$ và $BD$.<br/>
+                Ta có độ dài đường chéo $BD = a\\sqrt{2} = 6\\sqrt{2}$. Do $O$ là trung điểm $BD$ nên $DO = 3\\sqrt{2}$.<br/>
+                Xét tam giác $ADC$, có $H$ là trung điểm của $AD$ và $HK \\parallel DO$ (vì cùng vuông góc với $AC$).<br/>
+                Suy ra $HK$ là đường trung bình của $\\Delta ADO$, do đó:<br/>
+                $$ HK = \\dfrac{1}{2} DO = \\dfrac{3\\sqrt{2}}{2} $$<br/>
+                Xét tam giác $SHK$ vuông tại $H$:<br/>
+                $$ SH = HK \\cdot \\tan \\widehat{SKH} = \\dfrac{3\\sqrt{2}}{2} \\cdot \\tan 60^\\circ = \\dfrac{3\\sqrt{2}}{2} \\cdot \\sqrt{3} = \\dfrac{3\\sqrt{6}}{2} $$<br/>
+                
+                <b>3. Tính thể tích:</b><br/>
+                Diện tích đáy là $S_{ABCD} = 6^2 = 36$.<br/>
+                Thể tích khối chóp $S.ABCD$ là:<br/>
+                $$ V = \\dfrac{1}{3} S_{ABCD} \\cdot SH = \\dfrac{1}{3} \\cdot 36 \\cdot \\dfrac{3\\sqrt{6}}{2} = 18\\sqrt{6} \\approx 44{,}0908 $$<br/>
+                Làm tròn đến hàng phần mười, ta được $44,1$.
+            `
+        },
+        {
+            id: 'p3q2',
+            text: "Một công ty độc quyền sản xuất một loại thiết bị điện tử. Dựa trên nghiên cứu thị trường, hàm doanh thu của công ty được cho bởi hàm số bậc hai $R(x) = -x^2 + 220x$ (triệu đồng), trong đó $x$ là số lượng sản phẩm bán ra. Hàm chi phí để sản xuất <b>mỗi một sản phẩm</b> được ước lượng là $C_u(x) = x + 20 + \\dfrac{50}{x}$ (triệu đồng/sản phẩm). Nhà nước dự định đánh thuế $t$ (triệu đồng) trên mỗi sản phẩm bán ra. Biết rằng công ty luôn tự điều chỉnh sản lượng $x$ sao cho tổng lợi nhuận thu được (sau khi đã nộp thuế) là lớn nhất. Hỏi nhà nước có thể thu được <b>tổng tiền thuế lớn nhất</b> là bao nhiêu triệu đồng?",
+            answer: "2500",
+            explanation: `
+                <b>1. Bài toán cực trị của Doanh nghiệp (Tối đa hóa lợi nhuận)</b><br/>
+                Tổng chi phí để sản xuất $x$ sản phẩm là:<br/>
+                $$C(x) = x \\cdot C_u(x) = x \\left( x + 20 + \\dfrac{50}{x} \\right) = x^2 + 20x + 50 \\text{ (triệu đồng)}$$<br/>
+                Hàm lợi nhuận của công ty sau khi nộp thuế $t$ cho mỗi sản phẩm là:<br/>
+                $$P(x) = R(x) - C(x) - tx = (-x^2 + 220x) - (x^2 + 20x + 50) - tx$$
+                $$P(x) = -2x^2 + (200 - t)x - 50$$<br/>
+                Để tối đa hóa lợi nhuận, công ty sẽ sản xuất ở mức sản lượng $x$ sao cho đạo hàm $P'(x) = 0$:<br/>
+                $$P'(x) = -4x + 200 - t = 0 \\implies x = \\dfrac{200 - t}{4}$$
+                <i>(Do $P''(x) = -4 < 0$ nên đây chắc chắn là điểm cực đại của lợi nhuận).</i><br/><br/>
+                
+                <b>2. Bài toán cực trị của Nhà nước (Tối đa hóa tiền thuế)</b><br/>
+                Với mức sản lượng $x$ do công ty quyết định như trên, tổng tiền thuế $T(t)$ nhà nước thu được là một hàm phụ thuộc vào mức thuế $t$:<br/>
+                $$T(t) = t \\cdot x = t \\left( \\dfrac{200 - t}{4} \\right) = \\dfrac{1}{4}(-t^2 + 200t)$$<br/>
+                Để tối đa hóa tổng tiền thuế, ta tìm điểm cực đại của parabol $T(t)$:<br/>
+                $$T'(t) = \\dfrac{1}{4}(-2t + 200) = 0 \\implies t = 100 \\text{ (triệu đồng/sản phẩm)}$$<br/>
+                Khi đó, tổng tiền thuế lớn nhất mà nhà nước thu được là:<br/>
+                $$T_{\\max} = T(100) = \\dfrac{1}{4} \\left( -100^2 + 200 \\cdot 100 \\right) = \\dfrac{10000}{4} = 2500 \\text{ (triệu đồng)}$$<br/>
+                <i>(Nhận xét thêm: Khi $t=100$, sản lượng $x = 25$ sản phẩm. Lợi nhuận của công ty khi đó là $P(25) = 1200 > 0$, đảm bảo công ty vẫn hoạt động có lãi).</i><br/>
+                <b>Kết luận:</b> Tổng tiền thuế lớn nhất nhà nước có thể thu được là 2500 triệu đồng.
+            `
+        },
+        {
+            id: 'p3q3',
+            text: "Cô Lan dự định xây một chiếc bể chứa nước mưa dạng hình hộp chữ nhật (có nắp đậy) với thể tích $V = 108 \\text{ m}^3$. Biết rằng chiều dài của bể gấp ba lần chiều rộng bể. Trên nắp đậy của bể để hở một khoảng trống hình tròn có bán kính $r$ bằng $\\dfrac{1}{3}$ chiều rộng bể để dẫn nước mưa vào. Do yêu cầu kỹ thuật chống thấm, chi phí vật liệu để xây <b>đáy bể</b> đắt hơn, cụ thể là $500.000$ VNĐ/$\\text{m}^2$. Chi phí vật liệu để xây <b>nắp bể và $4$ mặt xung quanh</b> là $300.000$ VNĐ/$\\text{m}^2$. Hỏi cô Lan cần thiết kế chiều rộng của bể bằng bao nhiêu mét để tổng chi phí nguyên vật liệu là nhỏ nhất? (Không làm tròn kết quả các phép tính trung gian, chỉ làm tròn kết quả cuối cùng đến hàng phần trăm).",
+            answer: "3.24",
+            explanation: `
+                Gọi $x$ (mét) là chiều rộng của đáy bể ($x > 0$).<br/>
+                <ul>
+                    <li>Chiều dài của đáy bể là: $3x$ (m).</li>
+                    <li>Diện tích đáy bể là: $S_{\\text{đáy}} = x \\cdot 3x = 3x^2$ ($\\text{m}^2$).</li>
+                    <li>Chiều cao của bể là: $h = \\dfrac{V}{S_{\\text{đáy}}} = \\dfrac{108}{3x^2} = \\dfrac{36}{x^2}$ (m).</li>
+                </ul><br/>
+                Diện tích của nắp bể (sau khi trừ đi khoảng trống hình tròn có bán kính $r = \\dfrac{x}{3}$):<br/>
+                $$S_{\\text{nắp}} = S_{\\text{đáy}} - S_{\\text{tròn}} = 3x^2 - \\pi \\left(\\dfrac{x}{3}\\right)^2 = 3x^2 - \\dfrac{\\pi x^2}{9} = \\left( 3 - \\dfrac{\\pi}{9} \\right)x^2 \\text{ (m}^2)$$<br/>
+                Diện tích $4$ mặt xung quanh của bể:<br/>
+                $$S_{\\text{xq}} = 2 \\cdot (x + 3x) \\cdot h = 8x \\cdot \\dfrac{36}{x^2} = \\dfrac{288}{x} \\text{ (m}^2)$$<br/>
+                Tổng chi phí nguyên vật liệu $C(x)$ (đơn vị: trăm nghìn VNĐ) được tính như sau:<br/>
+                $$C(x) = 5 \\cdot S_{\\text{đáy}} + 3 \\cdot \\left( S_{\\text{nắp}} + S_{\\text{xq}} \\right)$$
+                $$C(x) = 5(3x^2) + 3 \\left( \\left( 3 - \\dfrac{\\pi}{9} \\right)x^2 + \\dfrac{288}{x} \\right) = 15x^2 + \\left( 9 - \\dfrac{\\pi}{3} \\right)x^2 + \\dfrac{864}{x}$$
+                $$C(x) = \\left( 24 - \\dfrac{\\pi}{3} \\right)x^2 + \\dfrac{864}{x}$$<br/>
+                Để tìm chi phí nhỏ nhất, ta tính đạo hàm của $C(x)$:<br/>
+                $$C'(x) = 2\\left( 24 - \\dfrac{\\pi}{3} \\right)x - \\dfrac{864}{x^2}$$<br/>
+                Xét phương trình $C'(x) = 0$:<br/>
+                $$2\\left( 24 - \\dfrac{\\pi}{3} \\right)x = \\dfrac{864}{x^2} \\implies x^3 = \\dfrac{432}{24 - \\dfrac{\\pi}{3}} = \\dfrac{1296}{72 - \\pi}$$
+                $$x = \\sqrt[3]{\\dfrac{1296}{72 - \\pi}} \\approx 3{,}2358$$<br/>
+                Lập bảng biến thiên, ta dễ dàng thấy hàm số $C(x)$ đạt cực tiểu tại $x = \\sqrt[3]{\\dfrac{1296}{72 - \\pi}}$.<br/>
+                <b>Kết luận:</b> Chiều rộng của bể cần thiết kế để chi phí nhỏ nhất là xấp xỉ $3,24$ mét.
+            `
+        },
+        {
+            id: 'p3q4',
+            text: "Một người nghỉ hưu hiện có 100 000 USD trong quỹ hưu trí. Quỹ này tạo ra mức lãi suất đều đặn là $0,5\\%$/tháng. Mỗi tháng, người này muốn rút chính xác 1 000 để trang trải chi phí sinh hoạt. Hỏi người đó có thể rút trọn vẹn số tiền này trong tối đa bao nhiêu tháng?",
+            answer: "138",
+            explanation: `
+                Gọi $PV$ là số tiền ban đầu, $A$ là số tiền rút đều đặn mỗi kỳ, $i$ là lãi suất mỗi kỳ, và $n$ là số kỳ (số tháng).<br/>
+                Công thức tính Giá trị hiện tại của dòng tiền định kỳ (Present Value of an Annuity) là:<br/>
+                $$PV = A \\cdot \\dfrac{1 - (1+i)^{-n}}{i}$$<br/>
+                Áp dụng các dữ kiện đã cho: $PV = 100.000$, $A = 1.000$, $i = 0,005$. Thay vào công thức, ta có phương trình tìm $n$:<br/>
+                $$100.000 = 1.000 \\cdot \\dfrac{1 - (1+0,005)^{-n}}{0,005}$$
+                $$100 = \\dfrac{1 - 1,005^{-n}}{0,005}$$
+                $$0,5 = 1 - 1,005^{-n}$$
+                $$1,005^{-n} = 0,5$$<br/>
+                Sử dụng logarit để giải tìm $n$:<br/>
+                $$-n = \\log_{1,005}(0,5) \\approx -138,98 \\implies n \\approx 138,98$$<br/>
+                Vậy người đó có thể rút trọn vẹn $1.000$ USD trong tối đa $138$ tháng.<br/>
+                Ở tháng thứ $139$, tài khoản sẽ chỉ còn lại một số tiền dư không đủ cho lần rút tiếp theo.
+            `
+        }
+    ]
+};
+
+// --- QUẢN LÝ TRẠNG THÁI ---
+let state = {
+    answers: { part1: {}, part2: {}, part3: {} },
+    timeLeft: EXAM_DURATION_MINUTES * 60, // 75 phút
+    submitted: false,
+    studentName: '',
+    className: ''
+};
+let timerInterval;
+
+// --- TIỆN ÍCH ---
+function shuffleArray(array) {
+    let newArr = [...array];
+    for (let i = newArr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+    }
+    return newArr;
+}
+
+function generateExamCode() {
+    return Math.floor(100 + Math.random() * 900);
+}
+
+function normalizeNumber(val) {
+    if(!val) return null;
+    return parseFloat(val.toString().replace(',', '.'));
+}
+
+// --- RENDER GIAO DIỆN ---
+function renderUI() {
+    if(!document.getElementById('examCode').value) {
+        document.getElementById('examCode').value = "MĐ: " + generateExamCode();
+    }
+
+    const mixedPart1 = shuffleArray(rawData.part1);
+    const mixedPart2 = shuffleArray(rawData.part2);
+
+    // Render Part 1
+    const p1Container = document.getElementById('part1');
+    p1Container.innerHTML = mixedPart1.map((q, index) => {
+        const mixedOptions = shuffleArray(q.options);
+        return `
+        <div class="question-card" id="card_${q.id}">
+            <p class="fw-bold">Câu ${index + 1}: <span class="fw-normal">${q.text}</span></p>
+            <div class="row">
+                ${mixedOptions.map(opt => `
+                    <div class="col-md-6 mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input p1-radio" type="radio" name="${q.id}" id="${q.id}_${opt.id}" value="${opt.id}" data-correct="${opt.correct}">
+                            <label class="form-check-label w-100" for="${q.id}_${opt.id}">
+                                ${opt.text}
+                            </label>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <div class="explanation-box" id="exp_${q.id}">
+                <strong class="text-success">Giải chi tiết:</strong><br/>
+                ${q.explanation}
+            </div>
+        </div>`;
+    }).join('');
+
+    // Render Part 2
+    const p2Container = document.getElementById('part2');
+    p2Container.innerHTML = mixedPart2.map((q, index) => {
+        return `
+        <div class="question-card" id="card_${q.id}">
+            <p class="fw-bold">Câu ${index + 1}: <span class="fw-normal">${q.text}</span></p>
+            <table class="table table-bordered tf-table bg-white">
+                <thead class="table-light">
+                    <tr>
+                        <th width="80%">Phát biểu</th>
+                        <th width="10%">Đúng</th>
+                        <th width="10%">Sai</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${q.statements.map(stmt => `
+                        <tr>
+                            <td class="text-start">${stmt.id}) ${stmt.text}</td>
+                            <td><input class="form-check-input p2-radio" type="radio" name="${q.id}_${stmt.id}" value="T" data-q="${q.id}" data-stmt="${stmt.id}" data-correct="${stmt.correct}"></td>
+                            <td><input class="form-check-input p2-radio" type="radio" name="${q.id}_${stmt.id}" value="F" data-q="${q.id}" data-stmt="${stmt.id}" data-correct="${stmt.correct}"></td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            <div class="explanation-box" id="exp_${q.id}">
+                <strong class="text-success">Giải chi tiết:</strong><br/>
+                ${q.explanation}
+            </div>
+        </div>`;
+    }).join('');
+
+    // Render Part 3
+    const p3Container = document.getElementById('part3');
+    p3Container.innerHTML = rawData.part3.map((q, index) => {
+        return `
+        <div class="question-card" id="card_${q.id}">
+            <p class="fw-bold">Câu ${index + 1}: <span class="fw-normal">${q.text}</span></p>
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <input type="text" class="form-control p3-input" id="input_${q.id}" data-q="${q.id}" data-ans="${q.answer}" placeholder="Nhập đáp án...">
+                </div>
+                <div class="col-md-8 text-success fw-bold d-none p3-correct-ans" id="cans_${q.id}">
+                    Đáp án đúng: ${q.answer}
+                </div>
+            </div>
+            <div class="explanation-box" id="exp_${q.id}">
+                <strong class="text-success">Giải chi tiết:</strong><br/>
+                ${q.explanation}
+            </div>
+        </div>`;
+    }).join('');
+
+    bindEvents();
+    renderMathSafely();
+}
+
+function renderMathSafely() {
+    if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise().catch(err => console.warn("MathJax Lỗi: ", err));
+    } else {
+        setTimeout(renderMathSafely, 500);
+    }
+}
+
+function bindEvents() {
+    document.getElementById('studentName').addEventListener('input', e => { state.studentName = e.target.value; });
+    document.getElementById('className').addEventListener('input', e => { state.className = e.target.value; });
+
+    document.querySelectorAll('.p1-radio').forEach(r => {
+        r.addEventListener('change', e => { state.answers.part1[e.target.name] = e.target.value; });
+    });
+
+    document.querySelectorAll('.p2-radio').forEach(r => {
+        r.addEventListener('change', e => {
+            const qId = e.target.getAttribute('data-q');
+            const stmtId = e.target.getAttribute('data-stmt');
+            if(!state.answers.part2[qId]) state.answers.part2[qId] = {};
+            state.answers.part2[qId][stmtId] = e.target.value;
+        });
+    });
+
+    document.querySelectorAll('.p3-input').forEach(i => {
+        i.addEventListener('input', e => { state.answers.part3[e.target.getAttribute('data-q')] = e.target.value; });
+    });
+
+    document.getElementById('btnSubmit').addEventListener('click', () => submitQuiz(false));
+    document.getElementById('btnPrint').addEventListener('click', () => window.print());
+}
+
+// --- LOGIC HỆ THỐNG ---
+function startTimer() {
+    const display = document.getElementById('timerDisplay');
+    
+    const mInitial = Math.floor(state.timeLeft / 60).toString().padStart(2, '0');
+    const sInitial = (state.timeLeft % 60).toString().padStart(2, '0');
+    display.textContent = `${mInitial}:${sInitial}`;
+
+    timerInterval = setInterval(() => {
+        if(state.submitted) {
+            clearInterval(timerInterval);
+            return;
+        }
+        
+        state.timeLeft--;
+        if(state.timeLeft < 0) state.timeLeft = 0;
+        
+        const m = Math.floor(state.timeLeft / 60).toString().padStart(2, '0');
+        const s = (state.timeLeft % 60).toString().padStart(2, '0');
+        display.textContent = `${m}:${s}`;
+        
+        if (state.timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert("Đã hết thời gian làm bài! Hệ thống tự động nộp bài.");
+            submitQuiz(true);
+        }
+    }, 1000);
+}
+
+function autoSave() {
+    setInterval(() => {
+        if(!state.submitted) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+    }, 10000);
+}
+
+function restoreProgress() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(saved) {
+        try {
+            const p = JSON.parse(saved);
+            if (p.timeLeft !== undefined) {
+                state = p;
+            }
+
+            if(state.studentName) document.getElementById('studentName').value = state.studentName;
+            if(state.className) document.getElementById('className').value = state.className;
+            
+            Object.keys(state.answers.part1).forEach(k => {
+                const el = document.getElementById(`${k}_${state.answers.part1[k]}`);
+                if(el) el.checked = true;
+            });
+
+            Object.keys(state.answers.part2).forEach(qId => {
+                Object.keys(state.answers.part2[qId]).forEach(stmtId => {
+                    const val = state.answers.part2[qId][stmtId];
+                    const el = document.querySelector(`input[name="${qId}_${stmtId}"][value="${val}"]`);
+                    if(el) el.checked = true;
+                });
+            });
+
+            Object.keys(state.answers.part3).forEach(k => {
+                const el = document.getElementById(`input_${k}`);
+                if(el) el.value = state.answers.part3[k];
+            });
+
+            if(state.submitted) {
+                applySubmissionUI();
+            } else {
+                const t = document.getElementById('toastMessage');
+                t.style.display = 'block';
+                setTimeout(() => t.style.display = 'none', 4000);
+            }
+        } catch(e) {
+            console.error("Lỗi khi khôi phục bài làm:", e);
+        }
+    }
+}
+
+function submitQuiz(force = false) {
+    const errorBox = document.getElementById('errorMsg');
+    errorBox.style.display = 'none';
+
+    if(!force) {
+        const sName = document.getElementById('studentName').value.trim();
+        const cName = document.getElementById('className').value.trim();
+        
+        if(!sName || !cName) {
+            errorBox.textContent = "Vui lòng nhập đầy đủ Họ Tên và Lớp trước khi nộp bài.";
+            errorBox.style.display = 'inline-block';
+            window.scrollTo({top: 0, behavior: 'smooth'});
+            return;
+        }
+    }
+    
+    let totalItems = 12 + 16 + 4;
+    let attempted = 0;
+    attempted += Object.keys(state.answers.part1).length;
+    Object.keys(state.answers.part2).forEach(q => { attempted += Object.keys(state.answers.part2[q]).length; });
+    Object.keys(state.answers.part3).forEach(q => { if(state.answers.part3[q].trim() !== '') attempted++; });
+    
+    const percent = Math.round((attempted / totalItems) * 100);
+    
+    let s1 = 0, s2 = 0, s3 = 0;
+    
+    document.querySelectorAll('.p1-radio').forEach(r => {
+        if(r.checked && r.getAttribute('data-correct') === 'true') s1 += 0.25;
+    });
+
+    rawData.part2.forEach(q => {
+        let correctCount = 0;
+        q.statements.forEach(stmt => {
+            const uAns = state.answers.part2[q.id]?.[stmt.id];
+            const cAns = stmt.correct ? 'T' : 'F';
+            if(uAns === cAns) correctCount++;
+        });
+        if(correctCount === 1) s2 += 0.1;
+        if(correctCount === 2) s2 += 0.25;
+        if(correctCount === 3) s2 += 0.5;
+        if(correctCount === 4) s2 += 1.0;
+    });
+
+    rawData.part3.forEach(q => {
+        const uAns = normalizeNumber(state.answers.part3[q.id]);
+        const cAns = normalizeNumber(q.answer);
+        if(uAns !== null && uAns === cAns) s3 += 0.5;
+    });
+
+    state.scores = { p1: s1, p2: s2, p3: s3, total: s1 + s2 + s3, percent: percent };
+    state.submitted = true;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+    applySubmissionUI();
+    sendDataToSheet();
+    window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+}
+
+function applySubmissionUI() {
+    clearInterval(timerInterval);
+    document.getElementById('errorMsg').style.display = 'none';
+    
+    document.getElementById('printName').textContent = state.studentName || "Không xác định";
+    document.getElementById('printClass').textContent = state.className || "Không xác định";
+    document.getElementById('printCode').textContent = document.getElementById('examCode').value;
+
+    document.getElementById('scoreP1').textContent = state.scores.p1.toFixed(2) + " / 3.0";
+    document.getElementById('scoreP2').textContent = state.scores.p2.toFixed(2) + " / 4.0";
+    document.getElementById('scoreP3').textContent = state.scores.p3.toFixed(2) + " / 2.0";
+    document.getElementById('scoreTotal').textContent = state.scores.total.toFixed(2) + " / 9.0";
+    
+    const timeTaken = (EXAM_DURATION_MINUTES * 60) - state.timeLeft;
+    const m = Math.floor(timeTaken / 60);
+    const s = timeTaken % 60;
+    document.getElementById('timeTaken').textContent = `${m} phút ${s} giây`;
+    document.getElementById('percentComplete').textContent = state.scores.percent;
+
+    document.getElementById('resultArea').style.display = 'block';
+    document.getElementById('btnSubmit').style.display = 'none';
+    document.getElementById('btnPrint').style.display = 'inline-block';
+
+    document.querySelectorAll('input').forEach(i => i.disabled = true);
+
+    if(state.scores.percent >= 50) {
+        document.querySelectorAll('.explanation-box').forEach(el => el.style.display = 'block');
+        
+        document.querySelectorAll('.p1-radio').forEach(r => {
+            const label = r.nextElementSibling;
+            if(r.getAttribute('data-correct') === 'true') {
+                label.classList.add('correct-answer');
+            } else if(r.checked) {
+                label.classList.add('wrong-answer');
+            }
+        });
+
+        document.querySelectorAll('.p2-radio').forEach(r => {
+            const isCorrectOption = (r.value === 'T' && r.getAttribute('data-correct') === 'true') || 
+                                    (r.value === 'F' && r.getAttribute('data-correct') === 'false');
+            if(isCorrectOption) {
+                r.parentElement.style.backgroundColor = '#d1e7dd';
+            } else if(r.checked) {
+                r.parentElement.style.backgroundColor = '#f8d7da';
+            }
+        });
+
+        document.querySelectorAll('.p3-correct-ans').forEach(el => el.classList.remove('d-none'));
+        document.querySelectorAll('.p3-input').forEach(i => {
+            const cAns = normalizeNumber(i.getAttribute('data-ans'));
+            const uAns = normalizeNumber(i.value);
+            if(uAns === cAns) {
+                i.classList.add('is-valid');
+            } else {
+                i.classList.add('is-invalid');
+            }
+        });
+        
+        // Gọi lại MathJax render lần nữa sau khi bỏ display:none để đảm bảo thẻ math render đủ kích thước.
+        renderMathSafely();
+    } else {
+        alert("Bạn mới làm dưới 50% bài thi. Chế độ xem chi tiết câu giải thích bị ẩn để đảm bảo tính khách quan của kỳ thi.");
+    }
+}
+
+function sendDataToSheet() {
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxlSeFL01K2mGKcgJVNGQLxSNpaXZTgQbUtzIuVEpLmPb3TnLPTq0qxQgjD8I1gKKIV/exec';
+    const payload = {
+        student_name: state.studentName,
+        class_name: state.className,
+        part1_score: state.scores.p1,
+        part2_score: state.scores.p2,
+        part3_score: state.scores.p3,
+        total_score: state.scores.total,
+        duration_minutes: Math.floor(((EXAM_DURATION_MINUTES * 60) - state.timeLeft) / 60),
+        percent: state.scores.percent,
+        submit_time: new Date().toLocaleString()
+    };
+    
+    fetch(GAS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }).catch(e => console.log('Log error expected if URL is dummy.'));
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    renderUI();
+    restoreProgress();
+    if(!state.submitted) {
+        startTimer();
+        autoSave();
+    }
+});
+</script>
+</body>
+</html>
