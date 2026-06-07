@@ -216,7 +216,7 @@
 // ==========================================
 // CẤU HÌNH & DỮ LIỆU
 // ==========================================
-const GAS_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwByu9pUcPM5wg9Rq2C5gNOqzHjmKDBa-ErZ2O0Kdc3IA-X6IIapzwFX_gQxTsvgRog-w/exec";
 
 // Ngân hàng câu hỏi đã được làm sạch thẻ \textbf và chuẩn hóa ký hiệu toán học
 const questionBank = [
@@ -589,12 +589,34 @@ function sendToGoogleSheet() {
         percent: examData.percent
     };
 
+    // Hiển thị trạng thái đang gửi (tùy chọn)
+    console.log("Đang gửi dữ liệu lên hệ thống...");
+
     fetch(GAS_URL, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
+        // BỎ mode: 'no-cors'
+        headers: { 
+            // Dùng text/plain thay vì application/json để lách lỗi preflight CORS của Google
+            'Content-Type': 'text/plain;charset=utf-8' 
+        },
         body: JSON.stringify(payload)
-    }).catch(err => console.log("Lỗi gửi dữ liệu:", err));
+    })
+    .then(response => response.json()) // Chuyển phản hồi thành JSON
+    .then(data => {
+        // Đọc dữ liệu từ Google Sheet trả về
+        if (data.status === "success") {
+            console.log("Thành công:", data.message);
+            // Bạn có thể alert hoặc update giao diện ở đây
+            alert("Hệ thống xác nhận: " + data.message); 
+        } else {
+            console.error("Lỗi từ server:", data.message);
+            alert("Có lỗi xảy ra khi lưu điểm!");
+        }
+    })
+    .catch(err => {
+        console.error("Lỗi mạng/fetch:", err);
+        alert("Không thể kết nối đến máy chủ. Điểm của bạn đã được lưu tạm trên máy này.");
+    });
 }
 
 // Khởi chạy khi load trang
