@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đề Ôn Tập Thi Tốt Nghiệp THPT Quốc Gia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>
+    window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+        svg: { fontCache: 'global' }
+    };
+    
+    // Hàm gọi an toàn
+    function renderMath() {
+        if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+            MathJax.typesetPromise().catch((err) => console.log(err));
+        }
+    }
+</script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root { --primary-color: #0d6efd; --bg-color: #ffffff; --text-color: #333333; }
+        body { background-color: #f8f9fa; color: var(--text-color); font-family: 'Segoe UI', Tahoma, sans-serif; }
+        .exam-container { background-color: var(--bg-color); max-width: 950px; margin: 20px auto; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header-title { color: var(--primary-color); text-align: center; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; }
+        .info-box { background-color: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .timer-box { font-size: 1.5rem; font-weight: bold; color: #dc3545; text-align: center; padding: 10px; border: 2px solid #dc3545; border-radius: 8px; background: #fff; position: sticky; top: 10px; z-index: 1000; }
+        .part-title { background-color: var(--primary-color); color: white; padding: 10px 15px; border-radius: 5px; margin-top: 30px; margin-bottom: 20px; font-weight: bold; }
+        .question-card { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #ccc; }
+        .question-text { font-weight: 600; margin-bottom: 15px; }
+        .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+        .option-label { display: flex; align-items: baseline; cursor: pointer; padding: 8px; border-radius: 4px; transition: background-color 0.2s; }
+        .option-label:hover { background-color: #f1f3f5; }
+        .option-label input { margin-right: 10px; }
+        .tf-table th, .tf-table td { vertical-align: middle; }
+        .short-ans-input { max-width: 200px; }
+        .explanation { background-color: #d1e7dd; border-left: 4px solid #0f5132; padding: 15px; margin-top: 15px; border-radius: 4px; }
+        .correct-ans { color: #198754; font-weight: bold; }
+        .wrong-ans { color: #dc3545; font-weight: bold; }
+        .highlight-correct { background-color: #e8f5e9 !important; border: 1px solid #198754; padding: 15px; border-radius: 5px;}
+        .highlight-wrong { background-color: #ffebee !important; border: 1px solid #dc3545; padding: 15px; border-radius: 5px;}
+        .svg-center { display: block; margin: 15px auto; max-width: 100%; height: auto; }
+        #results-overlay { display: none; margin-top: 20px; }
+        .score-board { background: #fff3cd; border: 2px solid #ffecb5; padding: 20px; border-radius: 8px; text-align: center; font-size: 1.2rem; margin-bottom: 20px; }
+        .score-board h3 { color: #856404; font-weight: bold; }
+        @media print {
+            body { background-color: #fff; }
+            .exam-container { box-shadow: none; max-width: 100%; margin: 0; padding: 0; }
+            .timer-box, #btn-submit, #btn-print, .no-print { display: none !important; }
+            .explanation { page-break-inside: avoid; }
+            .question-card { page-break-inside: avoid; border-bottom: 1px solid #000; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container exam-container" id="main-content">
+    <h2 class="header-title">Đề Ôn Tập Thi Tốt Nghiệp THPT Quốc Gia</h2>
+    
+    <div class="info-box no-print">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-5">
+                <input type="text" id="student_name" class="form-control" placeholder="Họ và tên" required>
+            </div>
+            <div class="col-md-3">
+                <input type="text" id="class_name" class="form-control" placeholder="Lớp" required>
+            </div>
+            <div class="col-md-4 text-md-end text-primary fw-bold">
+                Mã đề: <span id="exam_code"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="timer-box" id="timer_display">Thời gian: 90:00</div>
+
+    <div id="exam_body">
+        <div class="part-title">PHẦN I. Câu hỏi trắc nghiệm nhiều phương án lựa chọn (Mỗi câu 0.25 điểm)</div>
+        <div id="part1_container"></div>
+
+        <div class="part-title">PHẦN II. Trắc nghiệm đúng sai (Điểm: 1 ý=0.1, 2 ý=0.25, 3 ý=0.5, 4 ý=1.0)</div>
+        <div id="part2_container"></div>
+
+        <div class="part-title">PHẦN III. Câu trắc nghiệm trả lời ngắn (Mỗi câu 0.5 điểm)</div>
+        <div id="part3_container"></div>
+    </div>
+
+    <div class="text-center mt-4 no-print" id="action_buttons">
+        <button class="btn btn-primary btn-lg px-5" id="btn-submit" onclick="submitExam()">NỘP BÀI</button>
+    </div>
+
+    <div id="results-overlay">
+        <div class="score-board">
+            <h3>KẾT QUẢ BÀI LÀM</h3>
+            <div class="row mt-3">
+                <div class="col-md-3">Phần I: <strong id="score_p1">0</strong>/3.0</div>
+                <div class="col-md-3">Phần II: <strong id="score_p2">0</strong>/4.0</div>
+                <div class="col-md-3">Phần III: <strong id="score_p3">0</strong>/3.0</div>
+                <div class="col-md-3">Tổng điểm: <strong id="score_total" class="text-danger fs-4">0</strong>/10</div>
+            </div>
+            <div class="mt-2 text-muted">Thời gian hoàn thành: <span id="time_taken"></span> | Tỷ lệ: <span id="percent_done"></span>%</div>
+            <div class="mt-3 no-print">
+                <button class="btn btn-success me-2" id="btn-print" onclick="window.print()">IN KẾT QUẢ PDF</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="application/json" id="exam-data">
+{
+    "part1": [
+        {
+            "id": "p1_1",
+            "text": "Hàm số $y=\\sin{\\left(4 x + \\dfrac{3 \\pi}{8} \\right)}$ có chu kỳ là",
+            "options": [
+                { "id": "A", "text": "$\\dfrac{\\pi}{2}$", "isCorrect": true },
+                { "id": "B", "text": "$-1 + \\dfrac{\\pi}{4}$", "isCorrect": false },
+                { "id": "C", "text": "$\\dfrac{\\pi}{2}$", "isCorrect": false },
+                { "id": "D", "text": "$\\dfrac{3 \\pi}{4}$", "isCorrect": false }
+            ],
+            "explanation": "Chu kỳ của hàm số là $T=\\dfrac{2\\pi}{4}=\\dfrac{\\pi}{2}$."
+        },
+        {
+            "id": "p1_2",
+            "text": "Cho cấp số cộng $(u_n)$ với $u_1=-6$ và công sai $d=7$. Số $744$ là tổng của bao nhiêu số hạng đầu của cấp số cộng?",
+            "options": [
+                { "id": "A", "text": "$19$", "isCorrect": false },
+                { "id": "B", "text": "$18$", "isCorrect": false },
+                { "id": "C", "text": "$16$", "isCorrect": true },
+                { "id": "D", "text": "$13$", "isCorrect": false }
+            ],
+            "explanation": "Ta có <br> $S_n=744 \\Leftrightarrow n u_1+\\dfrac{n(n-1)}{2}d=744 \\Leftrightarrow n (-6)+\\dfrac{n(n-1)}{2} (7)=744$.<br> Giải phương trình ta được $n=16$. <br> Vậy số $744$ là tổng của $16$ số hạng đầu của cấp số cộng."
+        },
+        {
+            "id": "p1_3",
+            "text": "Một hộp đựng $8$ quả cầu màu xanh và $7$ quả cầu màu đỏ có cùng kích thước và khối lượng. Chọn ngẫu nhiên hai quả cầu trong hộp. Xác suất để chọn được hai quả cầu có cùng màu là",
+            "options": [
+                { "id": "A", "text": "$\\dfrac{34}{105}$", "isCorrect": false },
+                { "id": "B", "text": "$\\dfrac{7}{15}$", "isCorrect": true },
+                { "id": "C", "text": "$\\dfrac{1}{5}$", "isCorrect": false },
+                { "id": "D", "text": "$\\dfrac{4}{15}$", "isCorrect": false }
+            ],
+            "explanation": "Xét các biến cố A: \"Chọn được cả hai quả cầu màu xanh\",<br> B: \"Chọn được cả hai quả cầu màu đỏ\".<br> Biến cố C: \"Hai quả cầu có cùng màu\" là biến cố hợp của A và B.<br> Hai biến cố A và B là xung khắc nên $P(C) = P(A) + P(B)$.<br> $n(\\Omega) = C_{15}^{2} = 105, n(A) = C_{8}^{2} = 28$. Do đó $P(A) = \\dfrac{28}{105}$.<br> $n(B) = C_{7}^{2} = 21$. Do đó $P(B) = \\dfrac{21}{105}$.<br> Vậy $P(C) = P(A) + P(B) = \\dfrac{28}{105} + \\dfrac{21}{105} = \\dfrac{7}{15}$."
+        },
+        {
+            "id": "p1_4",
+            "text": "Cho hình hộp $ABCD.A'B'C'D'$ (xem hình dưới). Đường thẳng $AB$ song song với mặt phẳng nào sau đây?<br><svg class='svg-center' viewBox='-1 -1 8 6' width='300' height='225' stroke='black' stroke-width='0.04' fill='none'><polygon points='2,1 5,1 6,4 3,4' stroke-dasharray='0.1,0.1'/><polygon points='0,0 3,0 4,3 1,3'/><line x1='0' y1='0' x2='2' y2='1' stroke-dasharray='0.1,0.1'/><line x1='3' y1='0' x2='5' y2='1'/><line x1='4' y1='3' x2='6' y2='4'/><line x1='1' y1='3' x2='3' y2='4'/><line x1='0' y1='0' x2='1' y2='3'/><line x1='3' y1='0' x2='4' y2='3'/><line x1='5' y1='1' x2='6' y2='4'/><line x1='2' y1='1' x2='3' y2='4' stroke-dasharray='0.1,0.1'/><text x='1.48' y='1.7' font-size='0.4' fill='black' stroke='none'>A</text><text x='-0.6' y='0.36' font-size='0.4' fill='black' stroke='none'>B</text><text x='2.88' y='0.16' font-size='0.4' fill='black' stroke='none'>C</text><text x='5.06' y='1.28' font-size='0.4' fill='black' stroke='none'>D</text><text x='2.72' y='4.6' font-size='0.4' fill='black' stroke='none'>A'</text><text x='0.52' y='3.6' font-size='0.4' fill='black' stroke='none'>B'</text><text x='3.94' y='3.1' font-size='0.4' fill='black' stroke='none'>C'</text><text x='6.08' y='4.6' font-size='0.4' fill='black' stroke='none'>D'</text></svg>",
+            "options": [
+                { "id": "A", "text": "$(BCC'B')$", "isCorrect": false },
+                { "id": "B", "text": "$(CC'A'A)$", "isCorrect": false },
+                { "id": "C", "text": "$(AA'DD')$", "isCorrect": false },
+                { "id": "D", "text": "$(A'B'C'D')$", "isCorrect": true }
+            ],
+            "explanation": "Đường thẳng $AB$ không nằm trên mặt phẳng $(A'B'C'D')$ và song song với đường thẳng $A'B'$ nên $AB$ song song với mặt phẳng $(A'B'C'D')$."
+        },
+        {
+            "id": "p1_5",
+            "text": "Thể tích $V$ của khối lập phương $ABCD.A'B'C'D'$, biết $AC' = 3 \\sqrt{3} a$ bằng",
+            "options": [
+                { "id": "A", "text": "$V = 81 \\sqrt{3} a^{3}$", "isCorrect": false },
+                { "id": "B", "text": "$V = \\dfrac{81 \\sqrt{6} a^{3}}{4}$", "isCorrect": false },
+                { "id": "C", "text": "$V = 27 a^{3}$", "isCorrect": true },
+                { "id": "D", "text": "$V = 9 a^{3}$", "isCorrect": false }
+            ],
+            "explanation": "<svg class='svg-center' viewBox='0 0 300 200' width='300' height='200' stroke='black' stroke-width='1.5' fill='none'><rect x='92.47' y='68.4' width='120' height='100'/><rect x='132.47' y='28.4' width='120' height='100' stroke-dasharray='6,4'/><line x1='92.47' y1='68.4' x2='132.47' y2='28.4'/><line x1='212.47' y1='68.4' x2='252.47' y2='28.4'/><line x1='92.47' y1='168.4' x2='132.47' y2='128.4' stroke-dasharray='6,4'/><line x1='212.47' y1='168.4' x2='252.47' y2='128.4'/><line x1='92.47' y1='168.4' x2='252.47' y2='128.4' stroke-dasharray='6,4'/><line x1='92.47' y1='68.4' x2='252.47' y2='128.4' stroke-dasharray='6,4'/><text x='73' y='53' font-size='14' fill='black' stroke='none'>A</text><text x='124' y='16' font-size='14' fill='black' stroke='none'>B</text><text x='255' y='23' font-size='14' fill='black' stroke='none'>C</text><text x='212.47' y='58.4' font-size='14' fill='black' stroke='none'>D</text><text x='75' y='176' font-size='14' fill='black' stroke='none'>A'</text><text x='110' y='122' font-size='14' fill='black' stroke='none'>B'</text><text x='256' y='125' font-size='14' fill='black' stroke='none'>C'</text><text x='212.47' y='188.4' font-size='14' fill='black' stroke='none'>D'</text></svg><br>Giả sử khối lập phương có cạnh bằng $x; (x > 0)$.<br>Xét tam giác $A'B'C'$ vuông cân tại $B'$ ta có:<br>$A'C'^2 = A'B'^2 + B'C'^2 = x^2 + x^2 = 2x^2 \\Rightarrow A'C' = x\\sqrt{2}$.<br>Xét tam giác $A'AC'$ vuông tại $A'$ ta có:<br>$AC'^2 = A'A^2 + A'C'^2 \\Leftrightarrow 27 a^{2} = x^2 + 2x^2 \\Leftrightarrow x = 3 a$.<br>Thể tích của khối lập phương $ABCD.A'B'C'D'$ là $V = x^3 = 27 a^{3}$."
+        },
+        {
+            "id": "p1_6",
+            "text": "Đồ thị hàm số $y=f(x)=\\dfrac{- 3 x - 1}{4 x + 4}$ có bao nhiêu đường tiệm cận?",
+            "options": [
+                { "id": "A", "text": "$2$", "isCorrect": true },
+                { "id": "B", "text": "$4$", "isCorrect": false },
+                { "id": "C", "text": "$0$", "isCorrect": false },
+                { "id": "D", "text": "$1$", "isCorrect": false }
+            ],
+            "explanation": "Ta có $\\underset{x \\to -1^- }{\\mathop{\\lim }} \\dfrac{- 3 x - 1}{4 x + 4}= -\\infty$ và $\\underset{x \\to -1^+ }{\\mathop{\\lim }} \\dfrac{- 3 x - 1}{4 x + 4}=+\\infty$. Suy ra đồ thị có TCĐ $x=-1$.<br> $\\underset{x \\to \\pm\\infty }{\\mathop{\\lim }} \\dfrac{- 3 x - 1}{4 x + 4} = - \\dfrac{3}{4}$. Suy ra đồ thị có TCN $y=- \\dfrac{3}{4}$.<br> Vậy có 2 đường tiệm cận."
+        },
+        {
+            "id": "p1_7",
+            "text": "Cho tứ diện đều $ABCD$ có độ dài cạnh bằng $9$. Tích vô hướng $\\overrightarrow{AB} \\cdot \\overrightarrow{AC}$ bằng",
+            "options": [
+                { "id": "A", "text": "$\\dfrac{81}{2}$", "isCorrect": true },
+                { "id": "B", "text": "$40$", "isCorrect": false },
+                { "id": "C", "text": "$\\dfrac{79}{2}$", "isCorrect": false },
+                { "id": "D", "text": "$39$", "isCorrect": false }
+            ],
+            "explanation": "Ta có $(\\overrightarrow{AB}, \\overrightarrow{AC})=60^\\circ$.<br> $\\overrightarrow{AB} \\cdot \\overrightarrow{AC} = |\\overrightarrow{AB}| \\cdot |\\overrightarrow{AC}| \\cdot \\cos 60^\\circ = 9 \\cdot 9 \\cdot \\dfrac{1}{2} = \\dfrac{81}{2}$."
+        },
+        {
+            "id": "p1_8",
+            "text": "Trong không gian $Oxyz$, cho hai điểm $D(3;8;-5)$ và $Q(1;6;9)$. Tọa độ vectơ $\\overrightarrow{DQ}$ là",
+            "options": [
+                { "id": "A", "text": "$(-2;-1;14)$", "isCorrect": false },
+                { "id": "B", "text": "$(-2;-2;15)$", "isCorrect": false },
+                { "id": "C", "text": "$(-3;-2;14)$", "isCorrect": false },
+                { "id": "D", "text": "$(-2;-2;14)$", "isCorrect": true }
+            ],
+            "explanation": "Ta có $\\overrightarrow{DQ}=(x_Q-x_D;y_Q-y_D;z_Q-z_D)=(-2;-2;14)$."
+        },
+        {
+            "id": "p1_9",
+            "text": "Trong không gian với hệ trục tọa độ $Oxyz$. Cho đường thẳng $d$ có phương trình $\\heva{x=3-9t \\\\ y=3-6t\\\\ z=-4+7t}$. Đường thẳng $d$ đi qua điểm $P$ có tọa độ là",
+            "options": [
+                { "id": "A", "text": "$(-3;3;-4)$", "isCorrect": false },
+                { "id": "B", "text": "$(3;3;-4)$", "isCorrect": true },
+                { "id": "C", "text": "$(3;3;-3)$", "isCorrect": false },
+                { "id": "D", "text": "$(3;-3;-4)$", "isCorrect": false }
+            ],
+            "explanation": "Với $t=0$, đường thẳng $d$ đi qua điểm $P$ có tọa độ là $(3;3;-4)$."
+        },
+        {
+            "id": "p1_10",
+            "text": "Biết $F(x)=\\displaystyle \\int{(6x+3)(x+3) \\text{d}x}$ và thoả mãn $F\\left(1\\right)=\\dfrac{45}{2}$. Khi đó $F(x)$ là hàm số nào trong các hàm số sau?",
+            "options": [
+                { "id": "A", "text": "$F(x)=2x^3+\\dfrac{21}{2}x^2+9x$", "isCorrect": false },
+                { "id": "B", "text": "$F(x)=2x^3+\\dfrac{21}{2}x^2+9x+1$", "isCorrect": true },
+                { "id": "C", "text": "$F(x)=-2x^3+\\dfrac{21}{2}x^2+9x+2$", "isCorrect": false },
+                { "id": "D", "text": "$F(x)=2x^3+\\dfrac{21}{2}x^2-9x-1$", "isCorrect": false }
+            ],
+            "explanation": "Ta có $\\displaystyle \\int{(6x+3)(x+3) \\text{d}x}=\\displaystyle \\int{\\left(6x^2+21x+9\\right) \\text{d}x}=2x^3+\\dfrac{21}{2}x^2+9x+\\text{C}$.<br> Theo bài ta có $F\\left(1\\right)=\\dfrac{45}{2} \\Leftrightarrow 2\\cdot(1)^3+\\dfrac{21}{2}\\cdot(1)^2+9\\cdot(1)+\\text{C}=\\dfrac{45}{2}\\Leftrightarrow \\text{C}=1$.<br> Vậy $F(x)=2x^3+\\dfrac{21}{2}x^2+9x+1$."
+        },
+        {
+            "id": "p1_11",
+            "text": "Gọi $D$ là hình phẳng giới hạn bởi các đường $y=\\dfrac{x^{2} + 1}{x}$, trục hoành và hai đường thẳng $x=2, x=4$. Thể tích của khối tròn xoay tạo thành khi quay $D$ quanh trục $Ox$ là",
+            "options": [
+                { "id": "A", "text": "$\\pi \\displaystyle\\int\\limits_{2}^{4} \\left(\\dfrac{x^{2} + 1}{x}\\right)^2\\text{d}x$", "isCorrect": true },
+                { "id": "B", "text": "$\\displaystyle\\int\\limits_{2}^{4} \\left(\\dfrac{x^{2} + 1}{x}\\right)^2\\text{d}x$", "isCorrect": false },
+                { "id": "C", "text": "$\\displaystyle\\int\\limits_{2}^{4} \\left|\\dfrac{x^{2} + 1}{x}\\right|\\text{d}x$", "isCorrect": false },
+                { "id": "D", "text": "$\\pi \\displaystyle\\int\\limits_{2}^{4} \\left|\\dfrac{x^{2} + 1}{x}\\right|\\text{d}x$", "isCorrect": false }
+            ],
+            "explanation": "Thể tích vật thể tròn xoay cần tìm là $V=\\pi \\displaystyle\\int\\limits_{2}^{4} \\left(\\dfrac{x^{2} + 1}{x}\\right)^2\\text{d}x$."
+        },
+        {
+            "id": "p1_12",
+            "text": "Tọa độ tâm đối xứng của đồ thị hàm số $y=\\dfrac{4 x^{3}}{3} + 3 x^{2} - 18 x + 5$ là",
+            "options": [
+                { "id": "A", "text": "$\\left(-3;50\\right)$", "isCorrect": false },
+                { "id": "B", "text": "$\\left(-3;\\dfrac{3}{2}\\right)$", "isCorrect": false },
+                { "id": "C", "text": "$\\left(- \\dfrac{3}{4};\\dfrac{157}{8}\\right)$", "isCorrect": true },
+                { "id": "D", "text": "$\\left(\\dfrac{3}{2};- \\dfrac{43}{4}\\right)$", "isCorrect": false }
+            ],
+            "explanation": "Tập xác định: $\\mathscr{D}=\\mathbb{R}$.<br> Ta có $y'=4 x^{2} + 6 x - 18$.<br> $y''=8 x + 6$.<br> $y''=0\\Leftrightarrow 8 x + 6=0\\Leftrightarrow x=- \\dfrac{3}{4}$.<br> Khi đó $y\\left(- \\dfrac{3}{4}\\right)=\\dfrac{157}{8}$.<br> Vậy tọa độ tâm đối xứng của đồ thị hàm số đã cho là $\\left(- \\dfrac{3}{4};\\dfrac{157}{8}\\right)$."
+        }
+    ],
+    "part2": [
+        {
+            "id": "p2_1",
+            "text": "Một ngân hàng tiến hành khảo sát thời gian chờ (đơn vị: phút) của khách hàng khi gọi điện đến tổng đài chăm sóc ở hai chi nhánh A và B. Dữ liệu thời gian chờ của một mẫu gồm 100 cuộc gọi ngẫu nhiên tại Chi nhánh A được thống kê trong bảng ghép nhóm sau:<br><table class='table table-bordered text-center align-middle mt-2 mb-2'><thead><tr class='table-light'><th>Thời gian chờ (phút)</th><th>$[0; 5)$</th><th>$[5; 10)$</th><th>$[10; 15)$</th><th>$[15; 20)$</th><th>$[20; 25]$</th></tr></thead><tbody><tr><td>Số cuộc gọi</td><td>$10$</td><td>$25$</td><td>$30$</td><td>$20$</td><td>$15$</td></tr></tbody></table>Đối với Chi nhánh B, thông qua một mẫu khảo sát độc lập khác, người ta tính được thời gian chờ trung bình là $\\bar{x}_B = 14,5$ phút và độ lệch chuẩn là $s_B = 4,2$ phút.",
+            "options": [
+                { "id": "a", "text": "Thời gian chờ trung bình của một cuộc gọi trong mẫu số liệu tại Chi nhánh A là $12,75$ phút", "isCorrect": true },
+                { "id": "b", "text": "Độ lệch chuẩn về thời gian chờ của mẫu số liệu tại Chi nhánh A xấp xỉ $36,19$ phút", "isCorrect": false },
+                { "id": "c", "text": "So với Chi nhánh A, thời gian chờ của các cuộc gọi ở Chi nhánh B có mức độ đồng đều (ít biến động) hơn", "isCorrect": true },
+                { "id": "d", "text": "Dựa vào tỉ lệ của mẫu số liệu trên, nếu chọn ngẫu nhiên $3$ cuộc gọi bất kỳ đến Chi nhánh A, xác suất để có đúng $2$ cuộc gọi phải chờ từ $15$ phút trở lên là $12,25\\%$", "isCorrect": false }
+            ],
+            "explanation": "<strong>Giải chi tiết:</strong> Bảng giá trị đại diện cho mẫu số liệu Chi nhánh A:<br><table class='table table-bordered text-center table-sm mt-1 mb-1'><tr><td>Giá trị đại diện $(c_i)$</td><td>2,5</td><td>7,5</td><td>12,5</td><td>17,5</td><td>22,5</td></tr><tr><td>Tần số $(n_i)$</td><td>10</td><td>25</td><td>30</td><td>20</td><td>15</td></tr></table>Cỡ mẫu $n=100$.<br>a) <strong>Đúng.</strong> $\\bar{x}_A = \\dfrac{10 \\cdot 2,5 + 25 \\cdot 7,5 + 30 \\cdot 12,5 + 20 \\cdot 17,5 + 15 \\cdot 22,5}{100} = 12,75$ (phút).<br>b) <strong>Sai.</strong> $s_A^2 = \\dfrac{1}{100}(10\\cdot 2.5^2 + ... + 15\\cdot 22.5^2) - 12.75^2 = 36,1875$. Độ lệch chuẩn $s_A = \\sqrt{36,1875} \\approx 6,0156$ (phút). Giá trị $36,19$ là phương sai.<br>c) <strong>Đúng.</strong> $s_B = 4,2 < s_A \\approx 6,02$ chứng tỏ thời gian chờ ở CN B ít phân tán, đồng đều hơn.<br>d) <strong>Sai.</strong> Số cuộc gọi chờ từ 15 phút trở lên: $20 + 15 = 35$. Xác suất $p = 0,35$. Chọn ngẫu nhiên 3, có đúng 2 cuộc: $P = C_3^2 \\cdot (0,35)^2 \\cdot (0,65)^1 \\approx 23,89\\%$."
+        },
+        {
+            "id": "p2_2",
+            "text": "Tại một trung tâm kiểm soát không lưu, màn hình radar đang theo dõi hai phương tiện bay trong không gian với hệ tọa độ $Oxyz$ (mặt phẳng $(Oxy)$ là mặt đất, đơn vị km). Gọi $t$ là thời gian tính bằng phút. Máy bay thương mại $A$ có vị trí ban đầu tại $A_0(10; 20; 5)$ và bay với vectơ vận tốc $\\vec{v}_A = (2; -1; 0)$ km/phút. Cùng lúc đó, trực thăng cứu hộ $B$ xuất phát từ $B_0(-5; 5; 2)$ và bay với vectơ vận tốc $\\vec{v}_B = (1; 2; 1)$ km/phút. Hệ thống phát cảnh báo nếu khoảng cách nhỏ hơn $20\\text{ km}$.",
+            "options": [
+                { "id": "a", "text": "Tại thời điểm $t=5$ (phút), tọa độ của trực thăng cứu hộ $B$ là $(0; 15; 7)$", "isCorrect": true },
+                { "id": "b", "text": "Vectơ biểu diễn vị trí tương đối của trực thăng $B$ so với máy bay $A$ tại thời điểm $t$ là $\\overrightarrow{AB} = (t - 15; 3t - 15; t - 3)$", "isCorrect": false },
+                { "id": "c", "text": "Bình phương khoảng cách giữa hai phương tiện bay được mô hình hóa bởi hàm số $d^2(t) = 11t^2 - 66t + 459$", "isCorrect": true },
+                { "id": "d", "text": "Theo dữ liệu trên, hệ thống radar sẽ không bao giờ phải phát tín hiệu cảnh báo nguy hiểm trong suốt quá trình bay", "isCorrect": false }
+            ],
+            "explanation": "<strong>Giải chi tiết:</strong> Tọa độ: Máy bay $A(10+2t; 20-t; 5)$, Trực thăng $B(-5+t; 5+2t; 2+t)$.<br>a) <strong>Đúng.</strong> Tại $t=5$, $B(0; 15; 7)$.<br>b) <strong>Sai.</strong> $\\overrightarrow{AB} = (-t - 15; 3t - 15; t - 3)$. Bị sai dấu ở hoành độ.<br>c) <strong>Đúng.</strong> $d^2(t) = (-t-15)^2 + (3t-15)^2 + (t-3)^2 = 11t^2 - 66t + 459$.<br>d) <strong>Sai.</strong> $(d^2)'(t) = 22t - 66 = 0 \\Leftrightarrow t=3$. Tại $t=3$, $d^2(3) = 360 \\implies d_{\\min} = \\sqrt{360} \\approx 18,97\\text{ km} < 20\\text{ km}$, chắc chắn sẽ phát cảnh báo."
+        },
+        {
+            "id": "p2_3",
+            "text": "Cho hình phẳng $(H)$ giới hạn bởi đường cong $y = f(x) = \\dfrac{x^{3}}{6} - x^{2}$ và trục hoành.",
+            "options": [
+                { "id": "a", "text": "Đồ thị hàm số $y=f(x)$ cắt trục hoành tại ba điểm phân biệt", "isCorrect": false },
+                { "id": "b", "text": "$\\int f(x) \\text{d}x = \\dfrac{x^{4}}{24} - \\dfrac{x^{3}}{3} + C$", "isCorrect": true },
+                { "id": "c", "text": "Diện tích hình phẳng $(H)$ là $S = 18$", "isCorrect": true },
+                { "id": "d", "text": "Thể tích khối tròn xoay khi quay $(H)$ quanh trục $Ox$ là $V = \\dfrac{2592}{35}$", "isCorrect": false }
+            ],
+            "explanation": "a) <strong>Sai.</strong> $\\dfrac{x^3}{6} - x^2 = 0 \\Leftrightarrow x^2(\\dfrac{x}{6}-1)=0 \\Leftrightarrow x=0, x=6$. Cắt tại 2 điểm.<br>b) <strong>Đúng.</strong> $\\int (\\dfrac{x^3}{6} - x^2) \\text{d}x = \\dfrac{x^4}{24} - \\dfrac{x^3}{3} + C$.<br>c) <strong>Đúng.</strong> $S = \\int_0^6 |\\dfrac{x^3}{6} - x^2| \\text{d}x = \\int_0^6 (x^2 - \\dfrac{x^3}{6}) \\text{d}x = 18$.<br>d) <strong>Sai.</strong> $V = \\pi \\int_0^6 f^2(x) \\text{d}x = \\dfrac{2592}{35}\\pi$. Thiếu $\\pi$."
+        },
+        {
+            "id": "p2_4",
+            "text": "Một bể chứa nước hình trụ có chiều cao mực nước ban đầu là 9 mét. Bể bị rò rỉ nước qua một lỗ hở nhỏ dưới đáy. Theo Định luật Torricelli, tốc độ thay đổi chiều cao $h(t)$ (mét) tại thời điểm $t$ (giờ) tuân theo: $h'(t) = -k\\sqrt{h(t)}$. Sau đúng 2 giờ, chiều cao mực nước giảm xuống còn 4 mét.",
+            "options": [
+                { "id": "a", "text": "Tốc độ giảm chiều cao của mực nước tại thời điểm ban đầu ($t=0$) gấp $1,5$ lần tốc độ giảm sau $2$ giờ", "isCorrect": true },
+                { "id": "b", "text": "Hàm số biểu diễn chiều cao mực nước theo thời gian $t$ là $h(t) = (3 - t)^2$", "isCorrect": false },
+                { "id": "c", "text": "Sau đúng $4$ giờ kể từ lúc bắt đầu rò rỉ, chiều cao mực nước trong bể là $1\\text{ m}$", "isCorrect": true },
+                { "id": "d", "text": "Thời gian cần thiết để lượng nước trong bể chảy ra ngoài hết hoàn toàn (bể cạn khô) là $9$ giờ", "isCorrect": false }
+            ],
+            "explanation": "Lấy tích phân: $\\int h^{-1/2}dh = \\int -k dt \\implies 2\\sqrt{h} = -kt + C$.<br> Tại $t=0, h=9 \\implies C=6$.<br> Tại $t=2, h=4 \\implies 2\\sqrt{4} = -2k + 6 \\implies k=1$.<br> Vậy $h(t) = \\left(3 - \\dfrac{t}{2}\\right)^2$.<br>a) <strong>Đúng.</strong> Tốc độ $|h'(0)| = 1\\cdot\\sqrt{9}=3$. Tốc độ $|h'(2)| = 1\\cdot\\sqrt{4}=2$. Tỉ lệ $3/2 = 1,5$.<br>b) <strong>Sai.</strong> Hàm là $\\left(3 - \\dfrac{t}{2}\\right)^2$.<br>c) <strong>Đúng.</strong> $h(4) = (3 - 2)^2 = 1$.<br>d) <strong>Sai.</strong> $h(t)=0 \\Leftrightarrow 3 - t/2 = 0 \\Leftrightarrow t=6$ giờ.<br><svg class='svg-center' viewBox='-20 -20 320 250' width='320' height='250'><line x1='0' y1='200' x2='280' y2='200' stroke='gray' stroke-width='2' marker-end='url(#arrow)'/><line x1='20' y1='220' x2='20' y2='0' stroke='gray' stroke-width='2' marker-end='url(#arrow)'/><path d='M 20 20 Q 140 200 260 200' stroke='blue' stroke-width='2' fill='none'/><polyline points='100,200 100,120 20,120' stroke='gray' stroke-dasharray='4' fill='none'/><polyline points='180,200 180,180 20,180' stroke='gray' stroke-dasharray='4' fill='none'/><circle cx='20' cy='20' r='3' fill='black'/><circle cx='100' cy='120' r='3' fill='black'/><circle cx='180' cy='180' r='3' fill='black'/><circle cx='260' cy='200' r='3' fill='black'/><text x='5' y='25' font-size='12'>9</text><text x='5' y='125' font-size='12'>4</text><text x='5' y='185' font-size='12'>1</text><text x='100' y='215' font-size='12'>2</text><text x='180' y='215' font-size='12'>4</text><text x='260' y='215' font-size='12'>6</text><text x='285' y='205' font-size='12'>t</text><text x='10' y='10' font-size='12'>h</text><text x='65' y='105' font-size='12' fill='blue'>h(t) = (3 - t/2)²</text></svg>"
+        }
+    ],
+    "part3": [
+        {
+            "id": "p3_1",
+            "text": "Một kỹ sư thiết kế mặt cắt của một chi tiết máy bằng thép trên mặt phẳng tọa độ. Mặt cắt này là hình phẳng $(H)$ nằm giữa hai nửa đường tròn đường kính $AB$ và $AD$, cùng với hai đường thẳng $AB, AC$. Biết rằng $AB = 2AD = 6\\text{ cm}$ và góc $\\widehat{BAC} = 60^\\circ$. Chi tiết máy được tạo thành khi quay hình phẳng $(H)$ quanh trục $AB$. Cho biết chi phí vật liệu sản xuất là $20$ nghìn đồng/$\\text{cm}^3$. Giá tiền sản xuất một chi tiết máy là bao nhiêu nghìn đồng? (Kết quả làm tròn đến hàng đơn vị).<br><svg class='svg-center' viewBox='0 0 300 200' width='300' height='200'><path d='M 140 180 A 60 60 0 0 0 50 128.04 L 80 76.08 A 120 120 0 0 1 260 180 Z' fill='#b3d4ff' stroke='black' stroke-width='1'/><path d='M 140 180 A 60 60 0 0 0 20 180' fill='none' stroke='red' stroke-width='2'/><path d='M 260 180 A 120 120 0 0 0 20 180' fill='none' stroke='blue' stroke-width='2'/><line x1='20' y1='180' x2='280' y2='180' stroke='blue' stroke-width='2'/><line x1='20' y1='180' x2='120' y2='6.8' stroke='blue' stroke-width='2'/><text x='15' y='195' font-size='14' fill='green' font-weight='bold'>A</text><text x='135' y='195' font-size='14' fill='green' font-weight='bold'>D</text><text x='255' y='195' font-size='14' fill='green' font-weight='bold'>B</text><text x='125' y='15' font-size='14' fill='green' font-weight='bold'>C</text><text x='85' y='125' font-size='16' fill='blue' font-weight='bold'>(H)</text><path d='M 45 180 A 25 25 0 0 0 32.5 158.3' fill='none' stroke='green' stroke-width='2'/><text x='48' y='170' font-size='12' fill='green'>60°</text></svg>",
+            "correctAnswer": "1856",
+            "explanation": "Ta sử dụng <strong>Hệ tọa độ cực</strong> với gốc trùng với $A$, tia $AB$ là trục cực. <br>Phương trình đường tròn đường kính $D$: $r = D\\cos\\varphi$.<br>Biên của $(H)$ giới hạn bởi:<br>- Đường tròn lớn: $r_{\\text{ngoài}} = 6\\cos\\varphi$<br>- Đường tròn nhỏ: $r_{\\text{trong}} = 3\\cos\\varphi$<br>- Góc: $\\varphi$ từ $0$ đến $\\dfrac{\\pi}{3}$.<br>Công thức thể tích: $V = \\dfrac{2\\pi}{3} \\int_{0}^{\\pi/3} \\left( (6\\cos\\varphi)^3 - (3\\cos\\varphi)^3 \\right) \\sin\\varphi \\mathrm{\\,d}\\varphi = \\dfrac{945\\pi}{32} \\text{ (cm}^3\\text{)}$.<br>Giá tiền sản xuất: $T = V \\times 20 = \\dfrac{4725\\pi}{8} \\approx 1855{,}503$ (nghìn đồng). Làm tròn thành 1856."
+        },
+        {
+            "id": "p3_2",
+            "text": "Lúc 2:00 chiều, một chiếc thuyền màu đỏ đang ở bến và bắt đầu di chuyển về hướng Nam với vận tốc $20\\text{ km/h}$. Cùng lúc đó, một chiếc thuyền màu đen nằm cách bến $15\\text{ km}$ về phía Tây, đang di chuyển về hướng Đông (tiến về phía bến) với vận tốc $15\\text{ km/h}$. Hỏi sau bao nhiêu phút (kể từ 2:00 chiều) thì khoảng cách giữa hai con thuyền là ngắn nhất?",
+            "correctAnswer": "21.6",
+            "explanation": "Gọi $t$ (giờ) là thời gian di chuyển ($t > 0$).<br>Khoảng cách thuyền đỏ đi được là $20t$ (km). Khoảng cách thuyền đen đi được là $15t$ (km), cách bến còn $15 - 15t$ (km).<br>Khoảng cách bình phương giữa hai thuyền: $c^2 = (15 - 15t)^2 + (20t)^2 = 225(1-t)^2 + 400t^2$.<br>Đạo hàm theo thời gian $t$: $f'(t) = -450(1-t) + 800t = 1250t - 450$.<br>Cho $f'(t) = 0 \\Leftrightarrow t = \\dfrac{9}{25}$ (giờ).<br>Đổi ra phút: $t = \\dfrac{9}{25} \\times 60 = 21{,}6$ phút.<br><svg class='svg-center' viewBox='0 0 300 150' width='300' height='150'><line x1='20' y1='20' x2='280' y2='20' stroke='gray' stroke-width='2'/><line x1='220' y1='0' x2='220' y2='140' stroke='gray' stroke-width='2'/><circle cx='220' cy='20' r='5' fill='black'/><text x='230' y='15' font-size='12' font-weight='bold'>Bến (0;0)</text><circle cx='70' cy='20' r='5' fill='gray'/><text x='60' y='10' font-size='12' fill='gray'>2:00 PM</text><line x1='70' y1='20' x2='124' y2='20' stroke='blue' stroke-dasharray='5' stroke-width='2'/><circle cx='124' cy='20' r='5' fill='blue'/><text x='100' y='10' font-size='12' fill='blue' font-weight='bold'>Thuyền đen</text><line x1='220' y1='20' x2='220' y2='92' stroke='red' stroke-dasharray='5' stroke-width='2'/><circle cx='220' cy='92' r='5' fill='red'/><text x='230' y='95' font-size='12' fill='red' font-weight='bold'>Thuyền đỏ</text><line x1='124' y1='20' x2='220' y2='92' stroke='green' stroke-width='2'/><text x='125' y='75' font-size='12' fill='green' font-weight='bold'>c_min = 12 km</text><text x='270' y='15' font-size='12' fill='gray'>Đông</text><text x='225' y='135' font-size='12' fill='gray'>Nam</text></svg>"
+        },
+        {
+            "id": "p3_3",
+            "text": "Cho hình chóp $S.ABC$ có các mặt bên $SAB$ và $SAC$ là các tam giác đều cạnh bằng $3\\sqrt{2}$, góc $\\widehat{BAC}=90^\\circ$. Tính thể tích $V$ của khối chóp $S.ABC$.",
+            "correctAnswer": "9",
+            "explanation": "Vì $\\Delta SAB$ và $\\Delta SAC$ đều nên $SA = SB = SC = AB = AC = 3\\sqrt{2}$.<br>Hình chóp có các cạnh bên bằng nhau nên hình chiếu $H$ của $S$ lên $(ABC)$ là tâm đường tròn ngoại tiếp đáy.<br>Vì $\\Delta ABC$ vuông tại $A$, $H$ là trung điểm cạnh huyền $BC$.<br>$BC = \\sqrt{AB^2 + AC^2} = \\sqrt{(3\\sqrt{2})^2 + (3\\sqrt{2})^2} = 6 \\implies AH = 3$.<br>Đường cao chóp: $SH = \\sqrt{SA^2 - AH^2} = \\sqrt{18 - 9} = 3$.<br>Diện tích đáy: $S_{ABC} = \\dfrac{1}{2} \\cdot 3\\sqrt{2} \\cdot 3\\sqrt{2} = 9$.<br>Thể tích: $V = \\dfrac{1}{3} S_{ABC} \\cdot SH = \\dfrac{1}{3} \\cdot 9 \\cdot 3 = 9$.<br><svg class='svg-center' viewBox='0 0 250 260' width='250' height='260'><line x1='40' y1='180' x2='190' y2='180' stroke='black' stroke-dasharray='4' stroke-width='2'/><line x1='115' y1='45' x2='115' y2='180' stroke='red' stroke-dasharray='4' stroke-width='2'/><line x1='85' y1='240' x2='115' y2='180' stroke='blue' stroke-dasharray='4' stroke-width='2'/><line x1='115' y1='45' x2='40' y2='180' stroke='black' stroke-width='2'/><line x1='115' y1='45' x2='190' y2='180' stroke='black' stroke-width='2'/><line x1='115' y1='45' x2='85' y2='240' stroke='black' stroke-width='2'/><line x1='85' y1='240' x2='40' y2='180' stroke='black' stroke-width='2'/><line x1='85' y1='240' x2='190' y2='180' stroke='black' stroke-width='2'/><circle cx='40' cy='180' r='3' fill='black'/><text x='25' y='180' font-size='14'>B</text><circle cx='190' cy='180' r='3' fill='black'/><text x='200' y='180' font-size='14'>C</text><circle cx='85' cy='240' r='3' fill='black'/><text x='85' y='255' font-size='14'>A</text><circle cx='115' cy='180' r='3' fill='black'/><text x='118' y='195' font-size='14'>H</text><circle cx='115' cy='45' r='3' fill='black'/><text x='115' y='35' font-size='14'>S</text><path d='M 76 228 L 89 220.5 L 98 232.5' fill='none' stroke='black' stroke-width='1.5'/><path d='M 115 170 L 125 170 L 125 180' fill='none' stroke='red' stroke-width='1.5'/></svg>"
+        },
+        {
+            "id": "p3_4",
+            "text": "Một bồn chứa kín được thiết kế với phần thân là một hình trụ tròn có đáy phẳng, và phần mái úp là một nửa hình cầu. Biết rằng thể tích yêu cầu của bồn chứa này là $V = 13\\pi \\text{ (m}^3\\text{)}$. Hãy tính bán kính đáy $r$ (tính bằng mét) để tổng diện tích bề mặt (diện tích toàn phần) của bồn chứa là nhỏ nhất nhằm tiết kiệm chi phí vật liệu. (Làm tròn kết quả đến hàng phần trăm).",
+            "correctAnswer": "1.98",
+            "explanation": "Gọi $r$ (m) là bán kính đáy, $h$ (m) là chiều cao phần thân trụ.<br>Thể tích: $V = \\pi r^2 h + \\dfrac{2}{3}\\pi r^3 = 13\\pi \\implies h = \\dfrac{13}{r^2} - \\dfrac{2}{3}r$.<br>Diện tích bề mặt: $S = S_{\\text{đáy}} + S_{\\text{xq trụ}} + S_{\\text{nửa cầu}} = \\pi r^2 + 2\\pi rh + 2\\pi r^2 = 3\\pi r^2 + 2\\pi rh$.<br>Thế biểu thức $h$ vào $S$: $S(r) = 3\\pi r^2 + 2\\pi r\\left(\\dfrac{13}{r^2} - \\dfrac{2}{3}r\\right) = \\dfrac{5\\pi}{3}r^2 + \\dfrac{26\\pi}{r}$.<br>Đạo hàm: $S'(r) = \\dfrac{10\\pi}{3}r - \\dfrac{26\\pi}{r^2}$.<br>Cho $S'(r) = 0 \\implies 10r^3 = 78 \\implies r = \\sqrt[3]{7{,}8} \\approx 1{,}983$. Vậy $r \\approx 1{,}98\\text{ m}$.<br><svg class='svg-center' viewBox='0 0 300 280' width='300' height='280'><defs><linearGradient id='cylGrad' x1='0%' y1='0%' x2='100%' y2='0%'><stop offset='0%' stop-color='#cccccc'/><stop offset='50%' stop-color='#ffffff'/><stop offset='100%' stop-color='#cccccc'/></linearGradient></defs><rect x='80' y='80' width='140' height='140' fill='url(#cylGrad)' stroke='none'/><line x1='80' y1='80' x2='80' y2='220' stroke='black' stroke-width='1.5'/><line x1='220' y1='80' x2='220' y2='220' stroke='black' stroke-width='1.5'/><ellipse cx='150' cy='220' rx='70' ry='20' fill='#cccccc' stroke='black' stroke-width='1.5'/><path d='M 80 80 A 70 70 0 0 1 220 80' fill='#a6c8e6' stroke='black' stroke-width='1.5'/><ellipse cx='150' cy='80' rx='70' ry='20' fill='none' stroke='black' stroke-dasharray='4' stroke-width='1.5'/><path d='M 220 80 A 70 20 0 0 1 80 80' fill='none' stroke='black' stroke-width='1.5'/><line x1='150' y1='220' x2='220' y2='220' stroke='red' stroke-dasharray='4' stroke-width='1.5'/><text x='180' y='215' font-size='14' fill='red'>r</text><line x1='240' y1='80' x2='240' y2='220' stroke='blue' stroke-width='1.5'/><line x1='235' y1='80' x2='245' y2='80' stroke='blue' stroke-width='1.5'/><line x1='235' y1='220' x2='245' y2='220' stroke='blue' stroke-width='1.5'/><text x='250' y='155' font-size='14' fill='blue'>h</text><line x1='150' y1='80' x2='150' y2='10' stroke='green' stroke-dasharray='4' stroke-width='1.5'/><text x='155' y='50' font-size='14' fill='green'>r</text><circle cx='150' cy='220' r='3' fill='black'/><circle cx='150' cy='80' r='3' fill='black'/></svg>"
+        },
+        {
+            "id": "p3_5",
+            "text": "Ông A gửi tiết kiệm $500$ triệu đồng vào ngân hàng với lãi suất $6\\%$/năm, kỳ hạn $1$ năm. Sau đúng $3$ năm, ông A chuyển toàn bộ số tiền (cả gốc lẫn lãi) sang kỳ hạn $1$ tháng với lãi suất $0{,}6\\%$/tháng. Đồng thời, bắt đầu từ thời điểm chuyển kỳ hạn, vào ngày đầu tiên của mỗi tháng ông A gửi thêm $15$ triệu đồng vào ngân hàng cũng với lãi suất $0{,}6\\%$/tháng. Hỏi sau đúng $2$ năm kể từ ngày bắt đầu gửi thêm tiền hàng tháng, tổng số tiền ông A nhận được cả gốc và lãi là bao nhiêu triệu đồng? (Làm tròn kết quả đến hàng đơn vị).",
+            "correctAnswer": "1076",
+            "explanation": "<strong>Giai đoạn 1:</strong> Số tiền ông A có được sau 3 năm đầu là: $A_1 = 500(1 + 0{,}06)^3 = 595{,}508$ (triệu đồng).<br><strong>Giai đoạn 2:</strong> Gửi hàng tháng trong 24 tháng tiếp theo.<br>- Phần 1: Số gốc $A_1$ tiếp tục sinh lời trong 24 tháng: $T_1 = 595{,}508(1 + 0{,}006)^{24} \\approx 687{,}4417$ (triệu đồng).<br>- Phần 2: Gửi thêm $15$ triệu đồng vào đầu mỗi tháng: $T_2 = \\dfrac{15}{0{,}006} \\left[ (1{,}006)^{24} - 1 \\right] (1{,}006) \\approx 388{,}2613$ (triệu đồng).<br>Tổng số tiền ông A nhận được là: $T = T_1 + T_2 \\approx 687{,}4417 + 388{,}2613 = 1075{,}703$ (triệu đồng). Làm tròn thành 1076."
+        },
+        {
+            "id": "p3_6",
+            "text": "Nếu một doanh nghiệp sản xuất $x$ sản phẩm trong một tháng ($x \\in \\mathbb{N}^*; 1 \\le x \\le 3000$) thì doanh thu nhận được khi bán hết số sản phẩm đó là $F(x) = -0,02x^2 + 300x$ (nghìn đồng), trong khi chi phí sản xuất bình quân cho mỗi sản phẩm là $G(x) = \\dfrac{2000}{x} + 200$ (nghìn đồng). Giả sử số sản phẩm sản xuất ra luôn được bán hết. Trong một tháng, doanh nghiệp đó cần sản xuất ít nhất bao nhiêu sản phẩm để lợi nhuận thu được lớn hơn 50 triệu đồng?",
+            "correctAnswer": "590",
+            "explanation": "Đổi 50 triệu đồng = $50\\,000$ nghìn đồng.<br>Tổng chi phí để sản xuất $x$ sản phẩm: $C(x) = x \\cdot G(x) = 2000 + 200x$.<br>Hàm lợi nhuận: $P(x) = F(x) - C(x) = -0,02x^2 + 100x - 2000$.<br>Lợi nhuận $> 50000 \\Leftrightarrow -0,02x^2 + 100x - 52000 > 0 \\Leftrightarrow x^2 - 5000x + 2600000 < 0$.<br>Giải bất phương trình thu được nghiệm: $589{,}49 < x < 4410{,}51$.<br>Vì cần tìm số sản phẩm ít nhất (nguyên), ta chọn giá trị $x = 590$."
+        }
+    ]
+}
+</script>
+
+<script>
+    const CONFIG = {
+        timeMinutes: 90,
+        googleSheetUrl: "YOUR_GOOGLE_WEB_APP_URL"
+    };
+
+    let RAW_DATA = {};
+    let userAnswers = JSON.parse(localStorage.getItem('mathExamAnswers')) || {};
+    let timeLeft = parseInt(localStorage.getItem('mathExamTime')) || CONFIG.timeMinutes * 60;
+    let timerInterval;
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    function generateExamCode() {
+        return Math.floor(100 + Math.random() * 900).toString();
+    }
+
+    function renderExam() {
+        RAW_DATA = JSON.parse(document.getElementById('exam-data').textContent);
+        shuffleArray(RAW_DATA.part1);
+        shuffleArray(RAW_DATA.part2);
+        shuffleArray(RAW_DATA.part3);
+
+        let p1Html = '';
+        RAW_DATA.part1.forEach((q, index) => {
+            shuffleArray(q.options);
+            let optionsHtml = q.options.map(opt => `
+                <label class="option-label">
+                    <input type="radio" name="${q.id}" value="${opt.id}" ${userAnswers[q.id] === opt.id ? 'checked' : ''} onchange="saveAnswers()">
+                    ${opt.text}
+                </label>
+            `).join('');
+            p1Html += `
+                <div class="question-card" id="card_${q.id}">
+                    <div class="question-text">Câu ${index + 1}: ${q.text}</div>
+                    <div class="options-grid">${optionsHtml}</div>
+                    <div class="explanation d-none" id="exp_${q.id}">
+                        <strong>Giải thích:</strong><br> ${q.explanation}
+                    </div>
+                </div>`;
+        });
+        document.getElementById('part1_container').innerHTML = p1Html;
+
+        let p2Html = '';
+        RAW_DATA.part2.forEach((q, index) => {
+            let optionsHtml = q.options.map((opt, i) => `
+                <tr>
+                    <td>${String.fromCharCode(97 + i)}) ${opt.text}</td>
+                    <td class="text-center"><input type="radio" name="${q.id}_${opt.id}" value="T" ${userAnswers[`${q.id}_${opt.id}`] === 'T' ? 'checked' : ''} onchange="saveAnswers()"> Đ</td>
+                    <td class="text-center"><input type="radio" name="${q.id}_${opt.id}" value="F" ${userAnswers[`${q.id}_${opt.id}`] === 'F' ? 'checked' : ''} onchange="saveAnswers()"> S</td>
+                </tr>
+            `).join('');
+            p2Html += `
+                <div class="question-card" id="card_${q.id}">
+                    <div class="question-text">Câu ${index + 1}: ${q.text}</div>
+                    <table class="table table-bordered tf-table">
+                        <tbody>${optionsHtml}</tbody>
+                    </table>
+                    <div class="explanation d-none" id="exp_${q.id}">
+                        ${q.explanation}
+                    </div>
+                </div>`;
+        });
+        document.getElementById('part2_container').innerHTML = p2Html;
+
+        let p3Html = '';
+        RAW_DATA.part3.forEach((q, index) => {
+            p3Html += `
+                <div class="question-card" id="card_${q.id}">
+                    <div class="question-text">Câu ${index + 1}: ${q.text}</div>
+                    <div>
+                        <input type="text" class="form-control short-ans-input" name="${q.id}" placeholder="Nhập đáp án" value="${userAnswers[q.id] || ''}" oninput="saveAnswers()">
+                    </div>
+                    <div class="explanation d-none" id="exp_${q.id}">
+                        <strong>Đáp án đúng:</strong> <span class="correct-ans">${q.correctAnswer}</span><br>
+                        <strong>Giải thích:</strong><br> ${q.explanation}
+                    </div>
+                </div>`;
+        });
+        document.getElementById('part3_container').innerHTML = p3Html;
+
+        document.getElementById('student_name').value = localStorage.getItem('mathExamName') || '';
+        document.getElementById('class_name').value = localStorage.getItem('mathExamClass') || '';
+        document.getElementById('exam_code').innerText = localStorage.getItem('mathExamCode') || generateExamCode();
+        localStorage.setItem('mathExamCode', document.getElementById('exam_code').innerText);
+
+        if (window.MathJax) MathJax.typesetPromise();
+        
+        if (localStorage.getItem('mathExamSubmitted') === 'true') {
+            showResults(true);
+        } else {
+            startTimer();
+        }
+    }
+
+    function startTimer() {
+        updateTimerDisplay();
+        timerInterval = setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft % 10 === 0) saveState();
+            } else {
+                clearInterval(timerInterval);
+                submitExam(true);
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        let s = (timeLeft % 60).toString().padStart(2, '0');
+        document.getElementById('timer_display').innerText = `Thời gian: ${m}:${s}`;
+    }
+
+    function saveAnswers() {
+        RAW_DATA.part1.forEach(q => {
+            let el = document.querySelector(`input[name="${q.id}"]:checked`);
+            if(el) userAnswers[q.id] = el.value;
+        });
+        RAW_DATA.part2.forEach(q => {
+            q.options.forEach(opt => {
+                let el = document.querySelector(`input[name="${q.id}_${opt.id}"]:checked`);
+                if(el) userAnswers[`${q.id}_${opt.id}`] = el.value;
+            });
+        });
+        RAW_DATA.part3.forEach(q => {
+            let el = document.querySelector(`input[name="${q.id}"]`);
+            if(el) userAnswers[q.id] = el.value;
+        });
+        localStorage.setItem('mathExamAnswers', JSON.stringify(userAnswers));
+    }
+
+    function saveState() {
+        saveAnswers();
+        localStorage.setItem('mathExamTime', timeLeft);
+        localStorage.setItem('mathExamName', document.getElementById('student_name').value);
+        localStorage.setItem('mathExamClass', document.getElementById('class_name').value);
+    }
+
+    function checkCompletionRate() {
+        let totalItems = 12 + (4 * 4) + 6;
+        let answered = Object.keys(userAnswers).filter(k => userAnswers[k].trim() !== '').length;
+        return (answered / totalItems) * 100;
+    }
+
+    function submitExam(autoSubmit = false) {
+        if (!autoSubmit) {
+            let name = document.getElementById('student_name').value.trim();
+            if(!name) { alert("Vui lòng nhập Họ và Tên!"); return; }
+            let completion = checkCompletionRate();
+            if (completion < 50) {
+                alert(`Bạn mới làm được ${completion.toFixed(1)}%. Vui lòng hoàn thành ít nhất 50% trước khi nộp bài.`);
+                return;
+            }
+            if(!confirm("Bạn có chắc chắn muốn nộp bài?")) return;
+        }
+
+        clearInterval(timerInterval);
+        saveState();
+        localStorage.setItem('mathExamSubmitted', 'true');
+        showResults();
+        sendToGoogleSheet();
+    }
+
+    function compareNumeric(val1, val2) {
+        let n1 = parseFloat(val1.toString().replace(',', '.'));
+        let n2 = parseFloat(val2.toString().replace(',', '.'));
+        return !isNaN(n1) && !isNaN(n2) && n1 === n2;
+    }
+
+    function showResults(isReview = false) {
+        let scoreP1 = 0, scoreP2 = 0, scoreP3 = 0;
+
+        RAW_DATA.part1.forEach(q => {
+            let correctOpt = q.options.find(o => o.isCorrect).id;
+            let ans = userAnswers[q.id];
+            let card = document.getElementById(`card_${q.id}`);
+            if (ans === correctOpt) { scoreP1 += 0.25; card.classList.add('highlight-correct'); } 
+            else { card.classList.add('highlight-wrong'); }
+            document.getElementById(`exp_${q.id}`).classList.remove('d-none');
+            document.getElementsByName(q.id).forEach(el => el.disabled = true);
+        });
+
+        RAW_DATA.part2.forEach(q => {
+            let correctCount = 0;
+            q.options.forEach(opt => {
+                let ans = userAnswers[`${q.id}_${opt.id}`];
+                let truth = opt.isCorrect ? 'T' : 'F';
+                if (ans === truth) correctCount++;
+                document.getElementsByName(`${q.id}_${opt.id}`).forEach(el => el.disabled = true);
+            });
+            if(correctCount === 1) scoreP2 += 0.1;
+            else if(correctCount === 2) scoreP2 += 0.25;
+            else if(correctCount === 3) scoreP2 += 0.5;
+            else if(correctCount === 4) scoreP2 += 1.0;
+            
+            let card = document.getElementById(`card_${q.id}`);
+            if(correctCount === 4) card.classList.add('highlight-correct');
+            else if(correctCount > 0) card.style.backgroundColor = "#e2e3e5";
+            else card.classList.add('highlight-wrong');
+            document.getElementById(`exp_${q.id}`).classList.remove('d-none');
+        });
+
+        RAW_DATA.part3.forEach(q => {
+            let ans = userAnswers[q.id] || "";
+            let card = document.getElementById(`card_${q.id}`);
+            if (compareNumeric(ans, q.correctAnswer)) { scoreP3 += 0.5; card.classList.add('highlight-correct'); } 
+            else { card.classList.add('highlight-wrong'); }
+            document.getElementsByName(q.id)[0].disabled = true;
+            document.getElementById(`exp_${q.id}`).classList.remove('d-none');
+        });
+
+        let totalScore = scoreP1 + scoreP2 + scoreP3;
+        document.getElementById('score_p1').innerText = scoreP1.toFixed(2);
+        document.getElementById('score_p2').innerText = scoreP2.toFixed(2);
+        document.getElementById('score_p3').innerText = scoreP3.toFixed(2);
+        document.getElementById('score_total').innerText = totalScore.toFixed(2);
+        
+        let timeTaken = (CONFIG.timeMinutes * 60) - timeLeft;
+        document.getElementById('time_taken').innerText = `${Math.floor(timeTaken / 60)} phút ${timeTaken % 60} giây`;
+        document.getElementById('percent_done').innerText = checkCompletionRate().toFixed(1);
+
+        document.getElementById('action_buttons').style.display = 'none';
+        document.getElementById('timer_display').style.display = 'none';
+        document.getElementById('results-overlay').style.display = 'block';
+        document.getElementById('student_name').disabled = true;
+        document.getElementById('class_name').disabled = true;
+
+        if(!isReview) window.scrollTo({ top: 0, behavior: 'smooth' });
+        else alert("Đã khôi phục bài làm trước đó.");
+
+        if (window.MathJax) MathJax.typesetPromise();
+    }
+
+    function sendToGoogleSheet() {
+        let data = {
+            student_name: document.getElementById('student_name').value || "Ẩn danh",
+            class_name: document.getElementById('class_name').value || "Không rõ",
+            part1_score: document.getElementById('score_p1').innerText,
+            part2_score: document.getElementById('score_p2').innerText,
+            part3_score: document.getElementById('score_p3').innerText,
+            total_score: document.getElementById('score_total').innerText,
+            duration_minutes: Math.floor(((CONFIG.timeMinutes * 60) - timeLeft) / 60),
+            percent: checkCompletionRate().toFixed(1)
+        };
+        if(CONFIG.googleSheetUrl !== "https://script.google.com/macros/s/AKfycbwjel-8YqD3AKtu3BHVSRtADyS6VQlCOkh1EVVKj4MGHQjqjufeUjMGjtRVq-UMom26Ng/exec") {
+            fetch(CONFIG.googleSheetUrl, {
+                method: "POST", mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            }).catch(e => console.error("Error saving to sheet", e));
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', renderExam);
+</script>
+</body>
+</html>
