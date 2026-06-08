@@ -565,7 +565,7 @@ const rawData = {
         {
             id: 'p3q3',
             text: "Cô Lan dự định xây một chiếc bể chứa nước mưa dạng hình hộp chữ nhật (có nắp đậy) với thể tích $V = 108 \\text{ m}^3$. Biết rằng chiều dài của bể gấp ba lần chiều rộng bể. Trên nắp đậy của bể để hở một khoảng trống hình tròn có bán kính $r$ bằng $\\dfrac{1}{3}$ chiều rộng bể để dẫn nước mưa vào. Do yêu cầu kỹ thuật chống thấm, chi phí vật liệu để xây <b>đáy bể</b> đắt hơn, cụ thể là $500.000$ VNĐ/$\\text{m}^2$. Chi phí vật liệu để xây <b>nắp bể và $4$ mặt xung quanh</b> là $300.000$ VNĐ/$\\text{m}^2$. Hỏi cô Lan cần thiết kế chiều rộng của bể bằng bao nhiêu mét để tổng chi phí nguyên vật liệu là nhỏ nhất? (Không làm tròn kết quả các phép tính trung gian, chỉ làm tròn kết quả cuối cùng đến hàng phần trăm).",
-            answer: "3.24",
+            answer: "2.66",
             explanation: `
                 Gọi $x$ (mét) là chiều rộng của đáy bể ($x > 0$).<br/>
                 <ul>
@@ -585,9 +585,9 @@ const rawData = {
                 $$C'(x) = 2\\left( 24 - \\dfrac{\\pi}{3} \\right)x - \\dfrac{864}{x^2}$$<br/>
                 Xét phương trình $C'(x) = 0$:<br/>
                 $$2\\left( 24 - \\dfrac{\\pi}{3} \\right)x = \\dfrac{864}{x^2} \\implies x^3 = \\dfrac{432}{24 - \\dfrac{\\pi}{3}} = \\dfrac{1296}{72 - \\pi}$$
-                $$x = \\sqrt[3]{\\dfrac{1296}{72 - \\pi}} \\approx 3{,}2358$$<br/>
+                $$x = \\sqrt[3]{\\dfrac{1296}{72 - \\pi}} \\approx 2{,}66$$<br/>
                 Lập bảng biến thiên, ta dễ dàng thấy hàm số $C(x)$ đạt cực tiểu tại $x = \\sqrt[3]{\\dfrac{1296}{72 - \\pi}}$.<br/>
-                <b>Kết luận:</b> Chiều rộng của bể cần thiết kế để chi phí nhỏ nhất là xấp xỉ $3,24$ mét.
+                <b>Kết luận:</b> Chiều rộng của bể cần thiết kế để chi phí nhỏ nhất là xấp xỉ $2,66$ mét.
             `
         },
         {
