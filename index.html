@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Học Toán Trực Tuyến - Cơ sở Trí Đức</title>
+    <title>Học Toán Trực Tuyến - Cơ Sở Dạy thêm Trí Đức</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
             --primary-color: #0056b3;
@@ -11,7 +14,6 @@
             --border-color: #dee2e6;
             --text-main: #333;
             --box-bg: #e8f4fd;
-            --box-border: #b6d4fe;
         }
 
         * {
@@ -29,7 +31,7 @@
             min-height: 100vh;
         }
 
-        /* 1. Thanh Menu Ngang */
+        /* Thanh Menu Ngang */
         .navbar {
             background-color: var(--primary-color);
             color: white;
@@ -42,15 +44,24 @@
             z-index: 100;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+        .navbar .brand {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
         .navbar a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px; /* Khoảng cách giữa icon và chữ */
             color: white;
             text-decoration: none;
             font-weight: bold;
             margin-left: 20px;
+            transition: color 0.3s, transform 0.2s;
         }
-        .navbar .brand {
-            font-size: 1.2rem;
-            text-transform: uppercase;
+        .navbar a:hover {
+            color: #ffdf00; /* Đổi sang màu vàng khi học sinh rê chuột vào */
+            transform: scale(1.05); /* Phóng to nhẹ một chút */
         }
 
         /* Bố cục chia cột */
@@ -59,120 +70,131 @@
             flex: 1;
         }
 
-        /* 2. Sidebar Trái (Khan Academy Style) */
+        /* Sidebar Trái có Menu thả xuống */
         .sidebar {
-            width: 280px;
+            width: 320px; 
             background-color: var(--bg-light);
             border-right: 1px solid var(--border-color);
-            padding: 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-content {
+            flex: 1;
             overflow-y: auto;
         }
-        .sidebar h3 {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 5px;
+        
+        /* Tùy chỉnh Menu Thả xuống (Accordion) */
+        details {
+            margin-bottom: 10px;
         }
+        summary {
+            cursor: pointer;
+            outline: none;
+            list-style: none; /* Ẩn mũi tên mặc định */
+        }
+        summary::-webkit-details-marker {
+            display: none;
+        }
+        
+        /* Cấp 1: Chọn Khối Lớp */
+        .grade-title {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .grade-title::after {
+            content: '▼';
+            font-size: 0.8rem;
+        }
+        details[open] > .grade-title::after {
+            content: '▲';
+        }
+
+        /* Cấp 2: Chọn Chương */
+        .chapter-title {
+            color: var(--primary-color);
+            padding: 10px 5px 5px 10px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-top: 5px;
+        }
+        .chapter-title:hover {
+            color: #003d82;
+        }
+
+        /* Cấp 3: Danh sách bài học */
         .sidebar ul {
             list-style: none;
+            padding-left: 15px;
+            margin-top: 8px;
+            margin-bottom: 15px;
         }
         .sidebar li {
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         .sidebar a {
             text-decoration: none;
             color: #555;
             display: block;
-            padding: 8px;
+            padding: 6px 10px;
             border-radius: 4px;
+            font-size: 0.9rem;
             transition: background 0.2s;
         }
         .sidebar a:hover, .sidebar a.active {
             background-color: #e2e6ea;
             color: var(--primary-color);
             font-weight: bold;
+            border-left: 3px solid var(--primary-color);
         }
 
-        /* 3. Khung Nội Dung Chính */
+        /* Bộ đếm lượt truy cập */
+        .visitor-counter {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border-color);
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Khung Nội Dung Chính */
         .content {
             flex: 1;
-            padding: 30px 50px;
-            max-width: 900px;
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
         .content h1 {
             color: var(--primary-color);
             margin-bottom: 20px;
-            font-size: 2rem;
+            font-size: 2.2rem;
         }
-
-        /* Hộp Định lý/Công thức (LibreTexts Style) */
-        .theory-box {
+        .welcome-box {
             background-color: var(--box-bg);
-            border-left: 5px solid var(--primary-color);
-            border-radius: 4px;
-            padding: 15px 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #b6d4fe;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 650px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-        .theory-box h4 {
-            color: #084298;
-            margin-bottom: 10px;
+        .welcome-box p {
+            margin-bottom: 15px;
             font-size: 1.1rem;
         }
 
-        /* Nút tải PDF */
-        .pdf-download {
-            display: inline-block;
-            background-color: #dc3545;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            margin-bottom: 30px;
-            transition: background 0.3s;
-        }
-        .pdf-download:hover {
-            background-color: #c82333;
-        }
-
-        /* Khu vực Tự luyện (Paul's Notes Style) */
-        .practice-section {
-            border-top: 2px dashed var(--border-color);
-            padding-top: 25px;
-            margin-top: 30px;
-        }
-        .question-block {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            background: #fff;
-        }
-        .btn-toggle {
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            cursor: pointer;
-            border-radius: 4px;
-            margin-top: 10px;
-            font-size: 0.9rem;
-        }
-        .btn-toggle:hover {
-            background-color: #5a6268;
-        }
-        .solution {
-            display: none; /* Ẩn mặc định */
-            margin-top: 15px;
-            padding: 15px;
-            background-color: #f1f8ea;
-            border-left: 4px solid #28a745;
-            border-radius: 4px;
-        }
-
-        /* Responsive cho điện thoại */
+        /* Responsive */
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
@@ -185,85 +207,260 @@
             .content {
                 padding: 20px;
             }
+            .navbar a {
+                margin-left: 10px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <div class="brand">Toán Học Trí Đức</div>
+        <div class="brand">Cơ Sở Dạy thêm Trí Đức</div>
         <div>
-            <a href="#">Lớp 12</a>
-            <a href="#">Lớp 11</a>
-            <a href="#">Lớp 10</a>
-            <a href="#">Liên hệ</a>
+            <a href="https://www.facebook.com/PhuocTan85" target="_blank">
+                <i class="fab fa-facebook" style="font-size: 1.3rem;"></i> Facebook
+            </a>
+            <a href="https://www.youtube.com/@mathwithtan" target="_blank">
+                <i class="fab fa-youtube" style="font-size: 1.3rem;"></i> YouTube
+            </a>
         </div>
     </nav>
 
     <div class="main-container">
         <aside class="sidebar">
-            <h3>Chương 1: Ứng dụng đạo hàm</h3>
-            <ul>
-                <li><a href="#" class="active">Bài 1: Sự đồng biến, nghịch biến</a></li>
-                <li><a href="#">Bài 2: Cực trị của hàm số</a></li>
-                <li><a href="#">Bài 3: Giá trị lớn nhất, nhỏ nhất</a></li>
-                <li><a href="#">Bài 4: Đường tiệm cận</a></li>
-            </ul>
+            <div class="sidebar-content">
+                
+                <details open>
+                    <summary class="grade-title">Toán 12</summary>
+                    
+                    <details>
+                        <summary class="chapter-title">Chương 1: Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số</summary>
+                        <ul>
+                            <li><a href="ly-thuyet-1.html">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="bai-tap-1.html">Bài tập 1</a></li>
+                            <li><a href="bai-tap-2.html">Bài tập 2</a></li>
+                            <li><a href="on-chuong-1.html">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 2: Vectơ và hệ trục tọa độ trong không gian</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 3: Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 4: Nguyên hàm và Tích phân</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 5: Phương pháp tọa độ trong không gian</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 6: Xác suất có điều kiện</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                </details>
 
-            <h3 style="margin-top: 20px;">Chương 2: Mũ và Logarit</h3>
-            <ul>
-                <li><a href="#">Bài 1: Lũy thừa</a></li>
-                <li><a href="#">Bài 2: Hàm số Lũy thừa</a></li>
-                <li><a href="#">Bài 3: Logarit</a></li>
-            </ul>
+                <details>
+                    <summary class="grade-title">Toán 11 (KNTT)</summary>
+                    
+                    <details>
+                        <summary class="chapter-title">Chương 1: Hàm số lượng giác và phương trình lượng giác</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập 2</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 2: Dãy số. Cấp số cộng và cấp số nhân</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 3: Các số đặc trưng đo xu thế trung tâm của mẫu số liệu ghép nhóm</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 4: Quan hệ song song trong không gian</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 5: Giới hạn. Hàm số liên tục</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 6: Hàm số mũ và hàm số lôgarit</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 7: Quan hệ vuông góc trong không gian</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 8: Các quy tắc tính xác suất</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 9: Đạo hàm</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                </details>
+
+                <details>
+                    <summary class="grade-title">Toán 10 (KNTT)</summary>
+                    
+                    <details>
+                        <summary class="chapter-title">Chương 1: Mệnh đề và tập hợp</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 2: Bất phương trình và hệ bất phương trình bậc nhất hai ẩn</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 3: Hệ thức lượng trong tam giác</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 4: Vectơ</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 5: Các số đặc trưng của mẫu số liệu không ghép nhóm</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 6: Hàm số, đồ thị và ứng dụng</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 7: Phương pháp tọa độ trong mặt phẳng</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 8: Đại số tổ hợp</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary class="chapter-title">Chương 9: Tính xác suất theo định nghĩa cổ điển</summary>
+                        <ul>
+                            <li><a href="#">Trắc nghiệm lý thuyết</a></li>
+                            <li><a href="#">Bài tập 1</a></li>
+                            <li><a href="#">Bài tập ôn chương</a></li>
+                        </ul>
+                    </details>
+                </details>
+
+            </div>
+
+            <div class="visitor-counter">
+                <p style="margin-bottom: 5px; font-weight: bold;">Thống kê lượt truy cập:</p>
+                <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Ftandp-math.github.io%2Ftanquizlab.com&count_bg=%230056b3&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=L%C6%B0%E1%BB%A3t+xem&edge_flat=false" alt="Hits">
+            </div>
         </aside>
 
         <main class="content">
-            <h1>Bài 1: Sự đồng biến, nghịch biến của hàm số</h1>
+            <h1>Hệ Thống Ôn Tập Môn Toán</h1>
             
-            <p>Trong bài học này, chúng ta sẽ ôn tập lại các điều kiện để một hàm số đồng biến hoặc nghịch biến trên một khoảng, thông qua việc xét dấu đạo hàm y'.</p>
-
-            <div class="theory-box">
-                <h4>Định lý mở rộng</h4>
-                <p>Giả sử hàm số y = f(x) có đạo hàm trên K. Nếu f'(x) ≥ 0 (hoặc f'(x) ≤ 0) với mọi x thuộc K và f'(x) = 0 chỉ tại một số hữu hạn điểm thì hàm số f(x) đồng biến (hoặc nghịch biến) trên K.</p>
-            </div>
-
-            <a href="link-den-file-bai-tap.pdf" class="pdf-download" target="_blank">
-                📄 Tải File Bài Tập (PDF)
-            </a>
-
-            <div class="practice-section">
-                <h2>Câu Hỏi Tự Luyện</h2>
-                <p><i>Nhấp vào nút để xem hướng dẫn giải chi tiết.</i></p>
-
-                <div class="question-block">
-                    <p><b>Câu 1:</b> Cho hàm số y = x<sup>3</sup> - 3x + 2. Mệnh đề nào dưới đây đúng?</p>
-                    <p>A. Hàm số đồng biến trên khoảng (-1; 1).</p>
-                    <p>B. Hàm số nghịch biến trên khoảng (-1; 1).</p>
-                    <button class="btn-toggle" onclick="toggleSolution('sol1')">Hiện / Ẩn Đáp án</button>
-                    
-                    <div id="sol1" class="solution">
-                        <b>Hướng dẫn giải:</b><br>
-                        - Tập xác định: D = R<br>
-                        - Đạo hàm: y' = 3x<sup>2</sup> - 3. Cho y' = 0 &Leftrightarrow; x = 1 hoặc x = -1.<br>
-                        - Lập bảng xét dấu đạo hàm, ta thấy y' < 0 trên khoảng (-1; 1).<br>
-                        <b>Vậy chọn B.</b>
-                    </div>
-                </div>
-
+            <div class="welcome-box">
+                <p>👋 Chào mừng các em học sinh đến với hệ thống ôn tập trực tuyến.</p>
+                <p>Hệ thống bài giảng bám sát chương trình GDPT mới (Sách Kết nối tri thức với cuộc sống).</p>
+                <p style="margin-top: 15px; color: var(--primary-color);"><b>Bấm vào biểu tượng khối lớp và chọn chương ở danh mục bên trái</b> để bắt đầu làm bài nhé!</p>
+                <hr style="margin: 25px 0; border: 0; border-top: 1px solid #b6d4fe;">
+                <p style="font-size: 0.95rem; color: #555;">© 2026 - Biên soạn: Thầy Đinh Phước Tân</p>
             </div>
         </main>
     </div>
 
-    <script>
-        function toggleSolution(id) {
-            var element = document.getElementById(id);
-            if (element.style.display === "none" || element.style.display === "") {
-                element.style.display = "block";
-            } else {
-                element.style.display = "none";
-            }
-        }
-    </script>
 </body>
 </html>
