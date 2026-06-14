@@ -3,128 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ôn Thi Tốt Nghiệp THPT Quốc Gia Môn Toán</title>
+    <title>Học Toán Trực Tuyến - Cơ sở Trí Đức</title>
     <style>
         :root {
             --primary-color: #0056b3;
-            --hover-color: #004494;
-            --bg-color: #f4f7f6;
-            --text-color: #333;
+            --bg-light: #f8f9fa;
+            --border-color: #dee2e6;
+            --text-main: #333;
+            --box-bg: #e8f4fd;
+            --box-border: #b6d4fe;
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        header {
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* 1. Thanh Menu Ngang */
+        .navbar {
             background-color: var(--primary-color);
             color: white;
-            text-align: center;
-            padding: 2rem 1rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        header h1 {
-            margin: 0;
-            font-size: 2.2rem;
-        }
-        header p {
-            margin-top: 10px;
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        .container {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-        .section-title {
-            border-left: 5px solid var(--primary-color);
-            padding-left: 10px;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-        }
-        .grid-links {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 40px;
-        }
-        .btn-link {
-            display: block;
-            background: white;
-            color: var(--text-color);
+        .navbar a {
+            color: white;
             text-decoration: none;
-            text-align: center;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
             font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-left: 20px;
         }
-        .btn-link:hover {
-            background-color: var(--primary-color);
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        .navbar .brand {
+            font-size: 1.2rem;
+            text-transform: uppercase;
         }
-        .theory-section .btn-link {
-            background-color: #e8f4fd;
-            border-color: #b6d4fe;
-            color: #084298;
+
+        /* Bố cục chia cột */
+        .main-container {
+            display: flex;
+            flex: 1;
         }
-        .theory-section .btn-link:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        footer {
-            text-align: center;
+
+        /* 2. Sidebar Trái (Khan Academy Style) */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-light);
+            border-right: 1px solid var(--border-color);
             padding: 20px;
-            margin-top: 50px;
-            color: #666;
+            overflow-y: auto;
+        }
+        .sidebar h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+        }
+        .sidebar ul {
+            list-style: none;
+        }
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+        .sidebar a {
+            text-decoration: none;
+            color: #555;
+            display: block;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #e2e6ea;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* 3. Khung Nội Dung Chính */
+        .content {
+            flex: 1;
+            padding: 30px 50px;
+            max-width: 900px;
+        }
+        .content h1 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        /* Hộp Định lý/Công thức (LibreTexts Style) */
+        .theory-box {
+            background-color: var(--box-bg);
+            border-left: 5px solid var(--primary-color);
+            border-radius: 4px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .theory-box h4 {
+            color: #084298;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Nút tải PDF */
+        .pdf-download {
+            display: inline-block;
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            transition: background 0.3s;
+        }
+        .pdf-download:hover {
+            background-color: #c82333;
+        }
+
+        /* Khu vực Tự luyện (Paul's Notes Style) */
+        .practice-section {
+            border-top: 2px dashed var(--border-color);
+            padding-top: 25px;
+            margin-top: 30px;
+        }
+        .question-block {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: #fff;
+        }
+        .btn-toggle {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 10px;
             font-size: 0.9rem;
+        }
+        .btn-toggle:hover {
+            background-color: #5a6268;
+        }
+        .solution {
+            display: none; /* Ẩn mặc định */
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f1f8ea;
+            border-left: 4px solid #28a745;
+            border-radius: 4px;
+        }
+
+        /* Responsive cho điện thoại */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .content {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>ÔN THI TỐT NGHIỆP THPT QUỐC GIA MÔN TOÁN</h1>
-        <p>Hệ thống đề thi và câu hỏi trắc nghiệm trọng tâm</p>
-    </header>
-
-    <div class="container">
-        
-        <div class="theory-section">
-            <h2 class="section-title">I. Lý Thuyết & Trắc Nghiệm Ôn Tập</h2>
-            <div class="grid-links">
-                <a href="ly-thuyet-1.html" class="btn-link">Lý thuyết 1</a>
-                <a href="ly-thuyet-2.html" class="btn-link">Lý thuyết 2</a>
-                <a href="lt-thuc-te.html" class="btn-link">Lý thuyết Toán thực tế</a>
-            </div>
+    <nav class="navbar">
+        <div class="brand">Toán Học Trí Đức</div>
+        <div>
+            <a href="#">Lớp 12</a>
+            <a href="#">Lớp 11</a>
+            <a href="#">Lớp 10</a>
+            <a href="#">Liên hệ</a>
         </div>
+    </nav>
 
-        <div class="exam-section">
-            <h2 class="section-title">II. Hệ Thống Đề Thi Thử</h2>
-            <div class="grid-links">
-                <a href="de-13.html" class="btn-link">Đề số 13</a>
-                <a href="de-14.html" class="btn-link">Đề số 14</a>
-                <a href="de-15.html" class="btn-link">Đề số 15</a>
-                <a href="de-16.html" class="btn-link">Đề số 16</a>
-                <a href="de-17.html" class="btn-link">Đề số 17</a>
-                <a href="de-18.html" class="btn-link">Đề số 18</a>
+    <div class="main-container">
+        <aside class="sidebar">
+            <h3>Chương 1: Ứng dụng đạo hàm</h3>
+            <ul>
+                <li><a href="#" class="active">Bài 1: Sự đồng biến, nghịch biến</a></li>
+                <li><a href="#">Bài 2: Cực trị của hàm số</a></li>
+                <li><a href="#">Bài 3: Giá trị lớn nhất, nhỏ nhất</a></li>
+                <li><a href="#">Bài 4: Đường tiệm cận</a></li>
+            </ul>
+
+            <h3 style="margin-top: 20px;">Chương 2: Mũ và Logarit</h3>
+            <ul>
+                <li><a href="#">Bài 1: Lũy thừa</a></li>
+                <li><a href="#">Bài 2: Hàm số Lũy thừa</a></li>
+                <li><a href="#">Bài 3: Logarit</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <h1>Bài 1: Sự đồng biến, nghịch biến của hàm số</h1>
+            
+            <p>Trong bài học này, chúng ta sẽ ôn tập lại các điều kiện để một hàm số đồng biến hoặc nghịch biến trên một khoảng, thông qua việc xét dấu đạo hàm y'.</p>
+
+            <div class="theory-box">
+                <h4>Định lý mở rộng</h4>
+                <p>Giả sử hàm số y = f(x) có đạo hàm trên K. Nếu f'(x) ≥ 0 (hoặc f'(x) ≤ 0) với mọi x thuộc K và f'(x) = 0 chỉ tại một số hữu hạn điểm thì hàm số f(x) đồng biến (hoặc nghịch biến) trên K.</p>
             </div>
-        </div>
 
+            <a href="link-den-file-bai-tap.pdf" class="pdf-download" target="_blank">
+                📄 Tải File Bài Tập (PDF)
+            </a>
+
+            <div class="practice-section">
+                <h2>Câu Hỏi Tự Luyện</h2>
+                <p><i>Nhấp vào nút để xem hướng dẫn giải chi tiết.</i></p>
+
+                <div class="question-block">
+                    <p><b>Câu 1:</b> Cho hàm số y = x<sup>3</sup> - 3x + 2. Mệnh đề nào dưới đây đúng?</p>
+                    <p>A. Hàm số đồng biến trên khoảng (-1; 1).</p>
+                    <p>B. Hàm số nghịch biến trên khoảng (-1; 1).</p>
+                    <button class="btn-toggle" onclick="toggleSolution('sol1')">Hiện / Ẩn Đáp án</button>
+                    
+                    <div id="sol1" class="solution">
+                        <b>Hướng dẫn giải:</b><br>
+                        - Tập xác định: D = R<br>
+                        - Đạo hàm: y' = 3x<sup>2</sup> - 3. Cho y' = 0 &Leftrightarrow; x = 1 hoặc x = -1.<br>
+                        - Lập bảng xét dấu đạo hàm, ta thấy y' < 0 trên khoảng (-1; 1).<br>
+                        <b>Vậy chọn B.</b>
+                    </div>
+                </div>
+
+            </div>
+        </main>
     </div>
 
-    <footer>
-        <p>© 2026 - Biên soạn: Thầy Đinh Phước Tân</p>
-    </footer>
-
+    <script>
+        function toggleSolution(id) {
+            var element = document.getElementById(id);
+            if (element.style.display === "none" || element.style.display === "") {
+                element.style.display = "block";
+            } else {
+                element.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>
