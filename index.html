@@ -449,16 +449,79 @@
             </div>
         </aside>
 
-        <main class="content">
-            <h1>Hệ Thống Ôn Tập Môn Toán</h1>
+       <!-- KHUNG NỘI DUNG CHÍNH (Đã nâng cấp) -->
+        <main class="content" style="padding: 30px; display: block; text-align: left; background-color: #fcfcfc;">
             
-            <div class="welcome-box">
-                <p>👋 Chào mừng các em học sinh đến với hệ thống ôn tập trực tuyến.</p>
-                <p>Hệ thống bài giảng bám sát chương trình GDPT mới (Sách Kết nối tri thức với cuộc sống).</p>
-                <p style="margin-top: 15px; color: var(--primary-color);"><b>Bấm vào biểu tượng khối lớp và chọn chương ở danh mục bên trái</b> để bắt đầu làm bài nhé!</p>
-                <hr style="margin: 25px 0; border: 0; border-top: 1px solid #b6d4fe;">
-                <p style="font-size: 0.95rem; color: #555;">© 2026 - Biên soạn: Thầy Đinh Phước Tân</p>
+            <!-- 1. Banner Chào Mừng -->
+            <div style="background: linear-gradient(135deg, #0056b3 0%, #00a8ff 100%); color: white; padding: 40px 30px; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,86,179,0.2); margin-bottom: 40px; position: relative; overflow: hidden;">
+                <h1 style="color: white; margin-bottom: 10px; font-size: 2.2rem; position: relative; z-index: 2;">Chinh Phục Kỳ Thi THPT Quốc Gia</h1>
+                <p style="font-size: 1.1rem; opacity: 0.9; max-width: 600px; position: relative; z-index: 2;">Hệ thống lý thuyết trọng tâm và ngân hàng đề thi trắc nghiệm môn Toán bám sát đề thi THPT Quốc gia.</p>
+                <!-- Icon mờ làm background -->
+                <i class="fas fa-calculator" style="position: absolute; right: 20px; top: -20px; font-size: 150px; opacity: 0.1; transform: rotate(-15deg); z-index: 1;"></i>
             </div>
+
+            <!-- 2. Truy Cập Nhanh (Lưới thẻ) -->
+            <h2 style="color: #333; margin-bottom: 20px; font-size: 1.5rem; border-left: 4px solid var(--primary-color); padding-left: 10px;">📌 Lối Tắt Ôn Tập</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px;">
+                
+                <!-- Thẻ 1 -->
+                <a href="#" style="background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px; text-decoration: none; color: #333; transition: transform 0.3s, box-shadow 0.3s; display: block; border-top: 4px solid #dc3545;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                    <i class="fas fa-file-alt" style="font-size: 2rem; color: #dc3545; margin-bottom: 15px;"></i>
+                    <h3 style="font-size: 1.2rem; margin-bottom: 10px;">Đề ôn tập chương</h3>
+                    <p style="font-size: 0.9rem; color: #666;">Cập nhật sớm nhất sau khi học sinh học xong 1 chủ đề.</p>
+                </a>
+
+                <!-- Thẻ 2 -->
+                <a href="#" style="background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px; text-decoration: none; color: #333; transition: transform 0.3s, box-shadow 0.3s; display: block; border-top: 4px solid #28a745;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                    <i class="fas fa-book-open" style="font-size: 2rem; color: #28a745; margin-bottom: 15px;"></i>
+                    <h3 style="font-size: 1.2rem; margin-bottom: 10px;">Lý Thuyết Trọng Tâm theo chủ đề</h3>
+                    <p style="font-size: 0.9rem; color: #666;">Tóm tắt công thức, định lý và các mẹo giải nhanh cần nhớ.</p>
+                </a>
+
+                <!-- Thẻ 3 -->
+                <a href="#" style="background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px; text-decoration: none; color: #333; transition: transform 0.3s, box-shadow 0.3s; display: block; border-top: 4px solid #ffc107;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                    <i class="fas fa-chart-pie" style="font-size: 2rem; color: #ffc107; margin-bottom: 15px;"></i>
+                    <h3 style="font-size: 1.2rem; margin-bottom: 10px;">Toán Thực Tế</h3>
+                    <p style="font-size: 0.9rem; color: #666;">Chuyên đề các bài toán ứng dụng thực tế bám sát cấu trúc mới.</p>
+                </a>
+            </div>
+
+            <!-- 3. Bảng Tin / Hướng dẫn -->
+            <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                
+                <div style="flex: 1; min-width: 300px; background: white; padding: 25px; border-radius: 10px; border: 1px solid #e0e0e0;">
+                    <h2 style="color: #333; margin-bottom: 20px; font-size: 1.3rem;"><i class="fas fa-bullhorn" style="color: var(--primary-color);"></i> Thông Báo</h2>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #ccc;">
+                            <span style="background: #e8f4fd; color: #0056b3; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; margin-right: 10px;">MỚI</span>
+                            Đã cập nhật bài tập 1 - chương 2.
+                        </li>
+                        <li style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #ccc;">
+                            <span style="background: #fff3cd; color: #856404; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; margin-right: 10px;">LƯU Ý</span>
+                            Các em nhớ tự làm lại các câu mà mình không làm được.
+                        </li>
+                    </ul>
+                </div>
+
+                <div style="flex: 1; min-width: 300px; background: #f8f9fa; padding: 25px; border-radius: 10px; border: 1px solid #e0e0e0;">
+                    <h2 style="color: #333; margin-bottom: 20px; font-size: 1.3rem;"><i class="fas fa-route" style="color: var(--primary-color);"></i> Lộ Trình Gợi Ý</h2>
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="width: 30px; height: 30px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; margin-right: 15px;">1</div>
+                        <div>Chọn khối lớp và chương ở thanh Menu trái.</div>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="width: 30px; height: 30px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; margin-right: 15px;">2</div>
+                        <div>Hoàn thành "Trắc nghiệm lý thuyết" trước.</div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <div style="width: 30px; height: 30px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; margin-right: 15px;">3</div>
+                        <div>Làm bài tập vận dụng và tra cứu đáp án.</div>
+                    </div>
+                </div>
+
+            </div>
+
         </main>
     </div>
 
