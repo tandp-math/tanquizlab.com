@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đề Ôn Tập - Hệ Tọa Độ Oxyz (Đề 3)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                macros: {
+                    heva: ["\\left\\{\\begin{matrix}#1\\end{matrix}\\right.", 1],
+                    hoac: ["\\left[\\begin{matrix}#1\\end{matrix}\\right.", 1]
+                }
+            },
+            chtml: { scale: 1.0 }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --primary-light: #e7f1ff;
+            --text-color: #2b2b2b;
+            --bg-color: #ffffff;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            padding-bottom: 40px;
+        }
+        .progress-sticky {
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            background: rgba(255,255,255,0.95);
+            padding: 10px 0;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .header-banner {
+            background: linear-gradient(135deg, #0d6efd, #0a58ca);
+            color: white;
+            padding: 2.2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.15);
+        }
+        .student-info-card {
+            background-color: var(--primary-light);
+            border: 1px solid #cddfff;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 0.5rem;
+        }
+        .part-header {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.4rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+        .question-card {
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.25s ease;
+        }
+        .question-card:hover {
+            border-color: #b8d4ff;
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.08);
+        }
+        .choice-label {
+            cursor: pointer;
+            padding: 0.6rem 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            display: block;
+            margin-bottom: 0.5rem;
+            background-color: #fafafa;
+            transition: all 0.2s;
+        }
+        .choice-label:hover {
+            background-color: #f0f6ff;
+            border-color: #a3c7ff;
+        }
+        .form-check-input:checked + .choice-label {
+            background-color: var(--primary-light);
+            border-color: var(--primary-color);
+            color: #084298;
+            font-weight: 600;
+        }
+        .tf-table th, .tf-table td {
+            vertical-align: middle;
+        }
+        .solution-box {
+            display: none;
+            background-color: #f8f9fa;
+            border-left: 4px solid #198754;
+            padding: 1.2rem;
+            margin-top: 1.2rem;
+            border-radius: 0 0.4rem 0.4rem 0;
+            font-size: 0.95rem;
+        }
+        .correct-ans {
+            background-color: #d1e7dd !important;
+            border-color: #0f5132 !important;
+            color: #0f5132 !important;
+            font-weight: bold;
+        }
+        .wrong-ans {
+            background-color: #f8d7da !important;
+            border-color: #842029 !important;
+            color: #842029 !important;
+            text-decoration: line-through;
+        }
+        .score-display {
+            font-size: 1.35rem;
+            font-weight: 800;
+        }
+        .tikz-svg {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 1rem auto;
+        }
+        @media print {
+            body { background: white; font-size: 11pt; color: #000; padding-bottom: 0; }
+            .no-print, .progress-sticky, #action-buttons, #toast-container { display: none !important; }
+            .header-banner { background: none; color: black; box-shadow: none; padding: 0; margin-bottom: 1rem; border-bottom: 2px solid #000; }
+            .question-card { page-break-inside: avoid; border: 1px solid #aaa !important; box-shadow: none; padding: 1rem; }
+            .solution-box { display: block !important; border-left: 3px solid #000; background: #fff !important; color: #000; page-break-inside: avoid; }
+            .part-header { border-bottom: 1px solid black; color: black; }
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        // =========================================================================================
+        // DÁN ĐƯỜNG LINK WEB APP (GOOGLE APPS SCRIPT) CỦA BẠN VÀO GIỮA 2 DẤU NGOẶC KÉP BÊN DƯỚI:
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzncgO_a1JB-H7yZzLIlWkMvLE9QH1yozAqvRLBqdnC2-oB4WJRsNzgU1EFtDlu6Plb/exec";
+        // =========================================================================================
+    </script>
+
+    <div class="progress-sticky no-print">
+        <div class="container">
+            <div class="row align-items-center g-2">
+                <div class="col-md-6">
+                    <span class="fw-bold text-primary"><i class="fas fa-tasks me-2"></i>Tiến độ làm bài:</span> 
+                    <span id="progress-text" class="fw-medium">0/22 ý (0%)</span>
+                </div>
+                <div class="col-md-6">
+                    <div class="progress shadow-sm" style="height: 12px; border-radius: 10px;">
+                        <div id="progress-bar" class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header class="header-banner text-center">
+        <div class="container">
+            <h1 class="fw-bold text-uppercase tracking-wide mb-1">ĐỀ ÔN TẬP OXYZ - SỐ 3</h1>
+            <p class="lead mb-0 opacity-75 fs-6">Chuyên đề: Phương pháp tọa độ trong không gian • Môn: Toán Học</p>
+        </div>
+    </header>
+
+    <main class="container mb-5">
+        <div class="card student-info-card p-4 mb-4 shadow-sm">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-5">
+                    <label for="student-name" class="form-label fw-bold text-primary">Họ và tên học sinh:</label>
+                    <input type="text" class="form-control border-primary-subtle fw-medium" id="student-name" placeholder="Nhập đầy đủ họ tên..." required oninput="saveDraft()">
+                </div>
+                <div class="col-md-3">
+                    <label for="student-class" class="form-label fw-bold text-primary">Lớp:</label>
+                    <input type="text" class="form-control border-primary-subtle fw-medium" id="student-class" placeholder="Ví dụ: 12A1" required oninput="saveDraft()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-muted">Mã đề ngẫu nhiên:</label>
+                    <div class="form-control bg-white border-secondary-subtle fw-black text-primary text-center fs-5" id="exam-code"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="toast-container" class="mb-3"></div>
+
+        <form id="exam-form" onsubmit="return false;">
+            <section id="part1-container">
+                <h2 class="part-header">PHẦN I. Câu hỏi trắc nghiệm nhiều phương án lựa chọn</h2>
+                <p class="text-muted fst-italic mb-4">Thí sinh trả lời từ câu 1 đến câu 6. Mỗi câu hỏi thí sinh chỉ chọn một phương án đúng nhất. (Mỗi câu đúng được 0.25 điểm)</p>
+                <div id="part1-questions"></div>
+            </section>
+
+            <section id="part2-container">
+                <h2 class="part-header">PHẦN II. Câu hỏi trắc nghiệm đúng sai</h2>
+                <p class="text-muted fst-italic mb-4">Thí sinh trả lời từ câu 1 đến câu 3. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.<br>
+                <span class="fs-7 text-secondary">Thang điểm: Đúng 1 ý = 0.1đ | Đúng 2 ý = 0.25đ | Đúng 3 ý = 0.5đ | Đúng 4 ý = 1.0đ</span></p>
+                <div id="part2-questions"></div>
+            </section>
+
+            <section id="part3-container">
+                <h2 class="part-header">PHẦN III. Câu trắc nghiệm trả lời ngắn</h2>
+                <p class="text-muted fst-italic mb-4">Thí sinh trả lời từ câu 1 đến câu 4. Viết đáp án dưới dạng giá trị số (Hệ thống tự nhận diện tương đương: ví dụ 2.5 bằng 2,5 bằng 2.50). (Mỗi câu đúng được 0.5 điểm)</p>
+                <div id="part3-questions"></div>
+            </section>
+
+            <div id="result-summary-card" class="card border-primary mb-4 shadow-lg" style="display: none;">
+                <div class="card-header bg-primary text-white fw-bold fs-5 d-flex justify-content-between align-items-center">
+                    <div><i class="fas fa-award me-2"></i>KẾT QUẢ BÀI THI</div>
+                    <span class="badge bg-light text-primary fs-6" id="status-badge">Đã nộp bài</span>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row text-center g-3">
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-3 border border-secondary-subtle">
+                                <span class="d-block text-muted fs-7 fw-bold">PHẦN I</span>
+                                <span class="score-display text-primary" id="score-part1">0.00</span> / 1.50 đ
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-3 border border-secondary-subtle">
+                                <span class="d-block text-muted fs-7 fw-bold">PHẦN II</span>
+                                <span class="score-display text-primary" id="score-part2">0.00</span> / 3.00 đ
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-3 border border-secondary-subtle">
+                                <span class="d-block text-muted fs-7 fw-bold">PHẦN III</span>
+                                <span class="score-display text-primary" id="score-part3">0.00</span> / 2.00 đ
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-primary text-white rounded-3 shadow-sm">
+                                <span class="d-block fs-7 opacity-75 fw-bold">TỔNG CỘNG</span>
+                                <span class="score-display fs-2" id="score-total">0.00</span> / 6.50 đ
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="my-4">
+                    <div class="row g-2 text-muted fs-6">
+                        <div class="col-md-4">
+                            <i class="fas fa-stopwatch me-2 text-primary"></i><b>Thời gian làm bài:</b> <span id="duration-display" class="fw-bold text-dark">0 phút</span>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fas fa-calendar-check me-2 text-primary"></i><b>Thời điểm nộp:</b> <span id="submit-time-display" class="fw-bold text-dark">Chưa nộp</span>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <i class="fas fa-bullseye me-2 text-primary"></i><b>Tỷ lệ hoàn thành:</b> <span id="percent-display" class="fw-bold text-success fs-5">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="action-buttons" class="text-center my-5 no-print">
+                <button type="button" class="btn btn-primary btn-lg px-5 me-3 fw-bold shadow" id="btn-submit" onclick="submitExam()">
+                    <i class="fas fa-paper-plane me-2"></i>NỘP BÀI THI
+                </button>
+                <button type="button" class="btn btn-success btn-lg px-4 me-2 fw-bold shadow" id="btn-print" onclick="window.print()" style="display:none;">
+                    <i class="fas fa-print me-2"></i>IN KẾT QUẢ PDF
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-lg px-4 fw-bold" id="btn-review" onclick="reviewExam()" style="display:none;">
+                    <i class="fas fa-search me-2"></i>XEM LẠI BÀI LÀM
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        // --- DỮ LIỆU GỐC ---
+        const rawData = {
+            part1: [
+                {
+                    id: "p1_q1",
+                    question: "Cho hai vectơ $\\overrightarrow{u},\\overrightarrow{v}$ có $|\\overrightarrow{u}|=13,|\\overrightarrow{v}|=13$ và $(\\overrightarrow{u},\\overrightarrow{v})=45^\\circ$. Khi đó $\\overrightarrow{u}\\cdot\\overrightarrow{v}$ bằng",
+                    choices: [
+                        { text: "$- \\dfrac{169}{2}$", isCorrect: false },
+                        { text: "$\\dfrac{169}{2}\\sqrt{3}$", isCorrect: false },
+                        { text: "$0$", isCorrect: false },
+                        { text: "$\\dfrac{169}{2}\\sqrt{2}$", isCorrect: true }
+                    ],
+                    solution: "Ta có $\\overrightarrow{u}\\cdot\\overrightarrow{v}=|\\overrightarrow{u}|\\cdot|\\overrightarrow{v}|\\cdot\\cos(\\overrightarrow{u},\\overrightarrow{v})=13\\cdot13\\cdot\\cos 45^\\circ =\\dfrac{169}{2}\\sqrt{2}$."
+                },
+                {
+                    id: "p1_q2",
+                    question: "Trong không gian $Oxyz$, một máy bay cất cánh từ vị trí $A(1; 2; 3)$ và chuyển động thẳng đều theo hướng của vectơ vận tốc $\\vec{v} = (100; 150; 50)$ (đơn vị vận tốc là km/h). Giả sử máy bay giữ nguyên vận tốc này trong suốt quá trình bay. Tọa độ vị trí $B$ của máy bay sau khi bay được $2$ giờ là",
+                    choices: [
+                        { text: "$B(200; 300; 100)$", isCorrect: false },
+                        { text: "$B(201; 302; 103)$", isCorrect: true },
+                        { text: "$B(101; 152; 53)$", isCorrect: false },
+                        { text: "$B(202; 304; 106)$", isCorrect: false }
+                    ],
+                    solution: "Sau khoảng thời gian $t = 2$ giờ, vectơ dịch chuyển của máy bay từ vị trí xuất phát $A$ là: $$\\overrightarrow{AB} = t \\cdot \\vec{v} = 2 \\cdot (100; 150; 50) = (200; 300; 100)$$ Gọi tọa độ vị trí $B$ cần tìm là $B(x_B; y_B; z_B)$. Ta có: $$\\overrightarrow{AB} = (x_B - 1; y_B - 2; z_B - 3)$$ Từ đó suy ra hệ phương trình tọa độ của điểm $B$: $$\\heva{x_B - 1 = 200 \\\\ y_B - 2 = 300 \\\\ z_B - 3 = 100} \\Leftrightarrow \\heva{x_B = 201 \\\\ y_B = 302 \\\\ z_B = 103}$$ Vậy tọa độ vị trí của máy bay sau $2$ giờ là $B(201; 302; 103)$."
+                },
+                {
+                    id: "p1_q3",
+                    question: "Trong không gian, một vật chuyển động với tốc độ không đổi $v$ ($v > 0$) theo hướng cùng với hướng của vectơ $\\vec{u}$ ($\\vec{u} \\neq \\vec{0}$). Vectơ vận tốc $\\vec{v}$ của vật được xác định bởi công thức nào sau đây?",
+                    choices: [
+                        { text: "$\\vec{v} = v \\cdot \\vec{u}$", isCorrect: false },
+                        { text: "$\\vec{v} = \\dfrac{v}{\\left| \\vec{u} \\right|} \\cdot \\vec{u}$", isCorrect: true },
+                        { text: "$\\vec{v} = \\dfrac{\\left| \\vec{u} \\right|}{v} \\cdot \\vec{u}$", isCorrect: false },
+                        { text: "$\\vec{v} = v \\cdot \\left| \\vec{u} \\right| \\cdot \\vec{u}$", isCorrect: false }
+                    ],
+                    solution: "Vectơ vận tốc $\\vec{v}$ là một vectơ có hướng trùng với hướng chuyển động của vật (cùng hướng $\\vec{u}$) và độ dài $\\left| \\vec{v} \\right| = v$. Vectơ đơn vị cùng hướng với $\\vec{u}$ là $\\vec{e} = \\dfrac{\\vec{u}}{\\left| \\vec{u} \\right|}$. Do đó $\\vec{v} = v \\cdot \\vec{e} = \\dfrac{v}{\\left| \\vec{u} \\right|} \\cdot \\vec{u}$."
+                },
+                {
+                    id: "p1_q4",
+                    question: "Cho hình hộp chữ nhật $ABCD.A'B'C'D'$ có $AB=2$, $AD=3$, $AA'=6$. Độ dài vectơ $\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AA'}$ bằng",
+                    choices: [
+                        { text: "7", isCorrect: true },
+                        { text: "$7\\sqrt{3}$", isCorrect: false },
+                        { text: "$11\\sqrt{3}$", isCorrect: false },
+                        { text: "11", isCorrect: false }
+                    ],
+                    solution: "Theo quy tắc hình hộp ta có: $\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AA'} = \\overrightarrow{AC'}$. Độ dài đường chéo hình hộp chữ nhật: $\\left| \\overrightarrow{AC'} \\right| = \\sqrt{AB^{2}+AD^{2}+AA'^{2}} = \\sqrt{2^{2}+3^{2}+6^{2}} = 7$."
+                },
+                {
+                    id: "p1_q5",
+                    question: "Trong không gian $Oxyz$, hai điểm $A(4;7;-7), B(-6;9;-5)$ thẳng hàng với điểm nào sau đây?",
+                    choices: [
+                        { text: "$G \\left(\\dfrac{17}{3}; \\dfrac{20}{3}; - \\dfrac{22}{3} \\right)$", isCorrect: true },
+                        { text: "$I \\left(\\dfrac{17}{3}; \\dfrac{17}{3}; - \\dfrac{22}{3} \\right)$", isCorrect: false },
+                        { text: "$H \\left(\\dfrac{17}{3}; \\dfrac{23}{3}; - \\dfrac{22}{3} \\right)$", isCorrect: false },
+                        { text: "$N \\left(\\dfrac{17}{3}; \\dfrac{20}{3}; - \\dfrac{19}{3} \\right)$", isCorrect: false }
+                    ],
+                    solution: "Xét điểm $G \\left(\\dfrac{17}{3}; \\dfrac{20}{3}; - \\dfrac{22}{3} \\right)$, ta có $\\vec{AB}=\\left(-10; 2; 2 \\right)$ và $\\vec{AG}=\\left(\\dfrac{5}{3}; - \\dfrac{1}{3}; - \\dfrac{1}{3} \\right)$. Ta thấy $\\vec{AB} =-6 \\vec{AG}$ nên hai vectơ cùng phương. Vậy $A, B, G$ thẳng hàng."
+                },
+                {
+                    id: "p1_q6",
+                    question: "Trong không gian $Oxyz$, cho hai vectơ $\\vec{a}=(4;0;4),\\vec{b}=(1;1;0)$. Góc giữa hai vectơ đã cho bằng",
+                    choices: [
+                        { text: "$135^{\\circ}$", isCorrect: false },
+                        { text: "$60^{\\circ}$", isCorrect: true },
+                        { text: "$180^{\\circ}$", isCorrect: false },
+                        { text: "$90^{\\circ}$", isCorrect: false }
+                    ],
+                    solution: "Ta có $\\cos(\\vec{a},\\vec{b})=\\dfrac{\\vec{a}\\cdot\\vec{b}}{|\\vec{a}|\\cdot|\\vec{b}|}=\\dfrac{4\\cdot 1+0\\cdot1+4\\cdot 0}{\\sqrt{4^2+0^2+4^2}\\cdot\\sqrt{1^2+1^2+0^2}}=\\dfrac{4}{4\\sqrt{2}}=\\dfrac{1}{2}$. Vậy góc bằng $60^{\\circ}$."
+                }
+            ],
+            part2: [
+                {
+                    id: "p2_q1",
+                    question: "Trong không gian $Oxyz$, cho tam giác $ABC$ với $A(2;-8;-4), B(1;-5;-5)$ và $C(2;-6;-2)$.",
+                    sub: [
+                        { id: "a", text: "Toạ độ trọng tâm của tam giác $ABC$ là $\\left(\\dfrac{5}{3};- \\dfrac{19}{3};- \\dfrac{8}{3}\\right)$", isTrue: false, sol: "Toạ độ trọng tâm của tam giác $ABC$ là $G\\left(\\dfrac{2+1+2}{3}; \\dfrac{-8-5-6}{3}; \\dfrac{-4-5-2}{3}\\right) = \\left(\\dfrac{5}{3};- \\dfrac{19}{3};- \\dfrac{11}{3}\\right)$." },
+                        { id: "b", text: "Nếu tứ giác $ABCD$ là hình bình hành thì $D(3;-9;1)$", isTrue: false, sol: "Để $ABCD$ là hình bình hành thì $\\vec{AD}=\\vec{BC} \\Leftrightarrow \\heva{x_D-2=1-2 \\\\ y_D+8=-1 \\\\ z_D+4=3} \\Leftrightarrow D(3;-9;-1)$." },
+                        { id: "c", text: "Diện tích tam giác $ABC$ bằng $3 \\sqrt{2}$", isTrue: true, sol: "Ta có $AB=\\sqrt{11}, AC=2\\sqrt{2}, BC=\\sqrt{11}$. Sử dụng công thức Heron suy ra diện tích $S=3\\sqrt{2}$." },
+                        { id: "d", text: "Toạ độ giao điểm của đường thẳng $AB$ với mặt phẳng $(Oxy)$ là $\\left(6;-20;1\\right)$", isTrue: false, sol: "Giao điểm $I(x;y;0) \\in (Oxy)$. Do $A, B, I$ thẳng hàng $\\Rightarrow \\vec{AI}$ cùng phương $\\vec{AB} \\Rightarrow I(6;-20;0)$." }
+                    ]
+                },
+                {
+                    id: "p2_q2",
+                    question: "Trong không gian $Oxyz$, cho tam giác $ABC$ với $A(3;-1;0), B(1;-1;-2)$ và $C(3;1;2)$.",
+                    sub: [
+                        { id: "a", text: "Toạ độ trọng tâm của tam giác $ABC$ là $\\left(\\dfrac{7}{3}; \\dfrac{1}{3}; 0\\right)$", isTrue: false, sol: "Công thức trọng tâm $x_G = \\dfrac{3+1+3}{3}=\\dfrac{7}{3}; y_G = \\dfrac{-1-1+1}{3}=-\\dfrac{1}{3}; z_G=0 \\Rightarrow G\\left(\\dfrac{7}{3};-\\dfrac{1}{3};0\\right)$." },
+                        { id: "b", text: "Giao điểm của đường thẳng $BC$ với trục $Ox$ là điểm $N(1; 0; 0)$", isTrue: false, sol: "Gọi $K(x;0;0) \\in Ox$. $\\vec{BK}$ cùng phương $\\vec{BC}=(2;2;4) \\Rightarrow \\dfrac{x-1}{2}=\\dfrac{1}{2}=\\dfrac{2}{4} \\Rightarrow x=2 \\Rightarrow K(2;0;0)$." },
+                        { id: "c", text: "Góc giữa vectơ $\\overrightarrow{AC}$ và vectơ đơn vị $\\vec{j}$ của trục $Oy$ bằng $45^\\circ$", isTrue: true, sol: "$\\overrightarrow{AC}=(0;2;2), \\vec{j}=(0;1;0) \\Rightarrow \\cos(\\overrightarrow{AC},\\vec{j}) = \\dfrac{2}{\\sqrt{8}\\cdot 1} = \\dfrac{1}{\\sqrt{2}} \\Rightarrow 45^\\circ$." },
+                        { id: "d", text: "Biểu thức $P = \\left| \\overrightarrow{MA} + \\overrightarrow{MB} + \\overrightarrow{MC} \\right|$ với điểm $M$ thuộc mặt phẳng $(Oxz)$ đạt giá trị nhỏ nhất bằng $3$", isTrue: false, sol: "$P = 3MG$. Min khi $M$ là hình chiếu của $G\\left(\\dfrac{7}{3};-\\dfrac{1}{3};0\\right)$ lên $(Oxz) \\Rightarrow M\\left(\\dfrac{7}{3};0;0\\right) \\Rightarrow MG = \\dfrac{1}{3} \\Rightarrow P_{\\min} = 1$." }
+                    ]
+                },
+                {
+                    id: "p2_q3",
+                    question: "Chi đoàn X dự định dựng một lều trại dã ngoại hình chóp tứ giác đều $S.ABCD$ có cạnh $SB = 5$, $CD = 3 \\sqrt{2}$. Chọn hệ trục tọa độ $Oxyz$ như hình vẽ bên dưới.<br>" +
+                              "<svg viewBox='0 0 340 250' class='mx-auto d-block my-3' style='max-width:100%; width:280px;'>\n" +
+                              "  <defs>\n" +
+                              "    <marker id='arr_ax' viewBox='0 0 10 10' refX='5' refY='5' markerWidth='5' markerHeight='5' orient='auto-start-reverse'>\n" +
+                              "      <path d='M 0 0 L 10 5 L 0 10 z' fill='#0a58ca'/>\n" +
+                              "    </marker>\n" +
+                              "  </defs>\n" +
+                              "  <polygon points='110,150 90,215 250,210 270,145' fill='rgba(13, 110, 253, 0.05)' />\n" +
+                              "  <g stroke='#777' stroke-width='1.2' stroke-dasharray='4,3'>\n" +
+                              "    <line x1='110' y1='150' x2='90' y2='215' />\n" +
+                              "    <line x1='110' y1='150' x2='270' y2='145' />\n" +
+                              "    <line x1='180' y1='35' x2='110' y2='150' />\n" +
+                              "    <line x1='270' y1='145' x2='90' y2='215' />\n" +
+                              "    <line x1='110' y1='150' x2='250' y2='210' />\n" +
+                              "    <line x1='180' y1='180' x2='180' y2='35' />\n" +
+                              "  </g>\n" +
+                              "  <g stroke='#111' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'>\n" +
+                              "    <line x1='90' y1='215' x2='250' y2='210' />\n" +
+                              "    <line x1='250' y1='210' x2='270' y2='145' />\n" +
+                              "    <line x1='180' y1='35' x2='90' y2='215' />\n" +
+                              "    <line x1='180' y1='35' x2='250' y2='210' />\n" +
+                              "    <line x1='180' y1='35' x2='270' y2='145' />\n" +
+                              "  </g>\n" +
+                              "  <g stroke='#0a58ca' stroke-width='1.4'>\n" +
+                              "    <line x1='90' y1='215' x2='50' y2='230.5' marker-end='url(#arr_ax)' />\n" +
+                              "    <line x1='250' y1='210' x2='300' y2='229.5' marker-end='url(#arr_ax)' />\n" +
+                              "    <line x1='180' y1='35' x2='180' y2='10' marker-end='url(#arr_ax)' />\n" +
+                              "  </g>\n" +
+                              "  <circle cx='180' cy='180' r='2.5' fill='#dc3545' />\n" +
+                              "  <g fill='#000' font-size='15' font-family='sans-serif'>\n" +
+                              "    <text x='38' y='242' font-weight='bold' fill='#0a58ca'>x</text>\n" +
+                              "    <text x='306' y='238' font-weight='bold' fill='#0a58ca'>y</text>\n" +
+                              "    <text x='188' y='18' font-weight='bold' fill='#0a58ca'>z</text>\n" +
+                              "    <text x='164' y='32' font-weight='bold'>S</text>\n" +
+                              "    <text x='102' y='142' font-weight='bold'>A</text>\n" +
+                              "    <text x='74' y='218' font-weight='bold'>B</text>\n" +
+                              "    <text x='256' y='214' font-weight='bold'>C</text>\n" +
+                              "    <text x='276' y='142' font-weight='bold'>D</text>\n" +
+                              "    <text x='186' y='196' font-weight='bold' fill='#dc3545'>O</text>\n" +
+                              "  </g>\n" +
+                              "</svg>",
+                    sub: [
+                        { id: "a", text: "$C(0;3;0); D(-3;0;0)$", isTrue: true, sol: "Do $ABCD$ là hình vuông tâm $O$, $CD = 3 \\sqrt{2} \\Rightarrow OB = OC = \\dfrac{CD}{\\sqrt{2}} = 3$. Vì tia $Oy$ chứa $OC$, tia $Ox$ chứa $OB$, và $D$ đối xứng với $B$ qua $O$ nên $C(0;3;0)$ và $D(-3;0;0)$." },
+                        { id: "b", text: "Mặt cầu đường kính $SC$ có diện tích bằng $25\\pi$", isTrue: true, sol: "Ta có $S \\in Oz \\Rightarrow S(0;0;z_S)$. $OS = \\sqrt{SB^2 - OB^2} = \\sqrt{5^2 - 3^2} = 4 \\Rightarrow S(0;0;4)$. Bán kính mặt cầu đường kính $SC$ là $R = \\dfrac{SC}{2} = \\dfrac{\\sqrt{0^2 + 3^2 + 4^2}}{2} = \\dfrac{5}{2}$. Diện tích của mặt cầu là $S_{\\text{mc}} = 4\\pi R^2 = 25\\pi$." },
+                        { id: "c", text: "Gọi $M$ là trung điểm cạnh $SD$ thì $BM = \\dfrac{5}{2}$", isTrue: false, sol: "Ta có $S(0;0;4), D(-3;0;0) \\Rightarrow M\\left(- \\dfrac{3}{2}; 0; 2\\right)$. Với $B(3;0;0) \\Rightarrow \\overrightarrow{BM} = \\left(- \\dfrac{9}{2}; 0; 2\\right) \\Rightarrow BM = \\dfrac{\\sqrt{97}}{2} \\neq \\dfrac{5}{2}$." },
+                        { id: "d", text: "Gọi $G$ là trọng tâm tam giác $SCD$. Nếu chi đoàn muốn treo hệ thống đèn led trang trí nối từ một điểm $E$ trên mặt phẳng $(SBD)$ đến hai điểm $G, A$ sao cho $\\left| EG - EA \\right|$ là lớn nhất thì $E\\left(\\dfrac{3}{2}; 0; 2\\right)$", isTrue: false, sol: "Mặt phẳng $(SBD)$ có phương trình $y=0$. Điểm đối xứng của $A(0;-3;0)$ qua $(SBD)$ chính là $C(0;3;0)$. Do đó $\\left| EG - EA \\right| = \\left| EG - EC \\right| \\le GC$. Max khi $E, G, C$ thẳng hàng $\\Rightarrow E$ là giao điểm của đường thẳng $GC$ với $(SBD)$. Tính được tọa độ đúng phải là $E\\left(- \\dfrac{3}{2}; 0; 2\\right)$, đề bài bị thiếu dấu trừ." }
+                    ]
+                }
+            ],
+            part3: [
+                {
+                    id: "p3_q1",
+                    question: "Trong cùng một thời điểm, vị trí của điểm $M(a;b;c)$ trong không gian được xác định bởi bốn vệ tinh $A(-4; 7; -2), B(4; -1; -2), C(-4; -4; -8), D(4; -1; -2)$ thỏa mãn $MA=6, MB=6, MC=9, MD=6$. Khoảng cách từ điểm $M$ đến $O$ bằng bao nhiêu?",
+                    answer: "5",
+                    solution: "Giải hệ phương trình khoảng cách $(x-x_i)^2+(y-y_i)^2+(z-z_i)^2=R_i^2$ ta tìm được tọa độ $M(0;3;-4)$. Suy ra $OM = \\sqrt{0^2+3^2+(-4)^2} = 5$."
+                },
+                {
+                    id: "p3_q2",
+                    question: "Trong không gian $Oxyz$, cho ba điểm $A(-1;-13;-1),B(14;0;11),C(-12;4;15)$. Gọi điểm $M(a;b;c)$ thuộc mặt phẳng $(Oxy)$ sao cho biểu thức $P=\\vec{MA}^2+4\\vec{MB}^2+3\\vec{MC}^2$ đạt giá trị nhỏ nhất. Hỏi $a+b+c$ bằng bao nhiêu? (Kết quả làm tròn đến hàng phần chục).",
+                    answer: "2.3",
+                    solution: "Tìm điểm $I$ thỏa mãn $\\vec{IA}+4\\vec{IB}+3\\vec{IC}=\\vec{0} \\Rightarrow I\\left(\\dfrac{19}{8}; -\\dfrac{1}{8}; 11\\right)$. Biểu thức $P$ nhỏ nhất khi $M$ là hình chiếu của $I$ lên $(Oxy) \\Rightarrow M\\left(\\dfrac{19}{8}; -\\dfrac{1}{8}; 0\\right)$. Vậy $a+b+c = 2.25 \\approx 2.3$."
+                },
+                {
+                    id: "p3_q3",
+                    question: "Trạm kiểm soát không lưu theo dõi hai máy bay. Máy bay 1 ở $A(0;35;8)$, bay theo hướng $\\vec{v}_1=(3;4;0)$ với tốc độ 900 km/h. Máy bay 2 ở $B(30;8;8)$, bay theo hướng $\\vec{v}_2=(5;12;0)$ với tốc độ 910 km/h. Khoảng cách an toàn tối thiểu là 9.3 km. Sau ít nhất bao nhiêu phút hai máy bay vi phạm khoảng cách an toàn? (Làm tròn đến hàng phần trăm).",
+                    answer: "8.93",
+                    solution: "Thiết lập phương trình vị trí $A'(540t; 720t+35; 8)$ và $B'(350t+30; 840t+8; 8)$. Đặt $A'B' \\le 9.3 \\Rightarrow 50500t^2 - 17880t + 1542.51 \\le 0 \\Rightarrow t \\ge 0.1488$ giờ $\\approx 8.93$ phút."
+                },
+                {
+                    id: "p3_q4",
+                    question: "Một quả bóng hình cầu tiếp xúc với hai bức tường vuông góc và mặt đất. Điểm $B$ trên giao tuyến 2 tường cách mặt đất 89 cm. Dây treo nối từ $B$ đến mặt ngoài bóng dài $AB=43$ cm. Quả bóng cách mặt đất 27 cm. Hỏi đường kính quả bóng là bao nhiêu cm? (Làm tròn đến hàng phần chục).",
+                    answer: "21.1",
+                    solution: "Gọi bán kính bóng là $r$. Ta có $BI = 43+r$. Khoảng cách theo trục dọc $BM = 89-(r+27) = 62-r$. Hình chiếu ngang $MI = r\\sqrt{2}$. Định lý Pytago: $(43+r)^2 = (62-r)^2 + 2r^2 \\Rightarrow r \\approx 10.56$ cm. Đường kính $2r \\approx 21.1$ cm."
+                }
+            ]
+        };
+
+        // --- BỘ NHỚ LƯU TRỮ PRO ---
+        const STORAGE_KEY = "OXYZ_OT3_PRO_V1";
+        const SUBMITTED_KEY = "OXYZ_OT3_SUBMITTED_PRO_V1";
+
+        let currentExam = {
+            part1: [], part2: [], part3: [],
+            answers: {}, code: 0, startTime: Date.now()
+        };
+
+        function shuffleArray(arr) {
+            let array = [...arr];
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function compareShortAnswer(user, correct) {
+            if (!user || !correct) return false;
+            let cleanUser = user.toString().trim().replace(/,/g, '.');
+            let cleanCorrect = correct.toString().trim().replace(/,/g, '.');
+            let numUser = parseFloat(cleanUser);
+            let numCorrect = parseFloat(cleanCorrect);
+            if (!isNaN(numUser) && !isNaN(numCorrect)) {
+                return Math.abs(numUser - numCorrect) < 0.0001;
+            }
+            return cleanUser.toLowerCase() === cleanCorrect.toLowerCase();
+        }
+
+        function showToast(msg, type='info') {
+            const container = document.getElementById('toast-container');
+            const bg = type === 'success' ? 'bg-success' : (type === 'danger' ? 'bg-danger' : 'bg-primary');
+            container.innerHTML = `<div class="alert ${bg} text-white alert-dismissible fade show shadow-sm" role="alert">
+                ${msg}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+            </div>`;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        function generateExam() {
+            const submitted = localStorage.getItem(SUBMITTED_KEY);
+            if (submitted) { restoreSubmittedExam(JSON.parse(submitted)); return; }
+
+            const draft = localStorage.getItem(STORAGE_KEY);
+            if (draft) {
+                try {
+                    const data = JSON.parse(draft);
+                    currentExam = data.exam;
+                    document.getElementById('student-name').value = data.name || "";
+                    document.getElementById('student-class').value = data.class || "";
+                    renderExamQuestions(); applySavedAnswers(data.answers);
+                    showToast("<i class='fas fa-history me-2'></i>Đã khôi phục bài làm gần nhất.", "success");
+                    startAutoSave(); return;
+                } catch(e) { console.error(e); }
+            }
+
+            currentExam.code = Math.floor(100 + Math.random() * 900);
+            currentExam.startTime = Date.now();
+            
+            // Trộn đề
+            currentExam.part1 = shuffleArray(rawData.part1).map(q => ({ ...q, choices: shuffleArray(q.choices) }));
+            currentExam.part2 = shuffleArray(rawData.part2);
+            currentExam.part3 = shuffleArray(rawData.part3);
+
+            renderExamQuestions(); startAutoSave();
+        }
+
+        function renderExamQuestions() {
+            document.getElementById('exam-code').innerText = currentExam.code;
+
+            // Render Part 1 - Dàn ngang 4 đáp án trên máy tính
+            document.getElementById('part1-questions').innerHTML = currentExam.part1.map((q, idx) => `
+                <div class="question-card" id="card-${q.id}">
+                    <p class="fw-bold fs-6 mb-3">Câu ${idx + 1}: <span class="fw-normal">${q.question}</span></p>
+                    <div class="row g-2">
+                        ${q.choices.map((c, cIdx) => `
+                            <div class="col-lg-3 col-md-6 col-12">
+                                <div class="form-check ps-0 mb-0">
+                                    <input class="form-check-input d-none" type="radio" name="${q.id}" id="${q.id}_${cIdx}" value="${cIdx}" onchange="saveAnswer('${q.id}', ${cIdx})">
+                                    <label class="choice-label text-start h-100" for="${q.id}_${cIdx}">
+                                        <b>${String.fromCharCode(65 + cIdx)}.</b> ${c.text}
+                                    </label>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="solution-box shadow-sm" id="sol-${q.id}">
+                        <b class="text-success">💡 Hướng dẫn giải:</b><br>${q.solution}
+                    </div>
+                </div>
+            `).join('');
+
+            // Render Part 2
+            document.getElementById('part2-questions').innerHTML = currentExam.part2.map((q, idx) => `
+                <div class="question-card" id="card-${q.id}">
+                    <p class="fw-bold fs-6 mb-3">Câu ${idx + 1}: <span class="fw-normal">${q.question}</span></p>
+                    <div class="table-responsive border rounded">
+                        <table class="table table-bordered tf-table mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Phát biểu</th>
+                                    <th class="text-center" style="width: 80px;">Đúng</th>
+                                    <th class="text-center" style="width: 80px;">Sai</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${q.sub.map((subQ) => `
+                                    <tr>
+                                        <td><b>Ý ${subQ.id}):</b> ${subQ.text}</td>
+                                        <td class="text-center bg-success-subtle-hover">
+                                            <input type="radio" class="form-check-input mt-0 cursor-pointer" name="${q.id}_${subQ.id}" value="true" onchange="saveAnswer('${q.id}_${subQ.id}', 'true')">
+                                        </td>
+                                        <td class="text-center bg-danger-subtle-hover">
+                                            <input type="radio" class="form-check-input mt-0 cursor-pointer" name="${q.id}_${subQ.id}" value="false" onchange="saveAnswer('${q.id}_${subQ.id}', 'false')">
+                                        </td>
+                                    </tr>
+                                    <tr class="solution-box" id="sol-${q.id}_${subQ.id}">
+                                        <td colspan="3"><b class="text-primary">[Đáp án: ${subQ.isTrue ? 'ĐÚNG':'SAI'}]</b> — ${subQ.sol}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `).join('');
+
+            // Render Part 3
+            document.getElementById('part3-questions').innerHTML = currentExam.part3.map((q, idx) => `
+                <div class="question-card" id="card-${q.id}">
+                    <p class="fw-bold fs-6 mb-3">Câu ${idx + 1}: <span class="fw-normal">${q.question}</span></p>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text bg-primary text-white fw-bold">Trả lời:</span>
+                                <input type="text" class="form-control fw-bold text-primary text-center fs-5" id="input-${q.id}" placeholder="Nhập đáp số..." oninput="saveAnswer('${q.id}', this.value)">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="solution-box shadow-sm" id="sol-${q.id}">
+                        <b>Đáp án chuẩn:</b> <span class="badge bg-success fs-6 px-3 py-2 mb-2">${q.answer}</span><br>
+                        <b class="text-success">💡 Cách giải:</b><br>${q.solution}
+                    </div>
+                </div>
+            `).join('');
+
+            if (window.MathJax) MathJax.typesetPromise();
+            updateProgress();
+        }
+
+        function saveAnswer(key, val) { currentExam.answers[key] = val; updateProgress(); saveDraft(); }
+        function saveDraft() {
+            if (document.getElementById('btn-submit').style.display === 'none') return;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                name: document.getElementById('student-name').value,
+                class: document.getElementById('student-class').value,
+                exam: currentExam, answers: currentExam.answers, savedAt: Date.now()
+            }));
+        }
+
+        function updateProgress() {
+            let count = 0; const total = 22; // 6 + 12 + 4
+            currentExam.part1.forEach(q => { if (currentExam.answers[q.id] !== undefined) count++; });
+            currentExam.part2.forEach(q => q.sub.forEach(sub => { if (currentExam.answers[`${q.id}_${sub.id}`] !== undefined) count++; }));
+            currentExam.part3.forEach(q => { if (currentExam.answers[q.id] && currentExam.answers[q.id].trim() !== '') count++; });
+
+            const pct = Math.round((count / total) * 100);
+            document.getElementById('progress-bar').style.width = pct + '%';
+            document.getElementById('progress-text').innerText = `${count}/${total} ý (${pct}%)`;
+        }
+
+        function startAutoSave() { setInterval(saveDraft, 10000); }
+
+        function applySavedAnswers(ans) {
+            currentExam.answers = ans;
+            currentExam.part1.forEach(q => { if (ans[q.id] !== undefined) { const el = document.getElementById(`${q.id}_${ans[q.id]}`); if(el) el.checked = true; } });
+            currentExam.part2.forEach(q => q.sub.forEach(sub => { if (ans[`${q.id}_${sub.id}`]) { const el = document.querySelector(`input[name="${q.id}_${sub.id}"][value="${ans[`${q.id}_${sub.id}`]}"]`); if(el) el.checked = true; } }));
+            currentExam.part3.forEach(q => { if (ans[q.id]) document.getElementById(`input-${q.id}`).value = ans[q.id]; });
+            updateProgress();
+        }
+
+        function submitExam() {
+            const name = document.getElementById('student-name').value.trim();
+            const className = document.getElementById('student-class').value.trim();
+
+            if (!name || !className) { showToast("⚠️ Vui lòng điền đầy đủ Họ Tên và Lớp ở đầu trang!", "danger"); window.scrollTo({top: 0, behavior: 'smooth'}); return; }
+
+            let ansCount = 0; const total = 22;
+            currentExam.part1.forEach(q => { if (currentExam.answers[q.id] !== undefined) ansCount++; });
+            currentExam.part2.forEach(q => q.sub.forEach(s => { if (currentExam.answers[`${q.id}_${s.id}`] !== undefined) ansCount++; }));
+            currentExam.part3.forEach(q => { if (currentExam.answers[q.id]) ansCount++; });
+
+            const pct = (ansCount / total) * 100;
+            if (pct < 50) { alert(`⚠️ BẠN CHƯA ĐỦ ĐIỀU KIỆN NỘP BÀI!\nBạn mới hoàn thành ${Math.round(pct)}% bài thi. Cần tối thiểu 50% (11 ý) để được nộp.`); return; }
+
+            if (!confirm("❓ Xác nhận nộp toàn bộ bài thi? Sau khi nộp sẽ không thể sửa lại.")) return;
+
+            // Chấm điểm
+            let scoreP1 = 0, scoreP2 = 0, scoreP3 = 0;
+            currentExam.part1.forEach(q => { if (currentExam.answers[q.id] !== undefined && q.choices[currentExam.answers[q.id]].isCorrect) scoreP1 += 0.25; });
+            currentExam.part2.forEach(q => {
+                let c = 0;
+                q.sub.forEach(sub => { if (currentExam.answers[`${q.id}_${sub.id}`] !== undefined && (currentExam.answers[`${q.id}_${sub.id}`] === 'true') === sub.isTrue) c++; });
+                scoreP2 += [0, 0.1, 0.25, 0.5, 1.0][c];
+            });
+            currentExam.part3.forEach(q => { if (compareShortAnswer(currentExam.answers[q.id], q.answer)) scoreP3 += 0.5; });
+
+            const totalScore = scoreP1 + scoreP2 + scoreP3;
+            const durationMins = Math.max(1, Math.round((Date.now() - currentExam.startTime) / 60000));
+            const submitDate = new Date().toLocaleString('vi-VN');
+
+            const resultData = {
+                name, class: className, code: currentExam.code,
+                score1: scoreP1, score2: scoreP2, score3: scoreP3, totalScore,
+                duration: durationMins, submitTime: submitDate, percent: Math.round(pct),
+                exam: currentExam, answers: currentExam.answers
+            };
+
+            localStorage.setItem(SUBMITTED_KEY, JSON.stringify(resultData));
+            localStorage.removeItem(STORAGE_KEY);
+
+            restoreSubmittedExam(resultData); sendToGoogleSheet(resultData);
+        }
+
+        function restoreSubmittedExam(data) {
+            document.getElementById('student-name').value = data.name; document.getElementById('student-class').value = data.class;
+            document.getElementById('student-name').disabled = true; document.getElementById('student-class').disabled = true;
+            document.getElementById('exam-code').innerText = data.code;
+
+            document.getElementById('score-part1').innerText = data.score1.toFixed(2); document.getElementById('score-part2').innerText = data.score2.toFixed(2);
+            document.getElementById('score-part3').innerText = data.score3.toFixed(2); document.getElementById('score-total').innerText = data.totalScore.toFixed(2);
+            document.getElementById('duration-display').innerText = `${data.duration} phút`; document.getElementById('submit-time-display').innerText = data.submitTime;
+            document.getElementById('percent-display').innerText = `${data.percent}%`;
+            document.getElementById('result-summary-card').style.display = 'block';
+
+            document.getElementById('btn-submit').style.display = 'none'; document.getElementById('btn-print').style.display = 'inline-block'; document.getElementById('btn-review').style.display = 'inline-block';
+
+            currentExam = data.exam; applySavedAnswers(data.answers);
+            document.querySelectorAll('input').forEach(inp => inp.disabled = true);
+
+            // Tô màu đáp án P1
+            currentExam.part1.forEach(q => {
+                const userChoice = data.answers[q.id];
+                q.choices.forEach((c, idx) => {
+                    const lbl = document.querySelector(`label[for="${q.id}_${idx}"]`);
+                    if (c.isCorrect) lbl.classList.add('correct-ans', 'border-success');
+                    else if (userChoice == idx) lbl.classList.add('wrong-ans');
+                });
+                document.getElementById(`sol-${q.id}`).style.display = 'block';
+            });
+
+            // Tô màu đáp án P2
+            currentExam.part2.forEach(q => {
+                q.sub.forEach(sub => {
+                    const tr = document.querySelector(`input[name="${q.id}_${sub.id}"]`).closest('tr');
+                    const userVal = data.answers[`${q.id}_${sub.id}`];
+                    if (userVal !== undefined) tr.classList.add((userVal === 'true') === sub.isTrue ? 'table-success' : 'table-danger');
+                    document.getElementById(`sol-${q.id}_${sub.id}`).style.display = 'table-row';
+                });
+            });
+
+            // Tô màu đáp án P3
+            currentExam.part3.forEach(q => {
+                const inp = document.getElementById(`input-${q.id}`);
+                inp.classList.add(compareShortAnswer(data.answers[q.id], q.answer) ? 'bg-success-subtle' : 'bg-danger-subtle');
+                document.getElementById(`sol-${q.id}`).style.display = 'block';
+            });
+
+            window.scrollTo({top: document.getElementById('result-summary-card').offsetTop - 20, behavior: 'smooth'});
+        }
+
+        function reviewExam() { document.getElementById('result-summary-card').scrollIntoView({ behavior: 'smooth' }); }
+
+        // GỬI LÊN SCRIPT BẰNG URLSearchParams (Đảm bảo e.parameter nhận 100%)
+        function sendToGoogleSheet(d) {
+            if (!GAS_URL || GAS_URL.includes("VI_DU_Mẫu")) return;
+            const params = new URLSearchParams();
+            params.append("sheet_name", "Oxyz_ot3"); // Định danh Sheet nhận
+            params.append("student_name", d.name);
+            params.append("class_name", d.class);
+            params.append("part1_score", d.score1);
+            params.append("part2_score", d.score2);
+            params.append("part3_score", d.score3);
+            params.append("total_score", d.totalScore);
+            params.append("submit_time", d.submitTime);
+            params.append("duration_minutes", d.duration);
+            params.append("percent", d.percent + "%");
+
+            fetch(GAS_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() })
+            .then(() => showToast("<i class='fas fa-cloud-upload-alt me-2'></i>Đã lưu điểm vào máy chủ Google Sheets!", "success"))
+            .catch(() => showToast("Đã chấm xong! (Hệ thống lưu điểm offline do rớt mạng)", "warning"));
+        }
+
+        document.addEventListener("DOMContentLoaded", generateExam);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
