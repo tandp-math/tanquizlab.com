@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đề Ôn Tập - Toán Thực Tế & Lý Thuyết Vectơ</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            startup: {
+                typeset: false
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+    <style>
+        body {
+            background-color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .header-title {
+            color: #0d6efd;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        .question-card {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background-color: #fff;
+            transition: box-shadow 0.2s;
+        }
+        .question-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .option-label {
+            display: block;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-label:hover {
+            background-color: #f8f9fa;
+        }
+        .form-check-input:checked + .option-label {
+            background-color: #e7f1ff;
+            border-color: #0d6efd;
+        }
+        .correct-ans {
+            background-color: #d1e7dd !important;
+            border-color: #198754 !important;
+            color: #0f5132;
+        }
+        .wrong-ans {
+            background-color: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #842029;
+        }
+        .explanation {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .part-title {
+            font-weight: bold;
+            color: #084298;
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        
+        /* CSS for Print */
+        @media print {
+            body { background-color: #fff; }
+            .no-print { display: none !important; }
+            .question-card { break-inside: avoid; border: none; border-bottom: 1px dashed #ccc; box-shadow: none; padding: 10px 0; }
+            .option-label { border: none; padding: 5px 0; margin: 0; }
+            .explanation { display: block !important; background: transparent; border: 1px solid #ccc; page-break-inside: avoid; }
+            .container { max-width: 100%; padding: 0; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mt-4 mb-5" id="app">
+        <h2 class="header-title">ĐỀ ÔN TẬP</h2>
+        
+        <div class="d-flex justify-content-end mb-4 no-print">
+            <span class="badge bg-primary fs-6 p-2">Mã đề: <span id="examCode"></span></span>
+        </div>
+
+        <div id="printHeader" class="d-none d-print-block mb-4">
+            <h4 class="text-center">KẾT QUẢ LÀM BÀI</h4>
+            <p><strong>Mã đề:</strong> <span id="pExamCode"></span></p>
+            <p><strong>Điểm Phần I:</strong> <span id="pScore1"></span> / <span id="pMaxScore1"></span></p>
+            <p><strong>Tổng điểm:</strong> <span id="pTotalScore"></span></p>
+            <hr>
+        </div>
+
+        <div id="notification" class="alert alert-success d-none no-print" role="alert">
+            Đã khôi phục bài làm trước đó.
+        </div>
+
+        <div id="resultBoard" class="alert alert-info d-none mb-4" role="alert">
+            <h4 class="alert-heading">Kết quả làm bài</h4>
+            <hr>
+            <p class="mb-1 fw-bold fs-5">Điểm phần I: <span id="scoreText" class="text-danger"></span> / <span id="maxScoreText"></span></p>
+            <p class="mb-1">Tỷ lệ hoàn thành: <span id="percentText"></span>%</p>
+            <p class="mb-0">Số câu đúng: <span id="correctCount"></span> | Số câu sai: <span id="wrongCount"></span></p>
+        </div>
+
+        <div class="part-section">
+            <h4 class="part-title">PHẦN I. TRẮC NGHIỆM NHIỀU LỰA CHỌN</h4>
+            <p class="text-muted fst-italic mb-4">Mỗi câu đúng được 0.25 điểm.</p>
+            <div id="quiz-container">
+                </div>
+        </div>
+
+        <div class="text-center mt-5 no-print">
+            <button id="btnSubmit" class="btn btn-primary btn-lg px-5 me-3" onclick="submitExam()">NỘP BÀI</button>
+            <button id="btnPrint" class="btn btn-success btn-lg px-5 d-none" onclick="window.print()">IN KẾT QUẢ PDF</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const rawData = [
+            {
+                q: "Một vật được treo cân bằng dưới tác dụng của ba lực $\\overrightarrow{F}_1, \\overrightarrow{F}_2$ và trọng lực $\\overrightarrow{P}$. Phương trình nào sau đây thể hiện đúng trạng thái cân bằng của vật?",
+                options: [
+                    { text: "$\\overrightarrow{F}_1 + \\overrightarrow{F}_2 + \\overrightarrow{P} = \\overrightarrow{0}$", correct: true },
+                    { text: "$|\\overrightarrow{F}_1| + |\\overrightarrow{F}_2| + |\\overrightarrow{P}| = 0$", correct: false },
+                    { text: "$\\overrightarrow{F}_1 + \\overrightarrow{F}_2 = \\overrightarrow{P}$", correct: false },
+                    { text: "$\\overrightarrow{F}_1 \\cdot \\overrightarrow{F}_2 \\cdot \\overrightarrow{P} = 0$", correct: false }
+                ],
+                explanation: "Vật đứng yên (cân bằng) khi tổng các lực tác dụng lên nó bằng vectơ không: $\\overrightarrow{F}_1 + \\overrightarrow{F}_2 + \\overrightarrow{P} = \\overrightarrow{0}$."
+            },
+            {
+                q: "Công sinh ra khi một lực $\\overrightarrow{F}$ làm dịch chuyển vật một đoạn đường được biểu diễn bởi vectơ $\\overrightarrow{d}$ được tính bằng công thức nào?",
+                options: [
+                    { text: "$A = \\overrightarrow{F} \\cdot \\overrightarrow{d} = x_F x_d + y_F y_d + z_F z_d$", correct: true },
+                    { text: "$A = |\\overrightarrow{F}| + |\\overrightarrow{d}|$", correct: false },
+                    { text: "$A = \\frac{|\\overrightarrow{F}|}{|\\overrightarrow{d}|}$", correct: false },
+                    { text: "$A = [\\overrightarrow{F}, \\overrightarrow{d}]$", correct: false }
+                ],
+                explanation: "Công cơ học được tính bằng tích vô hướng của vectơ lực và vectơ độ dời: $A = \\overrightarrow{F} \\cdot \\overrightarrow{d}$."
+            },
+            {
+                q: "Để tìm vị trí trạm $M$ sao cho biểu thức $T = MA^2 + 2MB^2$ đạt giá trị nhỏ nhất, bước đầu tiên ta cần gọi điểm $I$ thỏa mãn hệ thức vectơ nào dưới đây?",
+                options: [
+                    { text: "$\\overrightarrow{IA} + 2\\overrightarrow{IB} = \\overrightarrow{0}$", correct: true },
+                    { text: "$\\overrightarrow{IA} - 2\\overrightarrow{IB} = \\overrightarrow{0}$", correct: false },
+                    { text: "$\\overrightarrow{IA} + \\overrightarrow{IB} = \\overrightarrow{0}$", correct: false },
+                    { text: "$2\\overrightarrow{IA} + \\overrightarrow{IB} = \\overrightarrow{0}$", correct: false }
+                ],
+                explanation: "Theo phương pháp tâm tỉ cự, với hàm mục tiêu $T = a MA^2 + b MB^2$, ta gọi điểm $I$ thỏa mãn $a\\overrightarrow{IA} + b\\overrightarrow{IB} = \\overrightarrow{0}$."
+            },
+            {
+                q: "Khi khảo sát khoảng cách giữa hai tàu di chuyển trên biển theo thời gian $t$, hàm khoảng cách có dạng $d(t) = \\sqrt{\\Delta x^2 + \\Delta y^2 + \\Delta z^2}$. Để tìm khoảng cách ngắn nhất, ta cần làm gì?",
+                options: [
+                    { text: "Tìm giá trị nhỏ nhất của hàm số bậc hai nằm dưới dấu căn.", correct: true },
+                    { text: "Cho $d(t) = 0$ và giải tìm $t$.", correct: false },
+                    { text: "Tính đạo hàm của $\\Delta x, \\Delta y, \\Delta z$ và cho bằng $0$.", correct: false },
+                    { text: "Tính tích vô hướng của hai vectơ vận tốc.", correct: false }
+                ],
+                explanation: "Biểu thức dưới dấu căn là một tam thức bậc hai theo $t$. Khoảng cách nhỏ nhất khi biểu thức bậc hai này đạt giá trị nhỏ nhất (Min)."
+            },
+            {
+                q: "Biết một máy bay di chuyển thẳng đều với tốc độ $v$ theo hướng của vectơ $\\overrightarrow{u}$ (không phải vectơ đơn vị). Vectơ vận tốc $\\overrightarrow{v}$ của máy bay được xác định như thế nào?",
+                options: [
+                    { text: "$\\overrightarrow{v} = v \\cdot \\frac{\\overrightarrow{u}}{|\\overrightarrow{u}|}$", correct: true },
+                    { text: "$\\overrightarrow{v} = v \\cdot \\overrightarrow{u}$", correct: false },
+                    { text: "$\\overrightarrow{v} = \\frac{\\overrightarrow{u}}{v}$", correct: false },
+                    { text: "$\\overrightarrow{v} = v + |\\overrightarrow{u}|$", correct: false }
+                ],
+                explanation: "Phải chuẩn hóa vectơ hướng thành vectơ đơn vị $\\overrightarrow{e} = \\frac{\\overrightarrow{u}}{|\\overrightarrow{u}|}$, sau đó nhân với tốc độ $v$ để ra vectơ vận tốc."
+            },
+            {
+                q: "Cho hai lực $\\overrightarrow{F}_1$ và $\\overrightarrow{F}_2$ cùng tác dụng vào một điểm vật chất và tạo với nhau một góc $\\alpha$. Công thức nào sau đây tính độ lớn của hợp lực $F$?",
+                options: [
+                    { text: "$F = \\sqrt{F_1^2 + F_2^2 + 2F_1 F_2 \\cos\\alpha}$", correct: true },
+                    { text: "$F = \\sqrt{F_1^2 + F_2^2 - 2F_1 F_2 \\cos\\alpha}$", correct: false },
+                    { text: "$F = F_1 + F_2$", correct: false },
+                    { text: "$F = \\sqrt{F_1^2 + F_2^2}$", correct: false }
+                ],
+                explanation: "Độ lớn của hợp lực theo quy tắc hình bình hành được tính bằng công thức: $F = \\sqrt{F_1^2 + F_2^2 + 2F_1 F_2 \\cos\\alpha}$."
+            },
+            {
+                q: "Cho $I$ là trung điểm của đoạn thẳng $AB$ và điểm $M$ bất kỳ. Đẳng thức vectơ nào sau đây đúng?",
+                options: [
+                    { text: "$\\overrightarrow{MA} + \\overrightarrow{MB} = 2\\overrightarrow{MI}$", correct: true },
+                    { text: "$\\overrightarrow{MA} + \\overrightarrow{MB} = \\overrightarrow{MI}$", correct: false },
+                    { text: "$\\overrightarrow{MA} + \\overrightarrow{MB} = \\frac{1}{2}\\overrightarrow{MI}$", correct: false },
+                    { text: "$\\overrightarrow{MA} - \\overrightarrow{MB} = 2\\overrightarrow{MI}$", correct: false }
+                ],
+                explanation: "Theo quy tắc trung điểm, với mọi điểm $M$ ta luôn có $\\overrightarrow{MA} + \\overrightarrow{MB} = 2\\overrightarrow{MI}$ (với $I$ là trung điểm $AB$)."
+            },
+            {
+                q: "Cho $G$ là trọng tâm của tam giác $ABC$ và điểm $M$ bất kỳ. Khẳng định nào sau đây là đúng?",
+                options: [
+                    { text: "$\\overrightarrow{MA} + \\overrightarrow{MB} + \\overrightarrow{MC} = 3\\overrightarrow{MG}$", correct: true },
+                    { text: "$\\overrightarrow{MA} + \\overrightarrow{MB} + \\overrightarrow{MC} = \\overrightarrow{MG}$", correct: false },
+                    { text: "$\\overrightarrow{MA} + \\overrightarrow{MB} + \\overrightarrow{MC} = \\overrightarrow{0}$", correct: false },
+                    { text: "$\\overrightarrow{GA} + \\overrightarrow{GB} + \\overrightarrow{GC} = 3\\overrightarrow{GM}$", correct: false }
+                ],
+                explanation: "Theo tính chất trọng tâm tam giác, với mọi điểm $M$ ta có $\\overrightarrow{MA} + \\overrightarrow{MB} + \\overrightarrow{MC} = 3\\overrightarrow{MG}$."
+            },
+            {
+                q: "Cho hình bình hành $ABCD$. Đẳng thức vectơ nào sau đây thể hiện đúng quy tắc hình bình hành?",
+                options: [
+                    { text: "$\\overrightarrow{AB} + \\overrightarrow{AD} = \\overrightarrow{AC}$", correct: true },
+                    { text: "$\\overrightarrow{AB} + \\overrightarrow{AC} = \\overrightarrow{AD}$", correct: false },
+                    { text: "$\\overrightarrow{AC} + \\overrightarrow{AD} = \\overrightarrow{AB}$", correct: false },
+                    { text: "$\\overrightarrow{AB} - \\overrightarrow{AD} = \\overrightarrow{AC}$", correct: false }
+                ],
+                explanation: "Quy tắc hình bình hành: Tổng hai vectơ cạnh chung gốc bằng vectơ đường chéo xuất phát từ gốc đó: $\\overrightarrow{AB} + \\overrightarrow{AD} = \\overrightarrow{AC}$."
+            },
+            {
+                q: "Cho hình hộp $ABCD.A'B'C'D'$. Đẳng thức vectơ nào sau đây là đúng theo quy tắc hình hộp?",
+                options: [
+                    { text: "$\\overrightarrow{AB} + \\overrightarrow{AD} + \\overrightarrow{AA'} = \\overrightarrow{AC'}$", correct: true },
+                    { text: "$\\overrightarrow{AB} + \\overrightarrow{AD} + \\overrightarrow{AA'} = \\overrightarrow{AC}$", correct: false },
+                    { text: "$\\overrightarrow{AB} + \\overrightarrow{AD} + \\overrightarrow{AC} = \\overrightarrow{AA'}$", correct: false },
+                    { text: "$\\overrightarrow{AC} + \\overrightarrow{AB'} + \\overrightarrow{AD'} = \\overrightarrow{AC'}$", correct: false }
+                ],
+                explanation: "Quy tắc hình hộp: Tổng ba vectơ cạnh chung gốc bằng vectơ đường chéo xuất phát từ gốc đó: $\\overrightarrow{AB} + \\overrightarrow{AD} + \\overrightarrow{AA'} = \\overrightarrow{AC'}$."
+            },
+            {
+                q: "Với ba điểm $O, A, B$ bất kỳ, quy tắc trừ hai vectơ có chung gốc $O$ được biểu diễn như thế nào?",
+                options: [
+                    { text: "$\\overrightarrow{OB} - \\overrightarrow{OA} = \\overrightarrow{AB}$", correct: true },
+                    { text: "$\\overrightarrow{OB} - \\overrightarrow{OA} = \\overrightarrow{BA}$", correct: false },
+                    { text: "$\\overrightarrow{OA} - \\overrightarrow{OB} = \\overrightarrow{AB}$", correct: false },
+                    { text: "$\\overrightarrow{AB} - \\overrightarrow{OA} = \\overrightarrow{OB}$", correct: false }
+                ],
+                explanation: "Quy tắc trừ vectơ chung gốc: $\\overrightarrow{OB} - \\overrightarrow{OA} = \\overrightarrow{AB}$ (ngọn của vectơ bị trừ là điểm cuối, ngọn của vectơ trừ là điểm đầu)."
+            },
+            {
+                q: "Trong không gian Oxyz, cho hai vectơ $\\overrightarrow{a} = (x_a; y_a; z_a)$ và $\\overrightarrow{b} = (x_b; y_b; z_b)$ (với $x_b, y_b, z_b \\neq 0$). Điều kiện cần và đủ để hai vectơ này cùng phương là gì?",
+                options: [
+                    { text: "Tồn tại số thực $k$ sao cho $\\overrightarrow{a} = k\\overrightarrow{b}$, hay tương đương $\\frac{x_a}{x_b} = \\frac{y_a}{y_b} = \\frac{z_a}{z_b}$", correct: true },
+                    { text: "$\\overrightarrow{a} \\cdot \\overrightarrow{b} = 0$, hay tương đương $x_a x_b + y_a y_b + z_a z_b = 0$", correct: false },
+                    { text: "$\\frac{x_a}{x_b} + \\frac{y_a}{y_b} + \\frac{z_a}{z_b} = 1$", correct: false },
+                    { text: "$x_a = x_b, y_a = y_b, z_a = z_b$", correct: false }
+                ],
+                explanation: "Hai vectơ cùng phương khi và chỉ khi vectơ này bằng $k$ lần vectơ kia ($\\overrightarrow{a} = k\\overrightarrow{b}$). Khi viết dưới dạng tọa độ (các thành phần của $\\overrightarrow{b}$ khác 0), ta có tỉ lệ: $\\frac{x_a}{x_b} = \\frac{y_a}{y_b} = \\frac{z_a}{z_b}$."
+            },
+            {
+                q: "Điều kiện cần và đủ để hai vectơ $\\overrightarrow{a}$ và $\\overrightarrow{b}$ (đều khác vectơ-không) vuông góc với nhau là gì?",
+                options: [
+                    { text: "$\\overrightarrow{a} \\cdot \\overrightarrow{b} = 0$", correct: true },
+                    { text: "$\\overrightarrow{a} \\cdot \\overrightarrow{b} = 1$", correct: false },
+                    { text: "$\\overrightarrow{a} + \\overrightarrow{b} = \\overrightarrow{0}$", correct: false },
+                    { text: "Tồn tại số thực $k$ sao cho $\\overrightarrow{a} = k\\overrightarrow{b}$", correct: false }
+                ],
+                explanation: "Hai vectơ khác vectơ-không vuông góc với nhau khi và chỉ khi tích vô hướng của chúng bằng 0: $\\overrightarrow{a} \\cdot \\overrightarrow{b} = 0$."
+            }
+        ];
+
+        let questions = [];
+        let isSubmitted = false;
+        let saveInterval;
+
+        // Tiện ích xáo trộn mảng
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Khởi tạo đề thi
+        function initExam() {
+            // Đổi key để clear cache bản cũ
+            let examCode = localStorage.getItem('examCode_v4');
+            if (!examCode) {
+                examCode = Math.floor(100 + Math.random() * 900).toString();
+                localStorage.setItem('examCode_v4', examCode);
+            }
+            document.getElementById('examCode').innerText = examCode;
+
+            let savedQuestions = JSON.parse(localStorage.getItem('quizData_v4'));
+            if (savedQuestions && savedQuestions.length === rawData.length) {
+                questions = savedQuestions;
+            } else {
+                questions = shuffleArray(rawData).map((q, index) => {
+                    let shuffledOptions = shuffleArray(q.options).map((opt, oIdx) => {
+                        return { ...opt, originalId: oIdx };
+                    });
+                    return { 
+                        id: 'q_' + index,
+                        text: q.q, 
+                        options: shuffledOptions,
+                        explanation: q.explanation
+                    };
+                });
+                localStorage.setItem('quizData_v4', JSON.stringify(questions));
+            }
+
+            renderQuestions();
+            checkAndRestore();
+            
+            // Auto save every 10 seconds
+            saveInterval = setInterval(saveProgress, 10000);
+
+            // Render MathJax
+            setTimeout(() => {
+                MathJax.typesetPromise();
+            }, 100);
+        }
+
+        // Render HTML câu hỏi
+        function renderQuestions() {
+            const container = document.getElementById('quiz-container');
+            let html = '';
+            const labels = ['A', 'B', 'C', 'D'];
+
+            questions.forEach((q, i) => {
+                let optionsHtml = '';
+                q.options.forEach((opt, j) => {
+                    optionsHtml += `
+                        <div class="form-check ps-0">
+                            <input class="form-check-input d-none" type="radio" name="${q.id}" id="${q.id}_${j}" value="${j}" onchange="saveProgress()">
+                            <label class="option-label" for="${q.id}_${j}" id="label_${q.id}_${j}">
+                                <strong>${labels[j]}.</strong> ${opt.text}
+                            </label>
+                        </div>
+                    `;
+                });
+
+                html += `
+                    <div class="question-card" id="card_${q.id}">
+                        <h5 class="mb-3"><strong>Câu ${i + 1}:</strong> ${q.text}</h5>
+                        <div class="options-container">
+                            ${optionsHtml}
+                        </div>
+                        <div class="explanation" id="exp_${q.id}">
+                            <strong>Lời giải chi tiết:</strong><br>
+                            ${q.explanation}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Lưu tiến trình làm bài
+        function saveProgress() {
+            if (isSubmitted) return;
+            
+            let progress = {
+                answers: {}
+            };
+
+            questions.forEach(q => {
+                const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+                if (selected) {
+                    progress.answers[q.id] = selected.value;
+                }
+            });
+
+            localStorage.setItem('quizProgress_v4', JSON.stringify(progress));
+        }
+
+        // Khôi phục bài làm
+        function checkAndRestore() {
+            const isSub = localStorage.getItem('isSubmitted_v4');
+            const progress = JSON.parse(localStorage.getItem('quizProgress_v4'));
+            
+            if (progress) {
+                let hasAnswers = false;
+                for (const [qId, val] of Object.entries(progress.answers)) {
+                    const input = document.getElementById(`${qId}_${val}`);
+                    if (input) {
+                        input.checked = true;
+                        hasAnswers = true;
+                    }
+                }
+                
+                if (hasAnswers && !isSub) {
+                    document.getElementById('notification').classList.remove('d-none');
+                    setTimeout(() => {
+                        document.getElementById('notification').classList.add('d-none');
+                    }, 4000);
+                }
+            }
+
+            if (isSub === 'true') {
+                submitExam(true);
+            }
+        }
+
+        // Nộp bài
+        function submitExam(isRestoring = false) {
+            let answersCount = 0;
+            questions.forEach(q => {
+                if (document.querySelector(`input[name="${q.id}"]:checked`)) answersCount++;
+            });
+
+            if (!isRestoring) {
+                if (answersCount < Math.ceil(questions.length / 2)) {
+                    alert(`Bạn cần hoàn thành ít nhất 50% số câu hỏi (${Math.ceil(questions.length / 2)}/${questions.length} câu) để được nộp bài và xem đáp án!`);
+                    return;
+                }
+                
+                if (!confirm("Bạn có chắc chắn muốn nộp bài? Sau khi nộp sẽ không thể sửa đổi.")) {
+                    return;
+                }
+            }
+
+            isSubmitted = true;
+            clearInterval(saveInterval);
+            localStorage.setItem('isSubmitted_v4', 'true');
+            if(!isRestoring) saveProgress();
+
+            let correctCount = 0;
+            const pointsPerQ = 0.25;
+
+            questions.forEach(q => {
+                const inputs = document.querySelectorAll(`input[name="${q.id}"]`);
+                let userSelected = -1;
+
+                inputs.forEach(input => {
+                    input.disabled = true;
+                    if (input.checked) {
+                        userSelected = parseInt(input.value);
+                    }
+                    
+                    const label = document.getElementById(`label_${q.id}_${input.value}`);
+                    const isCorrectOption = q.options[input.value].correct;
+
+                    if (isCorrectOption) {
+                        label.classList.add('correct-ans');
+                    } else if (input.checked && !isCorrectOption) {
+                        label.classList.add('wrong-ans');
+                    }
+                });
+
+                if (userSelected !== -1 && q.options[userSelected].correct) {
+                    correctCount++;
+                }
+
+                document.getElementById(`exp_${q.id}`).style.display = 'block';
+            });
+
+            const score = correctCount * pointsPerQ;
+            const maxScore = questions.length * pointsPerQ;
+            const percent = Math.round((answersCount / questions.length) * 100);
+
+            document.getElementById('scoreText').innerText = score;
+            document.getElementById('maxScoreText').innerText = maxScore;
+            document.getElementById('percentText').innerText = percent;
+            document.getElementById('correctCount').innerText = correctCount;
+            document.getElementById('wrongCount').innerText = questions.length - correctCount;
+            
+            document.getElementById('resultBoard').classList.remove('d-none');
+            document.getElementById('btnSubmit').classList.add('d-none');
+            document.getElementById('btnPrint').classList.remove('d-none');
+
+            document.getElementById('pExamCode').innerText = localStorage.getItem('examCode_v4');
+            document.getElementById('pScore1').innerText = score;
+            document.getElementById('pMaxScore1').innerText = maxScore;
+            document.getElementById('pTotalScore').innerText = score;
+
+            setTimeout(() => { MathJax.typesetPromise(); }, 100);
+            
+            if(!isRestoring) window.scrollTo(0, 0);
+        }
+
+        window.onload = initExam;
+    </script>
+</body>
+</html>
