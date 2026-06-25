@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Từ điển toán thực tế chương 2</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+
+    <style>
+        body {
+            background-color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .header-title {
+            color: #0d6efd;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+        }
+        .table-container {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 3rem;
+        }
+        .table {
+            margin-bottom: 0;
+        }
+        .table thead th {
+            background-color: #e7f1ff; /* Tông màu xanh dương nhạt */
+            color: #084298;
+            font-size: 1.1rem;
+            text-align: center;
+            vertical-align: middle;
+            border-bottom: 2px solid #b6d4fe;
+            padding: 1rem;
+        }
+        .table tbody td {
+            vertical-align: top;
+            padding: 1rem;
+        }
+        .section-title {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            text-align: center;
+            color: #495057;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .step-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+        .step-list li {
+            margin-bottom: 0.5rem;
+        }
+        .step-list li:last-child {
+            margin-bottom: 0;
+        }
+        /* Mobile friendly adjustments */
+        @media (max-width: 768px) {
+            .table thead th {
+                font-size: 1rem;
+                padding: 0.75rem;
+            }
+            .table tbody td {
+                padding: 0.75rem;
+            }
+            .header-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="header-title">Từ điển toán thực tế chương 2</h1>
+        
+        <div class="table-responsive table-container">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">1. TỪ KHÓA ĐỜI THƯỜNG</th>
+                        <th style="width: 30%;">2. Ý NGHĨA TOÁN HỌC</th>
+                        <th style="width: 45%;">3. THAO TÁC CẦN LÀM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="3" class="section-title">PHẦN: VECTƠ & HỆ TỌA ĐỘ OXYZ TRONG THỰC TẾ</td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>Hợp lực, Tác dụng đồng thời, Tổng tác động.</strong></td>
+                        <td>Tìm <strong>Tổng các vectơ</strong> thành phần.</td>
+                        <td>
+                            <ul class="step-list">
+                                <li><strong>1.</strong> Áp dụng hệ thức cộng lực: <br> $\overrightarrow{F}_{\text{hl}} = \overrightarrow{F}_1 + \overrightarrow{F}_2 + \dots$</li>
+                                <li><strong>2.</strong> Cộng từng tọa độ tương ứng ($x, y, z$) của các vectơ thành phần với nhau.</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Trạng thái đứng yên, Vật treo cân bằng, Lực căng triệt tiêu.</strong></td>
+                        <td>Hệ lực cân bằng (Tổng các vectơ lực bằng $\overrightarrow{0}$).</td>
+                        <td>
+                            <ul class="step-list">
+                                <li><strong>1.</strong> Thiết lập phương trình vectơ lực: <br> $\overrightarrow{F}_1 + \overrightarrow{F}_2 + \dots + \overrightarrow{P} = \overrightarrow{0}$.</li>
+                                <li><strong>2.</strong> Giải hệ 3 phương trình tương ứng cho từng trục tọa độ bằng $0$.</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Công sinh ra, Năng lượng tiêu hao di chuyển vật.</strong></td>
+                        <td>Ứng dụng <strong>Tích vô hướng</strong> của vectơ lực và độ dời.</td>
+                        <td>
+                            <ul class="step-list">
+                                <li><strong>1.</strong> Tính tích vô hướng của vectơ lực $\overrightarrow{F}$ và vectơ dịch chuyển $\overrightarrow{d}$: <br> $A = \overrightarrow{F} \cdot \overrightarrow{d} = x_F x_d + y_F y_d + z_F z_d$.</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Vị trí đặt trạm sao cho tổng bình phương khoảng cách đạt tối ưu hoặc độ dài tổng vectơ nhỏ nhất.</strong></td>
+                        <td>Cực trị Oxyz: Bài toán <strong>Tâm tỉ cự</strong>.<br><br>
+                            Nhận dạng: Tìm toạ độ $M$ thuộc mặt phẳng $(\alpha)$/đường thẳng $d$ thoả:<br>
+                            &bull; $T = a\,MA^2 + b\,MB^2 + \dots \to \min / \max$<br>
+                            &bull; $T = |a\,\overrightarrow{MA} + b\,\overrightarrow{MB} + \dots| \to \min$
+                        </td>
+                        <td>
+                            <ul class="step-list">
+                                <li><strong>1.</strong> Gọi điểm $I$ thỏa mãn hệ thức vectơ cố định: $a\,\overrightarrow{IA} + b\,\overrightarrow{IB} + \dots = \overrightarrow{0}$.</li>
+                                <li><strong>2.</strong> Tìm tọa độ điểm $I$: <br> $x_I = \dfrac{a\,x_A + b\,x_B + \dots}{a + b + \dots}$ (tương tự cho $y_I, z_I$).</li>
+                                <li><strong>3.</strong> Biến đổi hàm mục tiêu về điểm $I$: <br>
+                                    &bull; <strong>Dạng bình phương:</strong> $T = (a+b+\dots)MI^2 + T_0$. <br>
+                                    &nbsp;&nbsp;&nbsp;&mdash; Nếu $a+b+\dots > 0 \Rightarrow T_{\min} \Leftrightarrow MI_{\min}$. <br>
+                                    &nbsp;&nbsp;&nbsp;&mdash; Nếu $a+b+\dots < 0 \Rightarrow T_{\max} \Leftrightarrow MI_{\min}$. <br>
+                                    &bull; <strong>Dạng trị tuyệt đối:</strong> $T = |a+b+\dots| \cdot MI \Rightarrow T_{\min} \Leftrightarrow MI_{\min}$.
+                                </li>
+                                <li><strong>4.</strong> Tìm $M$ là hình chiếu vuông góc của điểm $I$ lên $(\alpha)$/$d$.</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Vị trí đặt trạm sao cho độ chênh lệch khoảng cách đến 2 điểm là lớn nhất.</strong></td>
+                        <td>Cực trị Oxyz: Tìm <strong>Max của $|MA - MB|$</strong> với điểm $M$ thuộc vách/mặt nền đặc biệt.</td>
+                        <td>
+                            <ul class="step-list">
+                                <li><strong>1.</strong> Áp dụng BĐT tam giác: $|MA - MB| \le AB$. Dấu $"="$ xảy ra khi ba điểm $M, A, B$ thẳng hàng.</li>
+                                <li><strong>2. Nếu $A, B$ cùng phía với mặt phẳng $(P)$:<br></strong> $M$ là giao điểm của đường thẳng $AB$ và mặt phẳng $(P)$.</li>
+                                <li><strong>3. Nếu $A, B$ khác phía với mặt phẳng $(P)$:<br></strong> Lấy điểm $A'$ đối xứng với $A$ qua $(P)$. Khi đó $M$ là giao điểm của đường thẳng $A'B$ và $(P)$.</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Khoảng cách giữa hai tàu/máy bay, thời điểm hai vật cách nhau một khoảng ngắn nhất.</strong></td>
+                        <td>Tính và tối ưu hóa <strong>Khoảng cách giữa hai điểm di động</strong> phụ thuộc vào biến thời gian $t$.</td>
+                        <td>
+                            <ul class="step-list">
+                                <li><strong>1.</strong> Thiết lập tọa độ của hai vật chuyển động theo biến thời gian $t$: <br> $M_1(x_1(t); y_1(t); z_1(t))$ và $M_2(x_2(t); y_2(t); z_2(t))$.</li>
+                                <li><strong>2.</strong> Lập công thức khoảng cách giữa hai vật: <br> $d(t) = \sqrt{\Delta x^2 + \Delta y^2 + \Delta z^2}$ <br> với $\Delta x = x_2(t) - x_1(t)$ (tương tự với $y, z$).</li>
+                                <li><strong>3.</strong> Khảo sát tìm giá trị nhỏ nhất (Min) của hàm số bậc hai nằm dưới dấu căn để kết luận thời điểm và khoảng cách ngắn nhất.</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Cho biết tốc độ chuyển động và vectơ hướng đi ban đầu, tìm vị trí vật sau thời gian $t$.</strong></td>
+                        <td>Xây dựng <strong>Vectơ vận tốc</strong> $\overrightarrow{v}$ từ tốc độ $v$ và vectơ hướng $\overrightarrow{u}$ (không là vectơ đơn vị). Xác định tọa độ điểm theo thời gian $t$.</td>
+                        <td>
+                            <ul class="step-list">
+                                <li><strong>1.</strong> Tính độ dài (mô-đun) của vectơ hướng $\overrightarrow{u}$: <br> $|\overrightarrow{u}| = \sqrt{x_u^2 + y_u^2 + z_u^2}$.</li>
+                                <li><strong>2.</strong> Chuẩn hóa để tìm vectơ đơn vị hướng đi $\overrightarrow{e}$: $\overrightarrow{e} = \dfrac{\overrightarrow{u}}{|\overrightarrow{u}|}$.</li>
+                                <li><strong>3.</strong> Xác định vectơ vận tốc: $\overrightarrow{v} = v \cdot \overrightarrow{e} = (v_x; v_y; v_z)$.</li>
+                                <li><strong>4.</strong> Tọa độ của vật tại thời điểm $t$, xuất phát từ vị trí ban đầu $M_0(x_0; y_0; z_0)$ là: <br>
+                                    $x(t) = x_0 + t \cdot v_x$ <br>
+                                    $y(t) = y_0 + t \cdot v_y$ <br>
+                                    $z(t) = z_0 + t \cdot v_z$.
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
