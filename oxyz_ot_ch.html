@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐỀ ÔN TẬP - HỆ TRỤC TỌA ĐỘ TRONG KHÔNG GIAN OXYZ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #f8f9fa;
+        }
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+        }
+        .exam-header {
+            background: linear-gradient(135deg, #0d6efd, #0a58ca);
+            color: white;
+            padding: 2.5rem 1rem;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .section-title {
+            background-color: #e7f1ff;
+            border-left: 5px solid var(--primary-color);
+            padding: 10px 15px;
+            font-weight: bold;
+            color: #0a58ca;
+            margin: 2rem 0 1.5rem 0;
+            border-radius: 4px;
+        }
+        .question-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+        .question-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .option-label {
+            cursor: pointer;
+            padding: 10px 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: block;
+            transition: all 0.2s;
+        }
+        .option-label:hover {
+            background-color: #f8f9fa;
+            border-color: #0d6efd;
+        }
+        .btn-check:checked + .option-label {
+            background-color: #e7f1ff;
+            border-color: #0d6efd;
+            font-weight: 500;
+        }
+        .solution-box {
+            display: none;
+            background-color: #f8f9fa;
+            border-left: 4px solid #198754;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+        .svg-container {
+            text-align: center;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+        .svg-container svg {
+            max-width: 100%;
+            height: auto;
+        }
+        .correct-ans {
+            background-color: #d1e7dd !important;
+            border-color: #198754 !important;
+        }
+        .wrong-ans {
+            background-color: #f8d7da !important;
+            border-color: #dc3545 !important;
+        }
+        .submit-bar {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 15px;
+            border-top: 1px solid #dee2e6;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+        @media print {
+            body { background-color: white; }
+            .submit-bar, #restore-alert, .no-print { display: none !important; }
+            .question-card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+            .solution-box { display: block !important; }
+            .exam-header { background: none; color: black; box-shadow: none; padding: 1rem 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="restore-alert" class="alert alert-info alert-dismissible fade show container mt-3 d-none" role="alert">
+        <strong>Thông báo:</strong> Đã khôi phục bài làm trước đó của bạn.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <header class="exam-header text-center">
+        <div class="container">
+            <h1 class="fw-bold mb-3">ĐỀ ÔN TẬP CHUYÊN ĐỀ OXYZ</h1>
+            <p class="lead mb-4">Hệ trục tọa độ trong không gian - Các phép toán vectơ (Tổng điểm: 9,0 điểm)</p>
+            <div class="row justify-content-center g-3 text-start">
+                <div class="col-md-4">
+                    <label class="form-label text-white-50">Họ và tên thí sinh:</label>
+                    <input type="text" id="student-name" class="form-control form-control-lg" placeholder="Nhập họ và tên...">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-white-50">Lớp:</label>
+                    <input type="text" id="student-class" class="form-control form-control-lg" placeholder="Nhập lớp...">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-white-50">Mã đề:</label>
+                    <input type="text" id="exam-code" class="form-control form-control-lg bg-light text-center fw-bold" readonly>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mb-5">
+        
+        <section id="part1-section">
+            <div class="section-title">
+                PHẦN I. CÂU HỎI TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN (3,0 ĐIỂM)
+                <div class="fs-6 fw-normal text-muted">Thí sinh trả lời từ câu 1 đến câu 12. Mỗi câu hỏi thí sinh chỉ chọn một phương án (0,25 điểm/câu).</div>
+            </div>
+            <div id="part1-questions"></div>
+        </section>
+
+        <section id="part2-section">
+            <div class="section-title">
+                PHẦN II. CÂU HỎI TRẮC NGHIỆM ĐÚNG SAI (3,0 ĐIỂM)
+                <div class="fs-6 fw-normal text-muted">Thí sinh trả lời từ câu 1 đến câu 3. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai (Tối đa 1,0 điểm/câu).</div>
+            </div>
+            <div id="part2-questions"></div>
+        </section>
+
+        <section id="part3-section">
+            <div class="section-title">
+                PHẦN III. CÂU HỎI TRẮC NGHIỆM TRẢ LỜI NGẮN (3,0 ĐIỂM)
+                <div class="fs-6 fw-normal text-muted">Thí sinh trả lời từ câu 1 đến câu 6 (0,5 điểm/câu).</div>
+            </div>
+            <div id="part3-questions"></div>
+        </section>
+
+        <div id="result-summary" class="card border-primary mb-4 d-none">
+            <div class="card-header bg-primary text-white fw-bold fs-5">KẾT QUẢ BÀI THI</div>
+            <div class="card-body">
+                <div class="row text-center g-3">
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <h6 class="text-muted">Phần I (12 câu)</h6>
+                            <h3 id="score-part1" class="text-primary my-1">0.00 / 3.00</h3>
+                            <small class="text-muted">Điểm</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <h6 class="text-muted">Phần II (3 câu)</h6>
+                            <h3 id="score-part2" class="text-primary my-1">0.00 / 3.00</h3>
+                            <small class="text-muted">Điểm</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <h6 class="text-muted">Phần III (6 câu)</h6>
+                            <h3 id="score-part3" class="text-primary my-1">0.00 / 3.00</h3>
+                            <small class="text-muted">Điểm</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 border border-2 border-danger rounded bg-light">
+                            <h6 class="text-danger fw-bold">TỔNG ĐIỂM</h6>
+                            <h2 id="score-total" class="text-danger fw-bold my-1">0.00 / 9.00</h2>
+                            <small id="completion-rate" class="text-muted">Hoàn thành: 0%</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="submit-bar text-center no-print">
+        <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="text-start">
+                <span id="progress-text" class="fw-bold text-primary">Đã làm: 0 / 21 câu (0%)</span>
+            </div>
+            <div class="d-flex gap-2">
+                <button id="btn-submit" class="btn btn-primary btn-lg px-4 fw-bold" onclick="submitExam()">NỘP BÀI</button>
+                <button id="btn-print" class="btn btn-outline-dark btn-lg px-3 d-none" onclick="window.print()">IN KẾT QUẢ PDF</button>
+                <button id="btn-sync" class="btn btn-success btn-lg px-3 d-none" onclick="sendToGoogleSheet()">GỬI ĐIỂM VỀ THẦY/CÔ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const rawPart1 = [
+            {
+                question: "Cho hình chóp tứ giác đều $S.ABCD$ có tất cả các cạnh bằng $14$. Tích vô hướng $\\overrightarrow{AB} \\cdot \\overrightarrow{AC}$ bằng",
+                options: ["$194$", "$193$", "$196$", "$197$"],
+                correct: 2,
+                solution: "Ta có $(\\overrightarrow{AB}, \\overrightarrow{AC})=45^\\circ$ và $AC=14\\sqrt{2}$.<br>$\\overrightarrow{AB} \\cdot \\overrightarrow{AC} = |\\overrightarrow{AB}| \\cdot |\\overrightarrow{AC}| \\cdot \\cos(\\overrightarrow{AB}, \\overrightarrow{AC}) = 14 \\cdot 14\\sqrt{2} \\cdot \\cos 45^\\circ = 196$."
+            },
+            {
+                question: "Cho hình lập phương $BAEH.FCDG$. Gọi $O$ là tâm của hình lập phương. Khẳng định nào sau đây là đúng?",
+                options: [
+                    "$\\vec{BO} = \\frac{1}{3}\\left(\\vec{BA} + \\vec{BH}\\right)$",
+                    "$\\vec{BO} = \\frac{1}{4}\\vec{BD}+ \\vec{BF}$",
+                    "$\\vec{BO} = \\vec{BA} + \\vec{BH} + \\vec{BF}$",
+                    "$\\vec{BO} = \\frac{1}{2}\\left(\\vec{BA} + \\vec{BH} + \\vec{BF}\\right)$"
+                ],
+                correct: 3,
+                solution: "Ta có $\\vec{BD} = \\vec{BA} + \\vec{BH} + \\vec{BF}$.<br>Mặt khác $O$ là trung điểm $BD \\Rightarrow \\vec{BO} = \\frac{1}{2}\\vec{BD} = \\frac{1}{2}\\left(\\vec{BA} + \\vec{BH} + \\vec{BF}\\right)$."
+            },
+            {
+                question: "Trong không gian $Oxyz$, cho hai vectơ $\\overrightarrow{u}$, $\\overrightarrow{v}$ tạo với nhau một góc $60^\\circ$ và $|\\overrightarrow{u}|=7$; $|\\overrightarrow{v}|=15$. Tìm $T=|\\overrightarrow{u}-\\overrightarrow{v}|$.",
+                options: ["$T=13$", "$T=17$", "$T=15$", "$T=11$"],
+                correct: 0,
+                solution: "Ta có $T^2 = |\\overrightarrow{u}-\\overrightarrow{v}|^2 = \\overrightarrow{u}^2 - 2\\overrightarrow{u}\\cdot\\overrightarrow{v} + \\overrightarrow{v}^2 = 7^2 - 2\\cdot 7\\cdot 15\\cdot \\cos 60^\\circ + 15^2 = 49 - 105 + 225 = 169$.<br>Suy ra $T = \\sqrt{169} = 13$."
+            },
+            {
+                question: "Trong không gian $Oxyz$, cho ba điểm $A(-1;-2;3)$, $B(0;3;1)$, $C(4;2;2)$. Côsin của góc $\\widehat{BAC}$ bằng",
+                options: ["$\\frac{9\\sqrt{35}}{70}$", "$\\frac{9}{\\sqrt{35}}$", "$\\frac{9\\sqrt{35}}{35}$", "$\\frac{3\\sqrt{35}}{70}$"],
+                correct: 0,
+                solution: "Ta có $\\overrightarrow{AB} = (1; 5; -2)$ và $\\overrightarrow{AC} = (5; 4; -1)$.<br>$|\\overrightarrow{AB}| = \\sqrt{30}$, $|\\overrightarrow{AC}| = \\sqrt{42}$, $\\overrightarrow{AB} \\cdot \\overrightarrow{AC} = 27$.<br>$\\cos \\widehat{BAC} = \\frac{27}{\\sqrt{30} \\cdot \\sqrt{42}} = \\frac{9\\sqrt{35}}{70}$."
+            },
+            {
+                question: "Tính công sinh bởi lực $\\overrightarrow{F}=(20; 30; -10)$ (đơn vị: N) tạo bởi một drone giao hàng khi thực hiện một độ dịch chuyển $\\overrightarrow{d}=(150; 200; 100)$ (đơn vị: m).",
+                options: ["$8000 \\text{ J}$", "$10000 \\text{ J}$", "$4000 \\text{ J}$", "$8000 \\text{ N}$"],
+                correct: 0,
+                solution: "Công sinh bởi lực là $A = \\overrightarrow{F} \\cdot \\overrightarrow{d} = 20 \\cdot 150 + 30 \\cdot 200 + (-10) \\cdot 100 = 8000 \\text{ J}$."
+            },
+            {
+                question: "Trong không gian $Oxyz$, cho tam giác $ABC$ với $\\overrightarrow{AB}=(1; -2; 2)$ và $\\overrightarrow{AC}=(3; -4; 6)$. Độ dài đường trung tuyến $AM$ của tam giác $ABC$ là",
+                options: ["$\\sqrt{29}$", "$\\frac{\\sqrt{29}}{2}$", "$29$", "$2\\sqrt{29}$"],
+                correct: 0,
+                solution: "Ta có $\\overrightarrow{AM} = \\frac{1}{2}(\\overrightarrow{AB} + \\overrightarrow{AC}) = (2; -3; 4)$.<br>Độ dài đường trung tuyến là $AM = \\sqrt{2^2 + (-3)^2 + 4^2} = \\sqrt{29}$."
+            },
+            {
+                question: "Trong không gian $Oxyz$, cho $\\overrightarrow{OQ}=6 \\vec{i}-3 \\vec{j}+7 \\vec{k}$. Tọa độ điểm $Q$ là",
+                options: ["$(6;-3;7)$", "$(6;-4;7)$", "$(6;-3;6)$", "$(6;-3;8)$"],
+                correct: 0,
+                solution: "Ta có $\\overrightarrow{OQ}=6 \\vec{i} -3 \\vec{j} +7 \\vec{k} \\Leftrightarrow Q(6;-3;7)$."
+            },
+            {
+                question: "Trong không gian $Oxyz$, cho hình hộp $ABCD.A'B'C'D'$ và các điểm $A(6;-8;-7)$, $B(8;0;-6)$, $D(3;-10;6)$, $A'(-8;-4;-6)$. Khẳng định nào sau đây là đúng?",
+                options: ["$B'(-6;4;-4)$", "$B'(-6;4;-5)$", "$C'(-9;2;9)$", "$C(5;-3;7)$"],
+                correct: 1,
+                solution: "Ta có $\\overrightarrow{AA'} = (-14; 4; 1)$. Vì $ABCD.A'B'C'D'$ là hình hộp nên $\\overrightarrow{BB'} = \\overrightarrow{AA'} \\Rightarrow B'(-6; 4; -5)$."
+            },
+            {
+                question: "Trong không gian $Oxyz$, cho điểm $C$ nằm trên tia đối của tia $Oz$ và $OC=5$. Toạ độ của điểm $C$ là",
+                options: ["$(-5;0;0)$", "$(0;-5;0)$", "$(0;0;-5)$", "$(0;0;6)$"],
+                correct: 2,
+                solution: "Vì điểm $C$ nằm trên tia đối của tia $Oz$ và $OC=5$ nên $\\overrightarrow{OC}=-5\\vec{k} \\Rightarrow C(0;0;-5)$."
+            },
+            {
+                question: "Trong không gian $Oxyz$, cho hai điểm $A(-2; -3; 6)$ và $B(-5; -5; 8)$. Tọa độ điểm $M$ thuộc mặt phẳng $(Oxy)$ sao cho ba điểm $A$, $B$, $M$ thẳng hàng là",
+                options: ["$M(8; 2; 0)$", "$M(7; 3; 0)$", "$M(-7; 3; 0)$", "$M(3; 7; 0)$"],
+                correct: 1,
+                solution: "Gọi $M(x; y; 0) \\in (Oxy)$. $\\overrightarrow{AB} = (-3; -2; 2)$; $\\overrightarrow{AM} = (x + 2; y + 3; -6)$.<br>$A, B, M$ thẳng hàng $\\Leftrightarrow \\frac{x + 2}{-3} = \\frac{y + 3}{-2} = \\frac{-6}{2} = -3 \\Rightarrow x=7, y=3$."
+            },
+            {
+                question: "Trong không gian $Oxyz$, cho hai điểm $A(2;9;-8)$ và $P(-8;-6;1)$. Độ dài đoạn thẳng $AP$ là",
+                options: ["$\\sqrt{407}$", "$\\sqrt{409}$", "$\\sqrt{406}$", "$2 \\sqrt{102}$"],
+                correct: 2,
+                solution: "$\\overrightarrow{AP} = (-10; -15; 9) \\Rightarrow AP = \\sqrt{(-10)^2 + (-15)^2 + 9^2} = \\sqrt{406}$."
+            },
+            {
+                question: "Trong không gian $Oxyz$, cho hai vectơ $\\vec{a}=(-9;2;-1)$ và $\\vec{b}=(3 m - 6;6 m + 4;9 m + 3)$. Giá trị của $m$ để hai vectơ vuông góc là",
+                options: ["$m=- \\dfrac{13}{24}$", "$m=\\dfrac{131}{24}$", "$m=\\dfrac{11}{24}$", "$m=\\dfrac{59}{24}$"],
+                correct: 3,
+                solution: "$\\vec{a} \\perp \\vec{b} \\Leftrightarrow \\vec{a} \\cdot \\vec{b} = 0 \\Leftrightarrow -9(3m-6) + 2(6m+4) - 1(9m+3) = 0 \\Leftrightarrow 59 - 24m = 0 \\Leftrightarrow m = \\dfrac{59}{24}$."
+            }
+        ];
+
+        const rawPart2 = [
+            {
+                question: "Một tháp trung tâm kiểm soát không lưu ở sân bay cao $73$ m sử dụng ra đa có phạm vi theo dõi $415$ km được đặt trên đỉnh tháp. Chọn hệ trục tọa độ $Oxyz$ có gốc tọa độ $O$ trùng với vị trí chân tháp, mặt phẳng $(Oxy)$ trùng với mặt đất sao cho trục $Ox$ hướng về phía tây, trục $Oy$ hướng về phía nam, trục $Oz$ hướng thẳng đứng lên trên (đơn vị trên mỗi trục tính theo kilômét). Một máy bay tại vị trí $A$ cách mặt đất $14$ km, cách $255$ km về phía đông và $165$ km về phía bắc so với tháp trung tâm.",
+                svg: '',
+                items: [
+                    { text: "a) Ra đa ở vị trí có tọa độ $(0;0;0)$", correct: false },
+                    { text: "b) Vị trí $A$ có tọa độ $(255;165;14)$", correct: false },
+                    { text: "c) Khoảng cách từ máy bay đến ra đa là $304,09$ km (làm tròn kết quả đến hàng phần trăm)", correct: false },
+                    { text: "d) Ra đa của trung tâm kiểm soát không lưu phát hiện được máy bay tại vị trí $A$", correct: true }
+                ],
+                solution: "a) <b>Sai:</b> Vì chiều cao của tháp là $73\\text{ m} = 0,073\\text{ km}$ nên ra đa ở tọa độ $(0;0;0,073)$.<br>b) <b>Sai:</b> Phía đông ngược hướng Tây ($Ox$), phía bắc ngược hướng Nam ($Oy$) nên $A(-255;-165;14)$.<br>c) <b>Sai:</b> Khoảng cách là $\\sqrt{(-255)^2 + (-165)^2 + (14-0,073)^2} \\approx 304,05\\text{ km}$.<br>d) <b>Đúng:</b> Vì $304,05\\text{ km} < 415\\text{ km}$ nên ra đa phát hiện được."
+            },
+            {
+                question: "Cho hình chóp $S.ABC$ có $SA \\perp (ABC)$, $SA = 4$ và đáy là tam giác đều cạnh $4$, $O$ là trung điểm của $BC$. Bằng cách thiết lập hệ tọa độ như hình vẽ:",
+                svg: `<div class="svg-container">
+                    <svg width="280" height="260" viewBox="-120 -150 260 260" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="0" y1="0" x2="120" y2="0" stroke="black" stroke-width="1.5" marker-end="url(#arrow)"/>
+                        <text x="125" y="5" font-style="italic">x</text>
+                        <line x1="0" y1="0" x2="-65" y2="105" stroke="black" stroke-width="1.5" marker-end="url(#arrow)"/>
+                        <text x="-78" y="115" font-style="italic">y</text>
+                        <line x1="0" y1="0" x2="0" y2="-140" stroke="black" stroke-width="1.5" marker-end="url(#arrow)"/>
+                        <text x="5" y="-135" font-style="italic">z</text>
+                        <line x1="-40" y1="67" x2="80" y2="0" stroke="black" stroke-width="1.5" stroke-dasharray="4"/>
+                        <line x1="0" y1="0" x2="-40" y2="67" stroke="black" stroke-width="1.5" stroke-dasharray="4"/>
+                        <line x1="-40" y1="-83" x2="0" y2="-120" stroke="black" stroke-width="1.5" stroke-dasharray="4"/>
+                        <polygon points="-80,0 80,0 -40,-83" fill="none" stroke="black" stroke-width="1.5"/>
+                        <line x1="-40" y1="-83" x2="-40" y2="67" stroke="black" stroke-width="1.5"/>
+                        <line x1="-40" y1="67" x2="-80" y2="0" stroke="black" stroke-width="1.5"/>
+                        <circle cx="0" cy="0" r="3" fill="black"/><text x="6" y="14">O</text>
+                        <circle cx="80" cy="0" r="3" fill="black"/><text x="80" y="18">C</text>
+                        <circle cx="-80" cy="0" r="3" fill="black"/><text x="-85" y="18">B</text>
+                        <circle cx="-40" cy="67" r="3" fill="black"/><text x="-32" y="78">A</text>
+                        <circle cx="-40" cy="-83" r="3" fill="black"/><text x="-40" y="-93">S</text>
+                        <defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="black"/></marker></defs>
+                    </svg>
+                </div>`,
+                items: [
+                    { text: "a) Tọa độ điểm $B$ là $(-2;0;0)$", correct: true },
+                    { text: "b) Tọa độ điểm $S$ là $(0;-2\\sqrt{3};4)$", correct: false },
+                    { text: "c) $\\cos \\widehat{BSC} = \\frac{3}{4}$", correct: true },
+                    { text: "d) Độ dài đường trung tuyến kẻ từ $S$ của tam giác $SBC$ bằng $4\\sqrt{2}$", correct: false }
+                ],
+                solution: "a) <b>Đúng:</b> $O$ là trung điểm $BC$, $BC=4 \\Rightarrow OB=2$, $B$ thuộc tia đối trục $Ox \\Rightarrow B(-2;0;0)$.<br>b) <b>Sai:</b> $OA = 2\\sqrt{3} \\Rightarrow A(0;2\\sqrt{3};0) \\Rightarrow S(0;2\\sqrt{3};4)$.<br>c) <b>Đúng:</b> $\\overrightarrow{SB}=(-2;-2\\sqrt{3};-4)$, $\\overrightarrow{SC}=(2;-2\\sqrt{3};-4) \\Rightarrow \\cos \\widehat{BSC} = \\frac{\\overrightarrow{SB}\\cdot\\overrightarrow{SC}}{SB\\cdot SC} = \\frac{24}{32} = \\frac{3}{4}$.<br>d) <b>Sai:</b> Trung tuyến $SO = \\sqrt{0^2 + (2\\sqrt{3})^2 + 4^2} = \\sqrt{28} = 2\\sqrt{7}$."
+            },
+            {
+                question: "Tại một trạm quan trắc khí tượng, vị trí của một khinh khí cầu thăm dò thời tiết được xác định bởi điểm $P(a; b; c)$ trong hệ trục tọa độ không gian $Oxyz$ (với gốc $O$ là vị trí đặt radar, mặt phẳng $(Oxy)$ trùng với mặt đất phẳng, trục $Oz$ hướng thẳng đứng lên trời, đơn vị đo lấy theo mét). Gọi $K$ là hình chiếu vuông góc của $P$ xuống mặt phẳng $(Oxy)$. Qua radar quan trắc, người ta đo được khoảng cách từ radar đến khinh khí cầu là $OP = 100\\text{ m}$, góc giữa vectơ $\\vec{i}$ và $\\overrightarrow{OK}$ bằng $60^\\circ$, góc giữa $\\overrightarrow{OK}$ và $\\overrightarrow{OP}$ bằng $30^\\circ$.",
+                svg: `<div class="svg-container">
+                    <svg width="280" height="220" viewBox="-40 -160 240 200" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="0" y1="0" x2="-40" y2="40" stroke="black" stroke-width="1.5" marker-end="url(#arrow)"/>
+                        <text x="-35" y="55" font-style="italic">x</text>
+                        <line x1="0" y1="0" x2="160" y2="0" stroke="black" stroke-width="1.5" marker-end="url(#arrow)"/>
+                        <text x="165" y="5" font-style="italic">y</text>
+                        <line x1="0" y1="0" x2="0" y2="-140" stroke="black" stroke-width="1.5" marker-end="url(#arrow)"/>
+                        <text x="-15" y="-135" font-style="italic">z</text>
+                        <line x1="-20" y1="20" x2="80" y2="20" stroke="gray" stroke-dasharray="3"/>
+                        <line x1="100" y1="0" x2="80" y2="20" stroke="gray" stroke-dasharray="3"/>
+                        <line x1="0" y1="0" x2="80" y2="20" stroke="gray" stroke-dasharray="3"/>
+                        <line x1="80" y1="20" x2="80" y2="-80" stroke="gray" stroke-dasharray="3"/>
+                        <line x1="0" y1="-100" x2="80" y2="-80" stroke="gray" stroke-dasharray="3"/>
+                        <line x1="0" y1="0" x2="80" y2="-80" stroke="#0d6efd" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                        <circle cx="0" cy="0" r="3" fill="black"/><text x="-12" y="5">O</text>
+                        <circle cx="80" cy="20" r="3" fill="black"/><text x="85" y="30">K</text>
+                        <circle cx="80" cy="-80" r="4" fill="red"/><text x="88" y="-83" fill="red" font-weight="bold">P</text>
+                        <defs><marker id="arrow-blue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0d6efd"/></marker></defs>
+                    </svg>
+                </div>`,
+                items: [
+                    { text: "a) Tam giác $OKP$ là tam giác vuông tại $K$ và $\\overrightarrow{PK} \\perp (Oxy)$", correct: true },
+                    { text: "b) Khinh khí cầu $P$ ở độ cao $50\\sqrt{3}\\text{ m}$", correct: false },
+                    { text: "c) Tọa độ hình chiếu $K$ trên mặt phẳng $(Oxy)$ là $K\\left(25\\sqrt{3}; 75; 0\\right)$", correct: true },
+                    { text: "d) Côsin của góc giữa vectơ vị trí $\\overrightarrow{OP}$ và vectơ đơn vị $\\vec{j}$ trên trục $Oy$ bằng $\\dfrac{3}{4}$", correct: true }
+                ],
+                solution: "a) <b>Đúng:</b> $K$ là hình chiếu của $P$ lên $(Oxy) \\Rightarrow PK \\perp (Oxy) \\Rightarrow PK \\perp OK$.<br>b) <b>Sai:</b> Độ cao $PK = OP \\cdot \\sin 30^\\circ = 100 \\cdot \\frac{1}{2} = 50\\text{ (m)}$.<br>c) <b>Đúng:</b> $OK = OP \\cos 30^\\circ = 50\\sqrt{3}$. $x_K = OK \\cos 60^\\circ = 25\\sqrt{3}$, $y_K = OK \\sin 60^\\circ = 75 \\Rightarrow K(25\\sqrt{3}; 75; 0)$.<br>d) <b>Đúng:</b> $P(25\\sqrt{3}; 75; 50)$. $\\cos(\\overrightarrow{OP}, \\vec{j}) = \\frac{y_P}{OP} = \\frac{75}{100} = \\frac{3}{4}$."
+            }
+        ];
+
+        const rawPart3 = [
+            {
+                question: "Trong không gian $Oxyz$, một cabin xuất phát từ điểm $A(-5; 2; 0)$, chuyển động đều cùng hướng với vectơ $\\vec{u}=(-1; 0; 1)$ với tốc độ $5\\text{ m/s}$ (đơn vị trên mỗi trục tọa độ là mét). Sau $39$ giây, cabin đến điểm $M(a; b; c)$. Tính giá trị của biểu thức $3a-5b+4c$ (kết quả làm tròn đến hàng đơn vị).",
+                svg: '',
+                correct: "113",
+                solution: "Vectơ vận tốc $\\vec{v} = 5 \\cdot \\frac{\\vec{u}}{|\\vec{u}|} = \\left(-\\frac{5\\sqrt{2}}{2}; 0; \\frac{5\\sqrt{2}}{2}\\right)$.<br>Sau 39s: $\\overrightarrow{AM} = 39\\vec{v} \\Rightarrow M\\left(-\\frac{195\\sqrt{2}}{2}-5; 2; \\frac{195\\sqrt{2}}{2}\\right)$.<br>$3a-5b+4c = 3\\left(-\\frac{195\\sqrt{2}}{2}-5\\right) - 10 + 4\\left(\\frac{195\\sqrt{2}}{2}\\right) \\approx 113$."
+            },
+            {
+                question: "Hình bên dưới mô tả hai bức tường gạch được xây vuông góc với nhau và cùng vuông góc với mặt đất. Một người thợ xây căng dây giữa hai bức tường. Đầu A của sợi dây trên bức tường thứ nhất, cách bức tường thứ hai là $3,2\\text{ m}$ và cách mặt đất là $1,1\\text{ m}$. Đầu B của sợi dây nằm trên bức tường thứ hai, cách bức tường thứ nhất là $2,0\\text{ m}$ và cách mặt đất là $3,6\\text{ m}$. Hỏi độ dài của sợi dây được căng bằng bao nhiêu mét? (làm tròn kết quả đến hàng phần trăm).",
+                svg: `<div class="svg-container">
+                    <svg width="340" height="260" viewBox="-130 -160 320 250" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="0,0 -100,50 40,50 140,0" fill="#e9ecef" stroke="#adb5bd"/>
+                        <polygon points="0,0 -100,50 -100,-80 0,-130" fill="#dee2e6" stroke="#6c757d"/>
+                        <polygon points="0,0 140,0 140,-130 0,-130" fill="#ced4da" stroke="#6c757d"/>
+                        <line x1="0" y1="0" x2="-115" y2="57.5" stroke="black" stroke-width="1.5" marker-end="url(#arrow)"/>
+                        <text x="-125" y="70" font-style="italic">x</text>
+                        <line x1="0" y1="0" x2="160" y2="0" stroke="black" stroke-width="1.5" marker-end="url(#arrow)"/>
+                        <text x="165" y="5" font-style="italic">y</text>
+                        <line x1="0" y1="0" x2="0" y2="-150" stroke="black" stroke-width="1.5" marker-end="url(#arrow)"/>
+                        <text x="-15" y="-145" font-style="italic">z</text>
+                        <circle cx="0" cy="0" r="3" fill="black"/><text x="-12" y="15">O</text>
+                        <line x1="-64" y1="32" x2="-64" y2="3" stroke="#495057" stroke-dasharray="3"/>
+                        <line x1="0" y1="-29" x2="-64" y2="3" stroke="#495057" stroke-dasharray="3"/>
+                        <circle cx="-64" cy="3" r="4.5" fill="#d63384"/>
+                        <text x="-82" y="0" font-weight="bold" fill="#d63384">A</text>
+                        <text x="-75" y="42" font-size="11" fill="#495057">3,2m</text>
+                        <text x="-58" y="20" font-size="11" fill="#495057">1,1m</text>
+                        <line x1="80" y1="0" x2="80" y2="-95" stroke="#495057" stroke-dasharray="3"/>
+                        <line x1="0" y1="-95" x2="80" y2="-95" stroke="#495057" stroke-dasharray="3"/>
+                        <circle cx="80" cy="-95" r="4.5" fill="#0d6efd"/>
+                        <text x="88" y="-98" font-weight="bold" fill="#0d6efd">B</text>
+                        <text x="35" y="-5" font-size="11" fill="#495057">2,0m</text>
+                        <text x="85" y="-45" font-size="11" fill="#495057">3,6m</text>
+                        <line x1="-64" y1="3" x2="80" y2="-95" stroke="#dc3545" stroke-width="3"/>
+                    </svg>
+                </div>`,
+                correct: "4.53",
+                solution: "Chọn hệ trục $Oxyz$ tại góc phòng. Tọa độ các điểm $A(3,2; 0; 1,1)$ và $B(0; 2,0; 3,6)$.<br>Độ dài dây $AB = \\sqrt{(0-3,2)^2 + (2-0)^2 + (3,6-1,1)^2} \\approx 4,53\\text{ m}$."
+            },
+            {
+                question: "Một người đứng ở mặt đất điều khiển hai flycam để phục vụ trong một chương trình của đài truyền hình. Flycam I ở vị trí $A$ cách vị trí điều khiển $127\\text{ m}$ về phía nam và $142\\text{ m}$ về phía đông, đồng thời cách mặt đất $31\\text{ m}$. Flycam II ở vị trí $B$ cách vị trí điều khiển $195\\text{ m}$ về phía bắc và $147\\text{ m}$ về phía tây, đồng thời cách mặt đất $45\\text{ m}$. Chọn hệ trục tọa độ $Oxyz$ với gốc $O$ là vị trí người điều khiển, mặt phẳng $(Oxy)$ trùng với mặt đất, trục $Ox$ hướng nam, $Oy$ hướng đông, $Oz$ hướng lên trời. Khoảng cách giữa hai flycam đó bằng bao nhiêu mét (làm tròn kết quả đến hàng đơn vị)?",
+                svg: '',
+                correct: "433",
+                solution: "Tọa độ $A(127; 142; 31)$ và $B(-195; -147; 45)$.<br>Khoảng cách $AB = \\sqrt{(-195-127)^2 + (-147-142)^2 + (45-31)^2} \\approx 433\\text{ m}$."
+            },
+            {
+                question: "Trong không gian với hệ trục tọa độ $Oxyz$ (đơn vị trên trục tính bằng cm), người ta lắp một chiếc quạt trần ba cách, các đầu cánh tạo thành một tam giác đều. Khi quạt quay, các đầu cánh di chuyển trên một mặt phẳng song song với $(Oxy)$. Tại một thời điểm quạt dừng quay, người ta xác định được tọa hai đầu cánh quạt là $A(7;21;280)$ và $B(13;27;280)$. Biết rằng điểm treo quạt $S(a;b;c)$ trên trần nhà và có hoành độ lớn hơn $10$, trục của quạt có phương thẳng đứng và có chiều dài $60\\text{ cm}$. Giá trị biểu thức $T = a + b + c$ bằng bao nhiêu?",
+                svg: '',
+                correct: "374",
+                solution: "$AB = 6\\sqrt{2}$. Bán kính đường tròn ngoại tiếp tam giác đều $R = \\frac{AB}{\\sqrt{3}} = 2\\sqrt{6} \\Rightarrow R^2 = 24$.<br>Tâm quay $I(a;b;280)$. Ta có $(a-7)^2 + (b-21)^2 = 24$ và $(a-13)^2 + (b-27)^2 = 24$.<br>Giải ra $a = 10+\\sqrt{3}$ (do $a>10$), $b = 24-\\sqrt{3}$.<br>Điểm treo $S(a;b;340) \\Rightarrow T = a+b+c = 10+\\sqrt{3} + 24-\\sqrt{3} + 340 = 374$."
+            },
+            {
+                question: "Trong không gian $Oxyz$, một quả bóng hình cầu được treo trong góc giữa hai bức tường vuông góc và mặt đất. Điểm $B$ nằm trên giao tuyến của hai bức tường, cách mặt đất $86\\text{ cm}$. Sợi dây treo bóng có độ dài $AB = 30\\text{ cm}$, nối từ $B$ đến mặt ngoài quả bóng. Quả bóng tiếp xúc với cả hai tường và cách mặt đất $29\\text{ cm}$. Hỏi đường kính quả bóng là bao nhiêu cm (kết quả làm tròn đến hàng phần chục)?",
+                svg: '',
+                correct: "33.4",
+                solution: "Gọi bán kính quả bóng là $r$. Tâm bóng $I(r; r; r+29)$.<br>Tọa độ $B(0; 0; 86)$. Ta có $BI = r + AB = r + 30$.<br>Mặt khác $BI^2 = r^2 + r^2 + (86 - r - 29)^2 = 2r^2 + (57-r)^2$.<br>Phương trình: $(r+30)^2 = 2r^2 + (57-r)^2 \\Leftrightarrow 2r^2 - 174r + 2349 = 0 \\Rightarrow r \\approx 16,71\\text{ cm}$.<br>Đường kính $2r \\approx 33,4\\text{ cm}$."
+            },
+            {
+                question: "Một thiết bị bay không người lái (drone) đang cất cánh từ một bãi phẳng. Với hệ tọa độ $Oxyz$ được thiết lập như hình vẽ, cho biết $M$ là vị trí của thiết bị bay, $OM = 20$ (đơn vị: mét), $\\widehat{NOB} = 30^\\circ$; $\\widehat{MOC} = 60^\\circ$. Tính giá trị của biểu thức $T = 2x_M + 5y_M + \\sqrt{3}z_M$ (làm tròn kết quả đến hàng đơn vị).",
+                svg: `<div class="svg-container">
+                    <svg width="300" height="260" viewBox="-80 -160 280 230" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="0" y1="0" x2="-65" y2="52" stroke="black" stroke-width="1.5" marker-end="url(#arrow)"/>
+                        <text x="-75" y="65" font-style="italic">x</text>
+                        <line x1="0" y1="0" x2="180" y2="0" stroke="black" stroke-width="1.5" marker-end="url(#arrow)"/>
+                        <text x="185" y="5" font-style="italic">y</text>
+                        <line x1="0" y1="0" x2="0" y2="-140" stroke="black" stroke-width="1.5" marker-end="url(#arrow)"/>
+                        <text x="-15" y="-135" font-style="italic">z</text>
+                        <line x1="-33" y1="26.4" x2="105" y2="26.4" stroke="#6c757d" stroke-dasharray="4"/>
+                        <line x1="138" y1="0" x2="105" y2="26.4" stroke="#6c757d" stroke-dasharray="4"/>
+                        <line x1="0" y1="0" x2="105" y2="26.4" stroke="#6c757d" stroke-dasharray="4"/>
+                        <line x1="105" y1="26.4" x2="105" y2="-73.6" stroke="#6c757d" stroke-dasharray="4"/>
+                        <line x1="0" y1="-100" x2="105" y2="-73.6" stroke="#6c757d" stroke-dasharray="4"/>
+                        <line x1="0" y1="0" x2="105" y2="-73.6" stroke="#d63384" stroke-width="2.5" marker-end="url(#arrow-pink)"/>
+                        <circle cx="0" cy="0" r="3.5" fill="black"/><text x="-18" y="-5" font-weight="bold">O</text>
+                        <circle cx="105" cy="-73.6" r="4.5" fill="#d63384"/><text x="115" y="-73" font-weight="bold" fill="#d63384">M</text>
+                        <circle cx="105" cy="26.4" r="3.5" fill="black"/><text x="110" y="42" font-weight="bold">N</text>
+                        <circle cx="-33" cy="26.4" r="3" fill="black"/><text x="-48" y="28">A</text>
+                        <circle cx="138" cy="0" r="3" fill="black"/><text x="138" y="-10">B</text>
+                        <circle cx="0" cy="-100" r="3" fill="black"/><text x="-18" y="-98">C</text>
+                        <path d="M 40 0 A 40 40 0 0 1 38 10" fill="none" stroke="#0d6efd" stroke-width="1.5"/>
+                        <text x="48" y="12" font-size="11" fill="#0d6efd" font-weight="bold">30°</text>
+                        <path d="M 0 -35 A 35 35 0 0 1 24 -24" fill="none" stroke="#198754" stroke-width="1.5"/>
+                        <text x="28" y="-32" font-size="11" fill="#198754" font-weight="bold">60°</text>
+                        <defs>
+                            <marker id="arrow-pink" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#d63384"/></marker>
+                        </defs>
+                    </svg>
+                </div>`,
+                correct: "110",
+                solution: "$z_M = OM \\cos 60^\\circ = 10$. $ON = OM \\sin 60^\\circ = 10\\sqrt{3}$.<br>$y_M = ON \\cos 30^\\circ = 15$, $x_M = ON \\sin 30^\\circ = 5\\sqrt{3}$.<br>Thay vào $T = 2(5\\sqrt{3}) + 5(15) + \\sqrt{3}(10) = 75 + 20\\sqrt{3} \\approx 109,64 \\approx 110$."
+            }
+        ];
+
+        let p1Data = [];
+        let p2Data = [];
+        let p3Data = [];
+        let startTime = Date.now();
+        let isSubmitted = false;
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyF8M8qlqqg3IiELoNqLwQtT0OJ-g9sKaca1LG9V11yY4_Pkb2ta8kuhpX0b4QdnTkq/exec";
+
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function generateExamCode() {
+            return Math.floor(100 + Math.random() * 900);
+        }
+
+        function initExam() {
+            document.getElementById('exam-code').value = generateExamCode();
+
+            p1Data = shuffleArray(rawPart1).map((item, qIdx) => {
+                let optIndices = [0, 1, 2, 3];
+                optIndices = shuffleArray(optIndices);
+                const shuffledOptions = optIndices.map(idx => item.options[idx]);
+                const newCorrectIdx = optIndices.indexOf(item.correct);
+                return {
+                    ...item,
+                    originalIndex: qIdx,
+                    options: shuffledOptions,
+                    correct: newCorrectIdx
+                };
+            });
+
+            p2Data = shuffleArray(rawPart2);
+            p3Data = [...rawPart3];
+
+            renderPart1();
+            renderPart2();
+            renderPart3();
+
+            checkAndRestoreData();
+
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise();
+            }
+
+            setInterval(saveData, 10000);
+        }
+
+        function renderPart1() {
+            const container = document.getElementById('part1-questions');
+            container.innerHTML = p1Data.map((q, idx) => `
+                <div class="question-card" id="p1-card-${idx}">
+                    <div class="fw-bold mb-3">Câu ${idx + 1}: <span class="fw-normal">${q.question}</span></div>
+                    <div class="row g-2">
+                        ${q.options.map((opt, oIdx) => `
+                            <div class="col-md-6">
+                                <input type="radio" class="btn-check" name="p1-q${idx}" id="p1-q${idx}-o${oIdx}" value="${oIdx}" onchange="updateProgress()">
+                                <label class="option-label w-100" for="p1-q${idx}-o${oIdx}">
+                                    <span class="fw-bold me-2">${['A', 'B', 'C', 'D'][oIdx]}.</span> ${opt}
+                                </label>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="solution-box" id="p1-sol-${idx}">
+                        <div class="fw-bold text-success mb-1">Lời giải chi tiết:</div>
+                        <div>${q.solution}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPart2() {
+            const container = document.getElementById('part2-questions');
+            container.innerHTML = p2Data.map((q, idx) => `
+                <div class="question-card" id="p2-card-${idx}">
+                    <div class="fw-bold mb-2">Câu ${idx + 1}: <span class="fw-normal">${q.question}</span></div>
+                    ${q.svg || ''}
+                    <div class="table-responsive mt-3">
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-light text-center">
+                                <tr>
+                                    <th>Phát biểu</th>
+                                    <th width="80">Đúng</th>
+                                    <th width="80">Sai</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${q.items.map((item, iIdx) => `
+                                    <tr id="p2-q${idx}-row-${iIdx}">
+                                        <td>${item.text}</td>
+                                        <td class="text-center">
+                                            <input class="form-check-input fs-5" type="radio" name="p2-q${idx}-i${iIdx}" value="true" onchange="updateProgress()">
+                                        </td>
+                                        <td class="text-center">
+                                            <input class="form-check-input fs-5" type="radio" name="p2-q${idx}-i${iIdx}" value="false" onchange="updateProgress()">
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="solution-box" id="p2-sol-${idx}">
+                        <div class="fw-bold text-success mb-1">Lời giải chi tiết:</div>
+                        <div>${q.solution}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPart3() {
+            const container = document.getElementById('part3-questions');
+            container.innerHTML = p3Data.map((q, idx) => `
+                <div class="question-card" id="p3-card-${idx}">
+                    <div class="fw-bold mb-2">Câu ${idx + 1}: <span class="fw-normal">${q.question}</span></div>
+                    ${q.svg || ''}
+                    <div class="mt-3 col-md-4">
+                        <label class="form-label fw-bold">Đáp án của bạn:</label>
+                        <input type="text" class="form-control form-control-lg border-primary" id="p3-q${idx}" placeholder="Nhập đáp số..." oninput="updateProgress()">
+                    </div>
+                    <div class="solution-box" id="p3-sol-${idx}">
+                        <div class="fw-bold text-success mb-1">Lời giải chi tiết:</div>
+                        <div>${q.solution}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateProgress() {
+            if (isSubmitted) return;
+            let answered = 0;
+
+            p1Data.forEach((_, idx) => {
+                if (document.querySelector(`input[name="p1-q${idx}"]:checked`)) answered++;
+            });
+
+            p2Data.forEach((q, idx) => {
+                let itemsAnswered = 0;
+                q.items.forEach((_, iIdx) => {
+                    if (document.querySelector(`input[name="p2-q${idx}-i${iIdx}"]:checked`)) itemsAnswered++;
+                });
+                if (itemsAnswered === 4) answered++;
+            });
+
+            p3Data.forEach((_, idx) => {
+                const val = document.getElementById(`p3-q${idx}`).value.trim();
+                if (val !== '') answered++;
+            });
+
+            const percent = Math.round((answered / 21) * 100);
+            document.getElementById('progress-text').innerText = `Đã làm: ${answered} / 21 câu (${percent}%)`;
+        }
+
+        function saveData() {
+            if (isSubmitted) return;
+            const data = {
+                name: document.getElementById('student-name').value,
+                cls: document.getElementById('student-class').value,
+                code: document.getElementById('exam-code').value,
+                p1: p1Data.map((_, idx) => {
+                    const el = document.querySelector(`input[name="p1-q${idx}"]:checked`);
+                    return el ? el.value : null;
+                }),
+                p2: p2Data.map((q, idx) => {
+                    return q.items.map((_, iIdx) => {
+                        const el = document.querySelector(`input[name="p2-q${idx}-i${iIdx}"]:checked`);
+                        return el ? el.value : null;
+                    });
+                }),
+                p3: p3Data.map((_, idx) => document.getElementById(`p3-q${idx}`).value)
+            };
+            localStorage.setItem('oxyz_exam_save', JSON.stringify(data));
+        }
+
+        function checkAndRestoreData() {
+            const saved = localStorage.getItem('oxyz_exam_save');
+            if (!saved) return;
+            try {
+                const data = JSON.parse(saved);
+                if (data.name) document.getElementById('student-name').value = data.name;
+                if (data.cls) document.getElementById('student-class').value = data.cls;
+                if (data.code) document.getElementById('exam-code').value = data.code;
+
+                if (data.p1) {
+                    data.p1.forEach((val, idx) => {
+                        if (val !== null) {
+                            const el = document.getElementById(`p1-q${idx}-o${val}`);
+                            if (el) el.checked = true;
+                        }
+                    });
+                }
+
+                if (data.p2) {
+                    data.p2.forEach((qItems, idx) => {
+                        qItems.forEach((val, iIdx) => {
+                            if (val !== null) {
+                                const el = document.querySelector(`input[name="p2-q${idx}-i${iIdx}"][value="${val}"]`);
+                                if (el) el.checked = true;
+                            }
+                        });
+                    });
+                }
+
+                if (data.p3) {
+                    data.p3.forEach((val, idx) => {
+                        const el = document.getElementById(`p3-q${idx}`);
+                        if (el && val) el.value = val;
+                    });
+                }
+
+                document.getElementById('restore-alert').classList.remove('d-none');
+                updateProgress();
+            } catch (e) {
+                console.error("Lỗi khôi phục dữ liệu:", e);
+            }
+        }
+
+        function submitExam() {
+            let answered = 0;
+            p1Data.forEach((_, idx) => { if (document.querySelector(`input[name="p1-q${idx}"]:checked`)) answered++; });
+            p2Data.forEach((q, idx) => {
+                let cnt = 0;
+                q.items.forEach((_, iIdx) => { if (document.querySelector(`input[name="p2-q${idx}-i${iIdx}"]:checked`)) cnt++; });
+                if (cnt === 4) answered++;
+            });
+            p3Data.forEach((_, idx) => { if (document.getElementById(`p3-q${idx}`).value.trim() !== '') answered++; });
+
+            const percent = (answered / 21) * 100;
+            if (percent < 50) {
+                alert("Bạn mới làm được " + Math.round(percent) + "% bài thi. Vui lòng hoàn thành ít nhất 50% tổng số câu trước khi nộp bài!");
+                return;
+            }
+
+            if (!confirm("Bạn có chắc chắn muốn nộp bài? Sau khi nộp sẽ không thể chỉnh sửa!")) return;
+
+            isSubmitted = true;
+            clearInterval();
+            localStorage.removeItem('oxyz_exam_save');
+
+            const durationMinutes = Math.max(1, Math.round((Date.now() - startTime) / 60000));
+
+            // Grade Part 1 (12 câu * 0.25 = 3.0 điểm)
+            let scoreP1 = 0;
+            p1Data.forEach((q, idx) => {
+                const selected = document.querySelector(`input[name="p1-q${idx}"]:checked`);
+                const labels = document.querySelectorAll(`input[name="p1-q${idx}"] + label`);
+                
+                labels[q.correct].classList.add('correct-ans');
+
+                if (selected) {
+                    if (parseInt(selected.value) === q.correct) {
+                        scoreP1 += 0.25;
+                    } else {
+                        labels[selected.value].classList.add('wrong-ans');
+                    }
+                }
+                document.getElementById(`p1-sol-${idx}`).style.display = 'block';
+            });
+
+            // Grade Part 2 (3 câu, tối đa 1.0 điểm/câu = 3.0 điểm)
+            let scoreP2 = 0;
+            p2Data.forEach((q, idx) => {
+                let correctCount = 0;
+                q.items.forEach((item, iIdx) => {
+                    const selected = document.querySelector(`input[name="p2-q${idx}-i${iIdx}"]:checked`);
+                    const row = document.getElementById(`p2-q${idx}-row-${iIdx}`);
+                    const isTrueChecked = selected && selected.value === 'true';
+                    const isFalseChecked = selected && selected.value === 'false';
+
+                    if ((isTrueChecked && item.correct) || (isFalseChecked && !item.correct)) {
+                        correctCount++;
+                        row.classList.add('table-success');
+                    } else if (selected) {
+                        row.classList.add('table-danger');
+                    }
+                    row.cells[0].innerHTML += ` <span class="badge ${item.correct ? 'bg-success' : 'bg-danger'} ms-2">${item.correct ? 'Đúng' : 'Sai'}</span>`;
+                });
+
+                if (correctCount === 1) scoreP2 += 0.1;
+                else if (correctCount === 2) scoreP2 += 0.25;
+                else if (correctCount === 3) scoreP2 += 0.5;
+                else if (correctCount === 4) scoreP2 += 1.0;
+
+                document.getElementById(`p2-sol-${idx}`).style.display = 'block';
+            });
+
+            // Grade Part 3 (6 câu * 0.5 = 3.0 điểm)
+            let scoreP3 = 0;
+            p3Data.forEach((q, idx) => {
+                const inputEl = document.getElementById(`p3-q${idx}`);
+                const userVal = inputEl.value.trim().replace(',', '.');
+                const correctVal = q.correct.replace(',', '.');
+
+                const numUser = parseFloat(userVal);
+                const numCorrect = parseFloat(correctVal);
+
+                if (!isNaN(numUser) && Math.abs(numUser - numCorrect) < 1e-6) {
+                    scoreP3 += 0.5;
+                    inputEl.classList.add('is-valid', 'bg-success', 'text-white');
+                } else {
+                    inputEl.classList.add('is-invalid', 'bg-danger', 'text-white');
+                    inputEl.value += ` (Đáp án đúng: ${q.correct})`;
+                }
+                inputEl.disabled = true;
+                document.getElementById(`p3-sol-${idx}`).style.display = 'block';
+            });
+
+            document.querySelectorAll('input[type="radio"]').forEach(el => el.disabled = true);
+
+            const totalScore = scoreP1 + scoreP2 + scoreP3;
+            document.getElementById('score-part1').innerText = `${scoreP1.toFixed(2)} / 3.00`;
+            document.getElementById('score-part2').innerText = `${scoreP2.toFixed(2)} / 3.00`;
+            document.getElementById('score-part3').innerText = `${scoreP3.toFixed(2)} / 3.00`;
+            document.getElementById('score-total').innerText = `${totalScore.toFixed(2)} / 9.00`;
+            document.getElementById('completion-rate').innerText = `Hoàn thành: ${Math.round(percent)}%`;
+
+            document.getElementById('result-summary').classList.remove('d-none');
+            document.getElementById('result-summary').scrollIntoView({ behavior: 'smooth' });
+
+            document.getElementById('btn-submit').classList.add('d-none');
+            document.getElementById('btn-print').classList.remove('d-none');
+            document.getElementById('btn-sync').classList.remove('d-none');
+
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise();
+            }
+
+            localStorage.setItem('oxyz_final_result', JSON.stringify({
+                name: document.getElementById('student-name').value,
+                cls: document.getElementById('student-class').value,
+                score: totalScore.toFixed(2),
+                duration: durationMinutes
+            }));
+        }
+
+        function sendToGoogleSheet() {
+            const name = document.getElementById('student-name').value || 'Ẩn danh';
+            const cls = document.getElementById('student-class').value || 'Không rõ';
+            const s1 = document.getElementById('score-part1').innerText;
+            const s2 = document.getElementById('score-part2').innerText;
+            const s3 = document.getElementById('score-part3').innerText;
+            const total = document.getElementById('score-total').innerText;
+
+            const payload = {
+		sheet_name: "Oxyz_ot_ch",
+                student_name: name,
+                class_name: cls,
+                part1_score: s1,
+                part2_score: s2,
+                part3_score: s3,
+                total_score: total,
+                submit_time: new Date().toLocaleString('vi-VN')
+            };
+
+            const btn = document.getElementById('btn-sync');
+            btn.innerHTML = 'ĐANG GỬI DỮ LIỆU...';
+            btn.disabled = true;
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                alert("Có nhận phản hồi từ google sheet ap script (Dữ liệu điểm đã được gửi thành công!)");
+                btn.innerHTML = 'ĐÃ GỬI ĐIỂM THÀNH CÔNG';
+                btn.classList.replace('btn-success', 'btn-secondary');
+            }).catch(err => {
+                alert("Lỗi khi gửi dữ liệu. Vui lòng kiểm tra lại đường truyền.");
+                btn.innerHTML = 'GỬI LẠI ĐIỂM';
+                btn.disabled = false;
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', initExam);
+    </script>
+</body>
+</html>
