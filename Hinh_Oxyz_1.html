@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đề Ôn Tập Hình Oxyz - Phần 1</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                macros: {
+                    heva: ["\\left\\{\\begin{aligned}#1\\end{aligned}\\right.", 1],
+                    choice: ["\\text{A. }#1", 1],
+                    True: ["#1", 1],
+                    abs: ["\\left|#1\\right|", 1]
+                }
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary-blue: #0d6efd;
+            --light-blue: #f0f7ff;
+        }
+        body {
+            background-color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .header-box {
+            background-color: var(--light-blue);
+            border: 2px solid var(--primary-blue);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .header-box h4, .header-box p {
+            margin: 0;
+            color: var(--primary-blue);
+        }
+        .question-box {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #fafafa;
+        }
+        .solution-box {
+            background-color: #e9ecef;
+            border-left: 4px solid var(--primary-blue);
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+        .correct-ans {
+            color: #198754;
+            font-weight: bold;
+        }
+        .wrong-ans {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .part-title {
+            color: var(--primary-blue);
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 5px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+        .form-check-input:checked {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+        }
+        #result-overlay {
+            display: none;
+            background-color: var(--light-blue);
+            border: 2px solid var(--primary-blue);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .sticky-progress {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: white;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        @media print {
+            body { background-color: white; }
+            .sticky-progress, #submit-btn, .no-print { display: none !important; }
+            .solution-box { display: block !important; break-inside: avoid; }
+            .question-box { break-inside: avoid; border: none; border-bottom: 1px solid #ccc; border-radius: 0; }
+            #result-overlay { display: block !important; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="header-box text-center">
+        <h4>CSDT Trí Đức</h4>
+        <p class="mb-2">Giáo viên: Đinh Phước Tân</p>
+        <h2 class="fw-bold text-uppercase">ĐỀ ÔN TẬP HÌNH OXYZ - PHẦN 1</h2>
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-4">
+                <input type="text" id="student_name" class="form-control mb-2" placeholder="Họ và tên học sinh">
+            </div>
+            <div class="col-md-3">
+                <input type="text" id="class_name" class="form-control mb-2" placeholder="Lớp">
+            </div>
+            <div class="col-md-3">
+                <div class="form-control bg-light text-start">Mã đề: <strong id="exam_code"></strong></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Progress Bar -->
+    <div class="sticky-progress no-print text-center">
+        <span class="fw-bold text-primary">Đã làm: <span id="answered-count">0</span> / <span id="total-count">19</span> câu</span>
+        <button id="submit-btn" class="btn btn-primary ms-3" onclick="submitExam()">NỘP BÀI</button>
+        <button id="print-btn" class="btn btn-success ms-2 d-none" onclick="window.print()">IN KẾT QUẢ PDF</button>
+    </div>
+
+    <!-- Result Overlay -->
+    <div id="result-overlay" class="text-center mt-3">
+        <h3 class="text-success fw-bold">KẾT QUẢ LÀM BÀI</h3>
+        <div class="row fw-bold text-primary fs-5">
+            <div class="col-md-3">Điểm Phần I: <span id="score-p1"></span>/3.5</div>
+            <div class="col-md-3">Điểm Phần II: <span id="score-p2"></span>/2.0</div>
+            <div class="col-md-3">Điểm Phần III: <span id="score-p3"></span>/1.5</div>
+            <div class="col-md-3 text-danger">TỔNG: <span id="score-total"></span>/7.0</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-6">Hoàn thành: <span id="completion-percent"></span>%</div>
+            <div class="col-md-6">Thời gian làm bài: <span id="time-taken"></span> phút</div>
+        </div>
+
+        <!-- Khu vực đồng bộ Google Sheet -->
+        <div class="text-center mt-3 border-top pt-3 no-print" id="sync-area">
+            <button id="btn-sync" class="btn btn-success btn-lg px-4" onclick="retrySendToGoogleSheet()">GỬI ĐIỂM VỀ THẦY/CÔ</button>
+            <p id="sync-status" class="mt-2 text-muted"></p>
+        </div>
+    </div>
+
+    <!-- Quiz Content -->
+    <div id="quiz-container">
+        <!-- Part 1 -->
+        <h4 class="part-title">PHẦN I. Câu hỏi trắc nghiệm nhiều phương án lựa chọn</h4>
+        <p class="fst-italic">Mỗi câu trả lời đúng được 0.25 điểm.</p>
+        <div id="part1-questions"></div>
+
+        <!-- Part 2 -->
+        <h4 class="part-title">PHẦN II. Câu hỏi trắc nghiệm đúng sai</h4>
+        <p class="fst-italic">Điểm tối đa 1 điểm/câu: Đúng 1 ý được 0.1 điểm | Đúng 2 ý được 0.25 điểm | Đúng 3 ý được 0.5 điểm | Đúng 4 ý được 1.0 điểm.</p>
+        <div id="part2-questions"></div>
+
+        <!-- Part 3 -->
+        <h4 class="part-title">PHẦN III. Câu trắc nghiệm trả lời ngắn</h4>
+        <p class="fst-italic">Mỗi câu trả lời đúng được 0.5 điểm.</p>
+        <div id="part3-questions"></div>
+    </div>
+</div>
+
+<script>
+    const part1Data = [
+        {
+            text: "Trong không gian $Oxyz$, phương trình mặt phẳng $(Oxz)$ là",
+            options: [
+                { text: "$y=1$", correct: false },
+                { text: "$x=0$", correct: false },
+                { text: "$y=0$", correct: true },
+                { text: "$x+y+z=0$", correct: false }
+            ],
+            solution: "Trong không gian $Oxyz$, phương trình mặt phẳng $(Oxz)$ là $y=0$."
+        },
+        {
+            text: "Trong không gian $Oxyz$, cho ba điểm $A(-6;0;0)$, $B(0;4;0)$ và $C(0;0;9)$. Mặt phẳng $(ABC)$ có phương trình là",
+            options: [
+                { text: "$\\dfrac{x}{6}+\\dfrac{y}{4}+\\dfrac{z}{9}=1$", correct: false },
+                { text: "$\\dfrac{x}{-6}+\\dfrac{y}{4}+\\dfrac{z}{9}=1$", correct: true },
+                { text: "$\\dfrac{x}{-6}+\\dfrac{y}{4}+\\dfrac{z}{9}=-1$", correct: false },
+                { text: "$\\dfrac{x}{-6}+\\dfrac{y}{-4}+\\dfrac{z}{9}=1$", correct: false }
+            ],
+            solution: "Phương trình mặt phẳng $ABC$ là $\\dfrac{x}{-6}+\\dfrac{y}{4}+\\dfrac{z}{9}=1$."
+        },
+        {
+            text: "Trong không gian $Oxyz$, cho mặt phẳng $(P):5 x - 3 y - 3 z - 8=0$ và mặt phẳng $(Q): - 15 x + 9 y + 9 z + 8=0$. Khoảng cách giữa hai mặt phẳng đó bằng",
+            options: [
+                { text: "$\\dfrac{80 \\sqrt{43}}{129}$", correct: false },
+                { text: "$\\dfrac{16 \\sqrt{43}}{129}$", correct: true },
+                { text: "$\\dfrac{16 \\sqrt{43}}{43}$", correct: false },
+                { text: "$\\dfrac{64 \\sqrt{43}}{129}$", correct: false }
+            ],
+            solution: "Vectơ pháp tuyến của hai mặt phẳng $(P),(Q)$ lần lượt là $\\vec{n_p}=(5;-3;-3),\\vec{n_q}=(-15;9;9)$.<br>Vì $\\dfrac{5}{-15}=\\dfrac{-3}{9}=\\dfrac{-3}{9}$ nên $(P)//(Q)$.<br>Chọn $M(-2;0;-6) \\in (P)$ ta có<br>$$d((P),(Q))=d(M,(Q))=\\dfrac{\\abs{-15\\cdot (-2)+9\\cdot (0)+9\\cdot (-6)+8}}{\\sqrt{(-15)^2+(9)^2+(9)^2}}=\\dfrac{16 \\sqrt{43}}{129}.$$<br>Vậy $d((P),(Q))=\\dfrac{16 \\sqrt{43}}{129}$."
+        },
+        {
+            text: "Trong không gian $Oxyz$, cho hai mặt phẳng $(P): 2 x + 2 y - 3 = 0$ và $(Q): y - 5 = 0$. Góc giữa hai mặt phẳng $(P)$ và $(Q)$ là",
+            options: [
+                { text: "$60^\\circ$", correct: false },
+                { text: "$45^\\circ$", correct: true },
+                { text: "$30^\\circ$", correct: false },
+                { text: "Góc $55^\\circ$", correct: false }
+            ],
+            solution: "Mặt phẳng $(P)$ có vectơ pháp tuyến $\\overrightarrow{n}_P = (2; 2; 0)$.<br>Mặt phẳng $(Q)$ có một vectơ pháp tuyến $\\overrightarrow{n}_Q = (0; 1; 0)$.<br>Ta có $\\cos((P), (Q)) = |\\cos(\\overrightarrow{n}_P, \\overrightarrow{n}_Q)| = \\frac{|\\overrightarrow{n}_P \\cdot \\overrightarrow{n}_Q|}{|\\overrightarrow{n}_P| \\cdot |\\overrightarrow{n}_Q|}= \\frac{|2|}{|2 \\sqrt{2}| \\cdot |1|} = \\frac{\\sqrt{2}}{2}$.<br>Vậy góc giữa hai mặt phẳng là $45^\\circ$."
+        },
+        {
+            text: "Trong không gian $Oxyz$, mặt phẳng $(P): x + 2 y + 2 z - 2 = 0$ song song với mặt phẳng nào dưới đây?",
+            options: [
+                { text: "$x + 3 y + 2 z + 1 = 0$", correct: false },
+                { text: "$2 x + 2 y + 2 z - 3 = 0$", correct: false },
+                { text: "$3 x + 6 y + 6 z - 4 = 0$", correct: true },
+                { text: "$- 3 x - 6 y - 6 z + 6 = 0$", correct: false }
+            ],
+            solution: "Mặt phẳng $(P): x + 2 y + 2 z - 2 = 0$ có vectơ pháp tuyến $\\overrightarrow{n}_P = (1; 2; 2)$.<br>Mặt phẳng song song với $(P)$ phải có vectơ pháp tuyến cùng phương với $\\overrightarrow{n}_P$, tức là các hệ số của $x, y, z$ phải tỉ lệ với các hệ số của $(P)$, nhưng hằng số tự do thì không.<br>Ta xét mặt phẳng có phương trình $3 x + 6 y + 6 z - 4 = 0$. Vectơ pháp tuyến của nó là $\\overrightarrow{n}_Q = (3; 6; 6)$.<br>Ta thấy $\\frac{1}{3} = \\frac{2}{6} = \\frac{2}{6} = \\frac{1}{3} \\neq \\frac{-2}{-4}$.<br>Vậy hai mặt phẳng $(P)$ và $(Q)$ song song với nhau."
+        },
+        {
+            text: "Trong không gian $Oxyz$, cho hai điểm $A(-2;5;6),B(0;-4;3)$. Phương trình tham số của đường thẳng đi qua hai điểm $A,B$ là",
+            options: [
+                { text: "$\\heva{&x=-2+2t\\\\&y=-5-9t\\\\&z=-6-3t}$", correct: false },
+                { text: "$\\heva{&x=-2+2t\\\\&y=5-9t\\\\&z=6-3t}$", correct: true },
+                { text: "$\\heva{&x=-2-2t\\\\&y=5+9t\\\\&z=6-3t}$", correct: false },
+                { text: "$\\heva{&x=-2+2t\\\\&y=5+9t\\\\&z=6+3t}$", correct: false }
+            ],
+            solution: "Ta có $\\vec{AB}=(2;-9;-3)$.<br>Đường thẳng $AB$ đi qua $A(-2;5;6)$ nhận $\\vec{AB}=(2;-9;-3)$ làm vectơ chỉ phương có phương trình tham số là<br>$$\\heva{&x=-2+2t\\\\&y=5-9t\\\\&z=6-3t}.$$"
+        },
+        {
+            text: "Trong không gian với hệ tọa độ $Oxyz$, vị trí tương đối của hai đường thẳng<br> $\\Delta_1: \\dfrac{x - 3}{6}=\\dfrac{y + 6}{4}=\\dfrac{z + 7}{-5},\\Delta_2: \\dfrac{x + 2}{-4}=\\dfrac{y + 3}{-4}=\\dfrac{z + 6}{4}$ là",
+            options: [
+                { text: "Song song", correct: false },
+                { text: "Trùng nhau", correct: false },
+                { text: "Chéo nhau", correct: false },
+                { text: "Cắt nhau", correct: true }
+            ],
+            solution: "Đường thẳng $\\Delta_1$ đi qua điêm $M_1=(3;-6;-7)$ có $\\vec{u_1}=(6;4;-5)$ là vectơ chỉ phương.<br>Đường thẳng $\\Delta_2$ đi qua điêm $M_2=(-2;-3;-6)$ có $\\vec{u_2}=(-4;-4;4)$ là vectơ chỉ phương.<br>Ta có $\\dfrac{6}{-4}\\neq\\dfrac{4}{-4}$, suy ra $\\vec{u_1},\\vec{u_2}$ không cùng phương;<br>$\\vec{M_1M_2}=(-5;3;1)$ và $\\left[\\vec{u_1},\\vec{u_2}\\right]=(-4;-4;-8)$.<br>Do $\\vec{M_1M_2}\\cdot\\left[\\vec{u_1},\\vec{u_2}\\right]=-5\\cdot(-4)+3\\cdot(-4)+1\\cdot(-8)=0$ nên $\\vec{u_1},\\vec{u_2},\\vec{M_1M_2}$ đồng phẳng.<br>Vậy $\\Delta_1$ cắt $\\Delta_2$."
+        },
+        {
+            text: "Trong không gian với hệ tọa độ $Oxyz$, vị trí tương đối của hai đường thẳng<br> $\\Delta_1: \\dfrac{x - 3}{-3}=\\dfrac{y}{3}=\\dfrac{z + 7}{7},\\Delta_2: \\dfrac{x - 2}{6}=\\dfrac{y - 3}{-3}=\\dfrac{z - 5}{-6}$ là",
+            options: [
+                { text: "Song song", correct: false },
+                { text: "Chéo nhau", correct: true },
+                { text: "Cắt nhau", correct: false },
+                { text: "Trùng nhau", correct: false }
+            ],
+            solution: "Đường thẳng $\\Delta_1$ đi qua điêm $M_1=(3;0;-7)$ có $\\vec{u_1}=(-3;3;7)$ là vectơ chỉ phương.<br>Đường thẳng $\\Delta_2$ đi qua điêm $M_2=(2;3;5)$ có $\\vec{u_2}=(6;-3;-6)$ là vectơ chỉ phương.<br>Ta có $\\dfrac{-3}{6}\\neq\\dfrac{3}{-3}$, suy ra $\\vec{u_1},\\vec{u_2}$ không cùng phương;<br>$\\vec{M_1M_2}=(-1;3;12)$ và $\\left[\\vec{u_1},\\vec{u_2}\\right]=(3;24;-9)$.<br>Do $\\vec{M_1M_2}\\cdot\\left[\\vec{u_1},\\vec{u_2}\\right]=-1\\cdot(3)+3\\cdot(24)+12\\cdot(-9)=-39\\neq 0$ nên $\\vec{u_1},\\vec{u_2},\\vec{M_1M_2}$ không đồng phẳng.<br>Vậy $\\Delta_1$ và $\\Delta_2$ chéo nhau."
+        },
+        {
+            text: "Trong không gian với hệ trục tọa độ $Oxyz$. Cho đường thẳng $d$ có phương trình $\\heva{& x=6+6t \\\\& y=-2-9t\\\\& z=2-7t}.$ Đường thẳng $d$ đi qua điểm $A$ có tọa độ là",
+            options: [
+                { text: "$(6;-2;2)$", correct: true },
+                { text: "$(6;-2;3)$", correct: false },
+                { text: "$(6;2;2)$", correct: false },
+                { text: "$(-6;-2;2)$", correct: false }
+            ],
+            solution: "Đường thẳng $d$ đi qua điểm $A$ có tọa độ là $(6;-2;2)$."
+        },
+        {
+            text: "Trong không gian $Oxyz$, cho mặt cầu có phương trình $\\left(x + 9\\right)^{2} + \\left(y + 1\\right)^{2} + \\left(z + 5\\right)^{2} = 36$. Bán kính của mặt cầu là",
+            options: [
+                { text: "$R=5$", correct: false },
+                { text: "$R=8$", correct: false },
+                { text: "$R=3$", correct: false },
+                { text: "$R=6$", correct: true }
+            ],
+            solution: "Bán kính của mặt cầu là $R=6$."
+        },
+        {
+            text: "Trong không gian $Oxyz$, cho mặt cầu có phương trình $x^2+y^2+z^2+12 x + 12 y - 4 z + 51=0$. Bán kính của mặt cầu là",
+            options: [
+                { text: "$R=2$", correct: false },
+                { text: "$R=5$", correct: true },
+                { text: "$R=6$", correct: false },
+                { text: "$R=3$", correct: false }
+            ],
+            solution: "Tọa độ tâm của mặt cầu là $(-6; -6; 2)$.<br>Bán kính của mặt cầu là $R=\\sqrt{(-6)^2+(-6)^2+(2)^2-(51)}=5$."
+        },
+        {
+            text: "Trong không gian $Oxyz$, cho mặt cầu có tâm $I(-6; -1; -4)$ và đi qua điểm $M(-2;-3;2)$. Phương trình của mặt cầu là",
+            options: [
+                { text: "$\\left(x - 6\\right)^{2} + \\left(y - 1\\right)^{2} + \\left(z - 4\\right)^{2} = 2 \\sqrt{14}$", correct: false },
+                { text: "$\\left(x + 6\\right)^{2} + \\left(y + 1\\right)^{2} + \\left(z + 4\\right)^{2} = 56$", correct: true },
+                { text: "$\\left(x + 6\\right)^{2} + \\left(y + 1\\right)^{2} + \\left(z + 4\\right)^{2} = 2 \\sqrt{14}$", correct: false },
+                { text: "$\\left(x - 6\\right)^{2} + \\left(y - 1\\right)^{2} + \\left(z - 4\\right)^{2} = 56$", correct: false }
+            ],
+            solution: "Ta có $\\vec{IM}=(4;-2;6)$, suy ra bán kính mặt cầu là $R=\\left| \\vec{IM} \\right| = 2 \\sqrt{14}$.<br>Phương trình của mặt cầu là $\\left(x + 6\\right)^{2} + \\left(y + 1\\right)^{2} + \\left(z + 4\\right)^{2} = 56$."
+        },
+        {
+            text: "Trong không gian với hệ tọa độ $Oxyz$, mặt cầu tâm $I(-3;-3;4)$ và đường kính bằng $6$ có phương trình là",
+            options: [
+                { text: "$(x+3)^2+(y+3)^2+(z-4)^2=36$", correct: false },
+                { text: "$(x-3)^2+(y-3)^2+(z+4)^2=36$", correct: false },
+                { text: "$(x+3)^2+(y+3)^2+(z-4)^2=9$", correct: true },
+                { text: "$(x-3)^2+(y-3)^2+(z+4)^2=9$", correct: false }
+            ],
+            solution: "Bán kính của mặt cầu là $R=\\dfrac{6}{2}=3$.<br>Do đó phương trình mặt cầu cần tìm là: $(x+3)^2+(y+3)^2+(z-4)^2=9$."
+        },
+        {
+            text: "Trong không gian $Oxyz$, phương trình mặt cầu $(S)$ có tâm $I(4;-9;-5)$ và tiếp xúc mặt phẳng $(P):2 x - y + 5 z - 12=0$ là",
+            options: [
+                { text: "$\\left(x + 4\\right)^{2} + \\left(y - 9\\right)^{2} + \\left(z - 5\\right)^{2}=\\dfrac{2 \\sqrt{30}}{3}$", correct: false },
+                { text: "$\\left(x - 4\\right)^{2} + \\left(y + 9\\right)^{2} + \\left(z + 5\\right)^{2}=\\dfrac{2 \\sqrt{30}}{3}$", correct: false },
+                { text: "$\\left(x - 4\\right)^{2} + \\left(y + 9\\right)^{2} + \\left(z + 5\\right)^{2}=\\dfrac{40}{3}$", correct: true },
+                { text: "$\\left(x + 4\\right)^{2} + \\left(y - 9\\right)^{2} + \\left(z - 5\\right)^{2}=\\dfrac{40}{3}$", correct: false }
+            ],
+            solution: "Khoảng cách từ điểm $I(4;-9;-5)$ đến mặt phẳng $(P)$: $2 x - y + 5 z - 12=0$ là<br>$$d(I,(P))=\\dfrac{\\abs{2\\cdot (4)-1\\cdot (-9)+5\\cdot (-5)-12}}{\\sqrt{(2)^2+(-1)^2+(5)^2}}=\\dfrac{2 \\sqrt{30}}{3}.$$Vì mặt cầu $(S)$ tiếp xúc với mặt phẳng $(P)$ nên mặt cầu $(S)$ có bán kính là $R=\\dfrac{2 \\sqrt{30}}{3}$.<br>Vậy phương tình mặt cầu $(S)$ là<br>$\\left(x - 4\\right)^{2} + \\left(y + 9\\right)^{2} + \\left(z + 5\\right)^{2}=\\dfrac{40}{3}$."
+        }
+    ];
+
+    const part2Data = [
+        {
+            text: "Trong không gian $Oxyz$, cho hai điểm $A(4; -4; 4), B(-2; 4; 5)$. Gọi $(P)$ là mặt phẳng trung trực của đoạn thẳng $AB$. Giả sử mặt phẳng $(Q)$ song song với $(P)$ và đi qua điểm $C(2; -2; 4)$.",
+            statements: [
+                { label: "a", text: "Vectơ $\\vec{AB}$ có tọa độ là $(6; -8; -1)$", correct: false },
+                { label: "b", text: "Trung điểm $I$ của đoạn thẳng $AB$ có tọa độ là $ \\left(1; 0; \\frac{9}{2} \\right)$", correct: true },
+                { label: "c", text: "Phương trình mặt phẳng $(P)$ là $-3 x + 4 y  + 3 = 0$", correct: true },
+                { label: "d", text: "Phương trình mặt phẳng $(Q)$ là $-3 x + 4 y  + 4 = 0$", correct: false }
+            ],
+            solution: "a) Vectơ $\\vec{AB}$ có tọa độ là $(-6; 8; 1)$.<br>b) Trung điểm $I$ của đoạn thẳng $AB$ có tọa độ là $I\\left(\\frac{4 -2}{2}; \\frac{-4 + 4}{2}; \\frac{4 + 5}{2}\\right) = I \\left(1; 0; \\frac{9}{2} \\right)$<br>c) Mặt phẳng $(P)$ là mặt phẳng trung trực của $AB$ nên $(P)$ đi qua $I\\left(1; 0; \\frac{9}{2}\\right)$ và có VTPT $\\vec{n} = (-3; 4; 0)$. Phương trình của $(P)$ là: $ -3 \\left(x - 1 \\right) + 4 \\left(y - 0 \\right) + 0 \\left(z - \\frac{9}{2} \\right) = 0 \\Leftrightarrow -3 x + 4 y  + 3 = 0$.<br>d) Mặt phẳng $(Q)$ song song với $(P)$ nên có VTPT $\\vec{n} = (-3; 4; 0)$ và có dạng $-3 x + 4 y  + D = 0$. $(Q)$ đi qua $C(2; -2; 4)$ nên: $ -3 \\cdot (2) + 4 \\cdot (-2) + 0 \\cdot (4) + D = 0 \\Leftrightarrow 14 + D = 0 \\Leftrightarrow D = -14$. Vậy phương trình mặt phẳng $(Q)$ là $-3 x + 4 y - 14 = 0$."
+        },
+        {
+            text: "Trong không gian với hệ tọa độ $Oxyz$, cho đường thẳng $\\Delta: \\dfrac{x + 3}{-3}=\\dfrac{y + 1}{-5}=\\dfrac{z + 7}{6}$ và mặt phẳng $(P):5 x + 5 y + z - 5=0$. Xét các vectơ $\\vec{u}=(-3;-5;6),\\vec{n}=(5;5;1)$.",
+            statements: [
+                { label: "a", text: "$\\vec{n}$ là một vectơ pháp tuyến của mặt phẳng $(P)$", correct: true },
+                { label: "b", text: "$\\vec{u}$ là một vectơ chỉ phương của đường thẳng $\\Delta$", correct: true },
+                { label: "c", text: "$\\sin \\left((P),\\Delta\\right)=\\dfrac{\\sqrt{3570}}{105}$", correct: true },
+                { label: "d", text: "Góc giữa đường thẳng $\\Delta$ và mặt phẳng $(P)$ bằng khoảng $\\mathtt{\\text{37}}^{\\circ}$ (làm tròn đến hàng đơn vị của độ)", correct: false }
+            ],
+            solution: "a) $\\vec{n}$ là một vectơ pháp tuyến của mặt phẳng $(P)$.<br>b) $\\vec{u}$ là một vectơ chỉ phương của đường thẳng $\\Delta$.<br>c) Ta có $\\sin \\left((P),\\Delta\\right)=\\dfrac{\\abs{5\\cdot(-3)+5\\cdot(-5)+1\\cdot(6)}}{\\sqrt{(5)^2+(5)^2+(1)^2}\\cdot\\sqrt{(-3)^2+(-5)^2+(6)^2}}=\\dfrac{\\sqrt{3570}}{105}$.<br>d) Ta có $\\sin \\left(\\Delta,(P)\\right)=\\dfrac{\\sqrt{3570}}{105}$. Do đó $\\left(\\Delta,(P)\\right)\\approx \\mathtt{\\text{35}}^{\\circ}$."
+        }
+    ];
+
+    const part3Data = [
+        {
+            text: "Trong không gian $Oxyz$, cho điểm $M(3;6;-1)$ và mặt phẳng $(P)$: $3x+5y-2z+6=0$. Hỏi khoảng cách từ điểm $M$ đến mặt phẳng $(P)$ bằng bao nhiêu? (làm tròn kết quả đến hàng phần chục)",
+            answer: 7.6,
+            solution: "Khoảng cách từ điểm $M(3;6;-1)$ đến mặt phẳng $(P)$: $3x+5y-2z+6=0$ là<br>$$d(M,(P))=\\dfrac{\\abs{3\\cdot (3)+5\\cdot (6)-2\\cdot (-1)+6}}{\\sqrt{(3)^2+(5)^2+(-2)^2}}\\approx \\mathtt{\\text{7,6}}.$$"
+        },
+        {
+            text: "Trong không gian với hệ trục tọa độ $Oxyz$. Cho đường thẳng $d$ có phương trình $\\heva{& x=-4- t \\\\& y=6- t\\\\& z=8+t}.$ Gọi $H(a;b;c)$ là hình chiếu vuông góc của điểm $I(-1;8;-8)$ lên đường thẳng $d$. Hỏi giá trị của biểu thức $a+b+c$ bằng bao nhiêu?",
+            answer: 17,
+            solution: "Vì $H$ thuộc đường thẳng $d$ nên $H(-4- t;6- t;8+t)$. Ta có<br>$\\vec{IH}=(-4+1- t;6-8- t;8+8+t)=(-3- t;-2- t;16+t)$.<br>Đường thẳng $d$ có vectơ chỉ phương $\\vec{u}=(-1;-1;1)$.<br>Vì $IH$ vuông góc với đường thẳng $d$ nên ta có<br>$\\vec{u}\\cdot\\vec{IH}=0\\Leftrightarrow -1(-3- t)-1(-2- t)+1(16+t)=0\\Leftrightarrow t=-7$.<br>Suy ra $H(3;13;1)$. Vậy $a+b+c=3+13+1=17$."
+        },
+        {
+            text: "Trong không gian $Oxyz$, cho hai mặt phẳng $$(P):4 x + 3 y - 3 z + 9=0,(Q):- y + 3 z + 11=0.$$Hỏi góc giữa hai mặt phẳng $(P)$ và $(Q)$ bằng bao nhiêu độ? (làm tròn kết quả đến hàng phần chục).",
+            answer: 49.4,
+            solution: "Các mặt phẳng $(P),(Q)$ tương ứng có các vectơ pháp tuyến là $\\vec{n_1}=(4;3;-3),\\vec{n_2}=(0;-1;3)$.<br>Ta có $\\cos \\left((P),(Q)\\right)=\\dfrac{\\abs{4\\cdot(0)+3\\cdot(-1)-3\\cdot(3)}}{\\sqrt{(4)^2+(3)^2+(-3)^2}\\cdot\\sqrt{(0)^2+(-1)^2+(3)^2}}=\\dfrac{6 \\sqrt{85}}{85}$.<br>Do đó $\\left((P),(Q)\\right)\\approx \\mathtt{\\text{49,4}}^{\\circ}$."
+        }
+    ];
+
+    const STORAGE_KEY = 'exam_Hinh_Oxyz_1_data';
+    let p1Shuffled = [];
+    let p2Shuffled = [];
+    let state = {
+        name: "", class: "", code: "", answersP1: {}, answersP2: {}, answersP3: {},
+        startTime: null, endTime: null, isSubmitted: false
+    };
+
+    function shuffleArray(array) {
+        let arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function initData() {
+        state.code = Math.floor(100 + Math.random() * 900).toString();
+        document.getElementById('exam_code').innerText = state.code;
+        state.startTime = Date.now();
+
+        p1Shuffled = shuffleArray(part1Data).map((q, i) => {
+            let opts = shuffleArray(q.options);
+            return { ...q, options: opts, originalIndex: i };
+        });
+
+        p2Shuffled = shuffleArray(part2Data);
+
+        loadFromLocalStorage();
+        renderQuiz();
+        
+        setInterval(saveToLocalStorage, 10000);
+    }
+
+    function renderQuiz() {
+        const p1Div = document.getElementById('part1-questions');
+        p1Div.innerHTML = '';
+        p1Shuffled.forEach((q, idx) => {
+            let html = `<div class="question-box" id="p1_box_${idx}">
+                <div class="fw-bold mb-2">Câu ${idx + 1}: ${q.text}</div>
+                <div class="row">`;
+            const labels = ['A', 'B', 'C', 'D'];
+            q.options.forEach((opt, optIdx) => {
+                let checked = state.answersP1[idx] === optIdx ? "checked" : "";
+                html += `<div class="col-md-6 col-12 mb-2">
+                    <div class="form-check">
+                        <input class="form-check-input p1-input" type="radio" name="p1_q${idx}" id="p1_q${idx}_opt${optIdx}" value="${optIdx}" ${checked} onchange="updateAns('p1', ${idx}, ${optIdx})">
+                        <label class="form-check-label" for="p1_q${idx}_opt${optIdx}">${labels[optIdx]}. ${opt.text}</label>
+                    </div>
+                </div>`;
+            });
+            html += `</div>
+                <div class="solution-box" id="sol_p1_${idx}">
+                    <strong>Lời giải:</strong> ${q.solution}
+                </div>
+            </div>`;
+            p1Div.innerHTML += html;
+        });
+
+        const p2Div = document.getElementById('part2-questions');
+        p2Div.innerHTML = '';
+        p2Shuffled.forEach((q, idx) => {
+            let html = `<div class="question-box" id="p2_box_${idx}">
+                <div class="fw-bold mb-3">Câu ${idx + 1}: ${q.text}</div>
+                <table class="table table-bordered table-sm align-middle">
+                    <thead class="table-light"><tr><th>Ý</th><th>Phát biểu</th><th class="text-center" style="width: 70px;">Đúng</th><th class="text-center" style="width: 70px;">Sai</th></tr></thead>
+                    <tbody>`;
+            if (!state.answersP2[idx]) state.answersP2[idx] = {};
+            q.statements.forEach((stmt, sIdx) => {
+                let valT = state.answersP2[idx][sIdx] === true ? "checked" : "";
+                let valF = state.answersP2[idx][sIdx] === false ? "checked" : "";
+                html += `<tr>
+                    <td class="text-center fw-bold">${stmt.label})</td>
+                    <td>${stmt.text}</td>
+                    <td class="text-center"><input class="form-check-input p2-input" type="radio" name="p2_q${idx}_s${sIdx}" value="true" ${valT} onchange="updateAnsP2(${idx}, ${sIdx}, true)"></td>
+                    <td class="text-center"><input class="form-check-input p2-input" type="radio" name="p2_q${idx}_s${sIdx}" value="false" ${valF} onchange="updateAnsP2(${idx}, ${sIdx}, false)"></td>
+                </tr>`;
+            });
+            html += `</tbody></table>
+                <div class="solution-box" id="sol_p2_${idx}">
+                    <strong>Lời giải:</strong> ${q.solution}
+                </div>
+            </div>`;
+            p2Div.innerHTML += html;
+        });
+
+        const p3Div = document.getElementById('part3-questions');
+        p3Div.innerHTML = '';
+        part3Data.forEach((q, idx) => {
+            let val = state.answersP3[idx] !== undefined ? state.answersP3[idx] : "";
+            let html = `<div class="question-box" id="p3_box_${idx}">
+                <div class="fw-bold mb-2">Câu ${idx + 1}: ${q.text}</div>
+                <div class="mt-2">
+                    <input type="text" class="form-control w-50 p3-input" placeholder="Nhập đáp án..." value="${val}" oninput="updateAnsP3(${idx}, this.value)">
+                </div>
+                <div class="solution-box" id="sol_p3_${idx}">
+                    <strong>Lời giải:</strong> ${q.solution}
+                </div>
+            </div>`;
+            p3Div.innerHTML += html;
+        });
+
+        updateProgress();
+        MathJax.typesetPromise();
+
+        if (state.isSubmitted) {
+            applyResults();
+        }
+    }
+
+    function updateAns(part, qIdx, val) { state.answersP1[qIdx] = val; updateProgress(); }
+    function updateAnsP2(qIdx, sIdx, val) { state.answersP2[qIdx][sIdx] = val; updateProgress(); }
+    function updateAnsP3(qIdx, val) { state.answersP3[qIdx] = val; updateProgress(); }
+
+    function updateProgress() {
+        let count = 0;
+        let total = p1Shuffled.length + p2Shuffled.length * 4 + part3Data.length;
+        
+        count += Object.keys(state.answersP1).length;
+        Object.keys(state.answersP2).forEach(k => { count += Object.keys(state.answersP2[k]).length; });
+        Object.keys(state.answersP3).forEach(k => { if (state.answersP3[k].trim() !== "") count++; });
+
+        document.getElementById('answered-count').innerText = count;
+        document.getElementById('total-count').innerText = total;
+        return { count, total };
+    }
+
+    function saveToLocalStorage() {
+        if(state.isSubmitted) return;
+        state.name = document.getElementById('student_name').value;
+        state.class = document.getElementById('class_name').value;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadFromLocalStorage() {
+        let saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            let parsed = JSON.parse(saved);
+            state = { ...state, ...parsed };
+            document.getElementById('student_name').value = state.name || "";
+            document.getElementById('class_name').value = state.class || "";
+            document.getElementById('exam_code').innerText = state.code;
+            if(!state.isSubmitted) {
+                alert("Đã khôi phục bài làm trước đó.");
+            }
+        }
+    }
+
+    function isEquivalentNum(ans, correct) {
+        if (!ans) return false;
+        let s = parseFloat(ans.toString().replace(',', '.'));
+        return !isNaN(s) && Math.abs(s - correct) < 0.0001;
+    }
+
+    function getP2Score(correctCount) {
+        if(correctCount === 1) return 0.1;
+        if(correctCount === 2) return 0.25;
+        if(correctCount === 3) return 0.5;
+        if(correctCount === 4) return 1.0;
+        return 0;
+    }
+
+    function submitExam() {
+        let { count, total } = updateProgress();
+        if (count / total < 0.5) {
+            alert("Bạn cần làm ít nhất 50% số câu hỏi trước khi nộp bài!");
+            return;
+        }
+
+        let name = document.getElementById('student_name').value.trim();
+        if (!name) { alert("Vui lòng nhập Họ và Tên!"); return; }
+
+        if (!confirm("Bạn có chắc chắn muốn nộp bài?")) return;
+
+        state.isSubmitted = true;
+        state.name = name;
+        state.class = document.getElementById('class_name').value.trim();
+        state.endTime = Date.now();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+        applyResults();
+        
+        document.querySelectorAll('input').forEach(el => el.disabled = true);
+        document.getElementById('submit-btn').classList.add('d-none');
+        document.getElementById('print-btn').classList.remove('d-none');
+    }
+
+    function applyResults() {
+        let score1 = 0, score2 = 0, score3 = 0;
+
+        p1Shuffled.forEach((q, idx) => {
+            let ansIdx = state.answersP1[idx];
+            let box = document.getElementById(`p1_box_${idx}`);
+            let solBox = document.getElementById(`sol_p1_${idx}`);
+            
+            q.options.forEach((opt, oIdx) => {
+                let lbl = document.querySelector(`label[for="p1_q${idx}_opt${oIdx}"]`);
+                if (opt.correct) {
+                    lbl.classList.add('correct-ans');
+                }
+            });
+
+            if (ansIdx !== undefined && q.options[ansIdx].correct) {
+                score1 += 0.25;
+                box.style.borderLeft = "5px solid #198754";
+            } else {
+                box.style.borderLeft = "5px solid #dc3545";
+            }
+            solBox.style.display = "block";
+        });
+
+        p2Shuffled.forEach((q, idx) => {
+            let box = document.getElementById(`p2_box_${idx}`);
+            let solBox = document.getElementById(`sol_p2_${idx}`);
+            let correctCount = 0;
+            q.statements.forEach((stmt, sIdx) => {
+                let sAns = state.answersP2[idx] ? state.answersP2[idx][sIdx] : null;
+                if (sAns === stmt.correct) {
+                    correctCount++;
+                }
+            });
+            score2 += getP2Score(correctCount);
+            if (correctCount === 4) {
+                box.style.borderLeft = "5px solid #198754";
+            } else if (correctCount > 0) {
+                box.style.borderLeft = "5px solid #ffc107";
+            } else {
+                box.style.borderLeft = "5px solid #dc3545";
+            }
+            solBox.style.display = "block";
+        });
+
+        part3Data.forEach((q, idx) => {
+            let ans = state.answersP3[idx] || "";
+            let box = document.getElementById(`p3_box_${idx}`);
+            let solBox = document.getElementById(`sol_p3_${idx}`);
+            let inputEl = document.querySelector(`#p3_box_${idx} input`);
+            
+            if (isEquivalentNum(ans, q.answer)) {
+                score3 += 0.5;
+                box.style.borderLeft = "5px solid #198754";
+                inputEl.classList.add('is-valid');
+            } else {
+                box.style.borderLeft = "5px solid #dc3545";
+                inputEl.classList.add('is-invalid');
+                let corr = document.createElement('div');
+                corr.className = 'text-success mt-1 fw-bold';
+                corr.innerText = "Đáp án đúng: " + q.answer;
+                box.insertBefore(corr, solBox);
+            }
+            solBox.style.display = "block";
+        });
+
+        let totalScore = score1 + score2 + score3;
+        let durationMinutes = Math.round((state.endTime - state.startTime) / 60000);
+        if(durationMinutes < 0) durationMinutes = 0;
+        let { count, total } = updateProgress();
+        let percent = Math.round((count / total) * 100);
+
+        document.getElementById('score-p1').innerText = score1;
+        document.getElementById('score-p2').innerText = score2;
+        document.getElementById('score-p3').innerText = score3;
+        document.getElementById('score-total').innerText = totalScore;
+        document.getElementById('completion-percent').innerText = percent;
+        document.getElementById('time-taken').innerText = durationMinutes;
+
+        document.getElementById('result-overlay').style.display = "block";
+        window.scrollTo(0, 0);
+
+        sendToGoogleSheet(state.name, state.class, score1, score2, score3, totalScore, durationMinutes, percent);
+    }
+
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyF8M8qlqqg3IiELoNqLwQtT0OJ-g9sKaca1LG9V11yY4_Pkb2ta8kuhpX0b4QdnTkq/exec';
+    let lastSyncPayload = null; // lưu lại để nút "Thử gửi lại" dùng khi lỗi
+
+    function sendToGoogleSheet(name, cls, s1, s2, s3, tScore, dur, pct) {
+        const payload = {
+            sheet_name: "Hinh_Oxyz_1",
+            student_name: name,
+            class_name: cls,
+            part1_score: s1,
+            part2_score: s2,
+            part3_score: s3,
+            total_score: tScore,
+            submit_time: new Date().toLocaleString('vi-VN'),
+            duration_minutes: dur,
+            percent: pct
+        };
+        lastSyncPayload = payload;
+        doSendToGoogleSheet(payload);
+    }
+
+    function retrySendToGoogleSheet() {
+        if (lastSyncPayload) doSendToGoogleSheet(lastSyncPayload);
+    }
+
+    function doSendToGoogleSheet(payload) {
+        const btn = document.getElementById('btn-sync');
+        const status = document.getElementById('sync-status');
+
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ĐANG GỬI...';
+        btn.disabled = true;
+        status.innerText = "Hệ thống đang kết nối...";
+
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // né CORS preflight, KHÔNG dùng application/json
+            body: JSON.stringify(payload)
+            // KHÔNG dùng mode: 'no-cors' để đọc được phản hồi thật
+        })
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
+        .then(result => {
+            if (result.status === "success") {
+                status.innerHTML = `<span class='text-success fw-bold'>✔ Đã lưu điểm thành công! Hạng ${result.rank}/${result.total_submissions} lượt nộp.</span>`;
+                btn.innerHTML = 'ĐÃ GỬI ĐIỂM';
+                btn.classList.replace('btn-success', 'btn-secondary');
+            } else {
+                throw new Error(result.message || 'Lỗi không xác định từ server');
+            }
+        })
+        .catch(err => {
+            status.innerHTML = `<span class='text-danger fw-bold'>✖ Lỗi kết nối: ${err.message}</span>`;
+            btn.innerHTML = 'THỬ GỬI LẠI';
+            btn.disabled = false;
+        });
+    }
+
+    window.onload = initData;
+
+</script>
+</body>
+</html>
