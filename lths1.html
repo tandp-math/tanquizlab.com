@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐỀ ÔN TẬP</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                macros: {
+                    hoac: ["\\left[\\begin{aligned}#1\\end{aligned}\\right.", 1],
+                    heva: ["\\left\\{\\begin{aligned}#1\\end{aligned}\\right.", 1],
+                    mathscr: ["\\mathcal{#1}", 1]
+                }
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-bg: #f8fbff;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+        .header-section {
+            background-color: var(--secondary-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(13, 110, 253, 0.1);
+        }
+        .part-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+            margin-top: 35px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .question-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fafafa;
+            transition: all 0.3s ease;
+        }
+        .solution-box {
+            background-color: #e9ecef;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+            border-radius: 0 4px 4px 0;
+        }
+        .sticky-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            padding: 15px 0;
+            border-bottom: 1px solid #ddd;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        #result-board {
+            display: none;
+            background-color: var(--secondary-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .opt-correct { color: var(--success-color); font-weight: bold; }
+        .opt-wrong { color: var(--danger-color); font-weight: bold; text-decoration: line-through;}
+        
+        .toast-notify {
+            position: fixed; 
+            bottom: 20px; 
+            right: 20px; 
+            background: var(--success-color); 
+            color: white;
+            padding: 12px 25px; 
+            border-radius: 8px; 
+            opacity: 0; 
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0.5s; 
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .toast-notify.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        @media print {
+            body { background-color: white; }
+            .sticky-toolbar, .no-print { display: none !important; }
+            .solution-box { display: block !important; break-inside: avoid; border-left-color: #6c757d; background-color: #f8f9fa; }
+            .question-card { break-inside: avoid; border: none; border-bottom: 1px dashed #ccc; background-color: transparent; padding: 10px 0; }
+            #result-board { display: block !important; border: 1px solid #000; box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-4">
+    <div class="header-section text-center">
+        <h2 class="fw-bold text-primary mb-3">ĐỀ ÔN TẬP</h2>
+        <div class="row justify-content-center g-3">
+            <div class="col-md-4">
+                <input type="text" id="input_name" class="form-control" placeholder="Họ và tên học sinh" oninput="triggerSave()">
+            </div>
+            <div class="col-md-3">
+                <input type="text" id="input_class" class="form-control" placeholder="Lớp" oninput="triggerSave()">
+            </div>
+            <div class="col-md-3">
+                <div class="form-control bg-white text-start border-primary">Mã đề: <strong id="lbl_exam_code" class="text-danger"></strong></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sticky-toolbar text-center no-print">
+        <span class="fw-bold text-primary fs-5 me-4">Đã làm: <span id="lbl_answered">0</span> / <span id="lbl_total">0</span></span>
+        <button id="btn_submit" class="btn btn-primary px-4 py-2 fw-bold" onclick="submitExam()">NỘP BÀI</button>
+        <button id="btn_print" class="btn btn-success px-4 py-2 fw-bold d-none" onclick="window.print()">IN KẾT QUẢ PDF</button>
+    </div>
+
+    <div id="result-board" class="text-center mt-3 shadow-sm">
+        <h3 class="text-success fw-bold mb-4">KẾT QUẢ BÀI LÀM</h3>
+        <div class="row fw-bold text-primary fs-5 mb-3">
+            <div class="col-md-3">Phần I: <span id="res_p1"></span> / 2.0</div>
+            <div class="col-md-3">Phần II: <span id="res_p2"></span> / 3.0</div>
+            <div class="col-md-3">Phần III: <span id="res_p3"></span> / 1.0</div>
+            <div class="col-md-3 text-danger fs-4">TỔNG: <span id="res_total"></span> / 6.0</div>
+        </div>
+        <hr>
+        <div class="row fs-6 text-muted">
+            <div class="col-md-6">Tỷ lệ hoàn thành: <span id="res_percent"></span>%</div>
+            <div class="col-md-6">Thời gian làm bài: <span id="res_time"></span> phút</div>
+        </div>
+    </div>
+
+    <div id="exam-content">
+        <!-- Phần I -->
+        <h4 class="part-title">PHẦN I. Câu hỏi trắc nghiệm nhiều phương án lựa chọn</h4>
+        <p class="fst-italic text-muted">Thí sinh trả lời từ câu 1 đến câu 8. Mỗi câu trả lời đúng được 0,25 điểm.</p>
+        <div id="wrap_p1"></div>
+
+        <!-- Phần II -->
+        <h4 class="part-title">PHẦN II. Câu hỏi trắc nghiệm đúng sai</h4>
+        <p class="fst-italic text-muted">Thí sinh trả lời từ câu 1 đến câu 3. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.<br>Đúng 1 ý: 0.1đ | Đúng 2 ý: 0.25đ | Đúng 3 ý: 0.5đ | Đúng 4 ý: 1.0đ.</p>
+        <div id="wrap_p2"></div>
+
+        <!-- Phần III -->
+        <h4 class="part-title">PHẦN III. Câu trắc nghiệm trả lời ngắn</h4>
+        <p class="fst-italic text-muted">Thí sinh trả lời từ câu 1 đến câu 2. Mỗi câu trả lời đúng được 0,5 điểm.</p>
+        <div id="wrap_p3"></div>
+    </div>
+</div>
+
+<div id="toast-msg" class="toast-notify">Đã khôi phục bài làm trước đó.</div>
+
+<script>
+    const DATA = {
+        part1: [
+            {
+                text: "Cho hàm số $y=f(x)$ có đạo hàm $f'(x)=(x+17)(x+15)(x+10), \\forall x\\in \\mathbb{R}$. Hàm số đã cho nghịch biến trên khoảng nào dưới đây?",
+                options: [
+                    { text: "$(-10;+\\infty)$", correct: false },
+                    { text: "$(-17;+\\infty)$", correct: false },
+                    { text: "$(-\\infty;-19)$", correct: true },
+                    { text: "$(-8;+\\infty)$", correct: false }
+                ],
+                solution: "Ta có $f'(x)=0 \\Leftrightarrow x \\in \\{-17, -15, -10\\}$. Lập bảng xét dấu ta thấy hàm số nghịch biến trên khoảng $(-\\infty;-17)$ và $(-15;-10)$. Do $(-\\infty;-19) \\subset (-\\infty;-17)$ nên hàm số nghịch biến trên $(-\\infty;-19)$."
+            },
+            {
+                text: "Cho hàm số $y=\\dfrac{x^{2} - 5 x - 75}{x + 7}$. Hàm số nghịch biến trên khoảng nào dưới đây?",
+                options: [
+                    { text: "$(-\\infty;-10)$", correct: false },
+                    { text: "$\\left(-7;-4 \\right)$", correct: true },
+                    { text: "$(-3;+\\infty)$", correct: false },
+                    { text: "$\\left(-10;-4 \\right)$", correct: false }
+                ],
+                solution: "Tập xác định $\\mathscr{D}=\\mathbb{R}\\backslash \\{-7\\}$. Ta có $y'=\\dfrac{x^{2} + 14 x + 40}{\\left(x + 7\\right)^{2}}$. $y'=0 \\Leftrightarrow x=-4 \\text{ hoặc } x=-10$. Lập bảng biến thiên ta thấy hàm số nghịch biến trên các khoảng $\\left( -10;-7 \\right)$ và $\\left( -7;-4 \\right)$."
+            },
+            {
+                text: "Hàm số nào dưới đây nghịch biến trên $\\mathbb{R}$?",
+                options: [
+                    { text: "$y=9x^3+3x^2+8x-7$", correct: false },
+                    { text: "$y=\\dfrac{-9x+3}{-8x-7}$", correct: false },
+                    { text: "$y=-9x^3+3x^2-8x-7$", correct: true },
+                    { text: "$y=-9x^4-9x^2-8$", correct: false }
+                ],
+                solution: "Xét hàm số: $y=-9x^3+3x^2-8x-7$. Ta có $y'=-27x^2+6x-8$. Hệ số $a=-27<0$ và $\\Delta '= 36 - 4(-27)(-8) = -828 <0 \\Rightarrow y' < 0, \\forall x\\in \\mathbb{R}$. Vậy hàm số nghịch biến trên $\\mathbb{R}$."
+            },
+            {
+                text: "Cho hàm số $y=\\dfrac{2}{3}x^3- \\dfrac{7}{2}x^2-72x-15$. Điểm cực tiểu của đồ thị hàm số là",
+                options: [
+                    { text: "$(8;- \\dfrac{1421}{3})$", correct: true },
+                    { text: "$(8;\\dfrac{1419}{8})$", correct: false },
+                    { text: "$y=- \\dfrac{9}{2}$", correct: false },
+                    { text: "$x=- \\dfrac{9}{2}$", correct: false }
+                ],
+                solution: "Tập xác định: $D=\\mathbb{R}$. Ta có $y'=2x^2-7x-72 = 0 \\Leftrightarrow x=- \\dfrac{9}{2} \\text{ hoặc } x=8$. Hàm số đạt cực đại tại $x=- \\dfrac{9}{2}$ và cực tiểu tại $x=8$. Thay $x=8$ vào hàm số ta được giá trị cực tiểu $y_{\\text{CT}}=- \\dfrac{1421}{3}$."
+            },
+            {
+                text: "Cho hàm số $y=f(x)$ có đạo hàm $f'(x)=\\left(x - 8\\right) \\left(x - 2\\right) \\left(x + 4\\right)$. Khẳng định nào sau đây là đúng biết $f(-4)+f(9)=2f(8)$?",
+                options: [
+                    { text: "$f(2)>f(8)>f(-4)$", correct: true },
+                    { text: "$f(-4)>f(2)>f(8)$", correct: false },
+                    { text: "$f(-4)>f(8)>f(2)$", correct: false },
+                    { text: "$f(2)>f(-4)>f(8)$", correct: false }
+                ],
+                solution: "Ta có $f'(x)=0 \\Leftrightarrow x \\in \\{-4, 2, 8\\}$. Hàm số đạt cực đại tại $x=2$ và đạt cực tiểu tại $x=-4, x=8$. Suy ra $f(2)>f(8)$. Theo giả thiết $f(8)=\\dfrac{f(-4)+f(9)}{2}$ nên $f(8)$ là trung bình cộng của $f(-4)$ và $f(9)$. Trên khoảng $(8;+\\infty)$ hàm số đồng biến nên $f(9)>f(8)$, suy ra $f(8)>f(-4)$. Vậy $f(2)>f(8)>f(-4)$."
+            },
+            {
+                text: "Hàm số $y=8^{- 5 x^{2} + 2 x - 4}$ nghịch biến trên khoảng nào sau đây?",
+                options: [
+                    { text: "$\\left( -\\infty; \\dfrac{6}{5} \\right)$", correct: false },
+                    { text: "$\\left( - \\dfrac{4}{5}; +\\infty \\right)$", correct: false },
+                    { text: "$\\left( -\\infty; \\dfrac{11}{5} \\right)$", correct: false },
+                    { text: "$\\left( \\dfrac{1}{5}; +\\infty \\right)$", correct: true }
+                ],
+                solution: "Tập xác định: $\\mathscr{D}=\\mathbb{R}$. Ta có $y'=(2 - 10 x) 8^{- 5 x^{2} + 2 x - 4} \\cdot \\ln 8$. $y' < 0 \\Leftrightarrow 2 - 10x < 0 \\Leftrightarrow x > \\dfrac{1}{5}$. Hàm số nghịch biến trên khoảng $\\left( \\dfrac{1}{5}; +\\infty \\right)$."
+            },
+            {
+                text: "Hàm số $y=\\log_{3} (8 x - 9)$ đồng biến trên khoảng nào sau đây?",
+                options: [
+                    { text: "$\\left( \\dfrac{1}{8}; +\\infty \\right)$", correct: false },
+                    { text: "$\\left( - \\dfrac{7}{8}; +\\infty \\right)$", correct: false },
+                    { text: "$\\left( \\dfrac{9}{8}; +\\infty \\right)$", correct: true },
+                    { text: "$\\left( -\\infty; \\dfrac{17}{8} \\right)$", correct: false }
+                ],
+                solution: "Tập xác định: $8x-9>0 \\Leftrightarrow x > \\dfrac{9}{8}$. Ta có $y'=\\dfrac{8}{(8 x - 9) \\ln{3}} > 0, \\forall x > \\dfrac{9}{8}$. Hàm số đồng biến trên khoảng $\\left(\\dfrac{9}{8};+\\infty \\right)$."
+            },
+            {
+                text: "Hàm số nào dưới đây \textbf{không} có cực trị?",
+                options: [
+                    { text: "$y=\\dfrac{x^{3}}{3} - \\dfrac{x^{2}}{2} - 2 x - 9$", correct: false },
+                    { text: "$y=3 x^{4} - 3 x^{2} + 7$", correct: false },
+                    { text: "$y=\\dfrac{5 x - 6}{9 x - 9}$", correct: true },
+                    { text: "$y=\\dfrac{x^{2} - 16 x + 65}{9 x - 3}$", correct: false }
+                ],
+                solution: "Hàm phân thức bậc nhất trên bậc nhất $y=\\dfrac{ax+b}{cx+d}$ luôn đơn điệu trên từng khoảng xác định và đạo hàm không bao giờ bằng 0 nên không có cực trị. Vậy $y=\\dfrac{5 x - 6}{9 x - 9}$ không có cực trị."
+            }
+        ],
+        part2: [
+            {
+                text: "Cho hàm số $y=-2x^3- \\dfrac{7}{2}x^2+49x+10$.",
+                statements: [
+                    { text: "Hàm số có một điểm cực trị", correct: false },
+                    { text: "Giá trị cực đại của hàm số là $y_{\\text{CĐ}}=\\dfrac{7}{3}$", correct: false },
+                    { text: "Đạo hàm của hàm số là $y'=- 6 x^{2} - 7 x + 50$", correct: false },
+                    { text: "Điểm cực đại của đồ thị hàm số là $\\left(\\dfrac{7}{3};\\dfrac{4313}{54}\\right)$", correct: true }
+                ],
+                solution: "Tập xác định: $D=\\mathbb{R}$. Ta có $y'=-6x^2-7x+49=0 \\Leftrightarrow x=- \\dfrac{7}{2} \\text{ hoặc } x=\\dfrac{7}{3}$. Đạo hàm đổi dấu 2 lần nên hàm số có 2 điểm cực trị. Hàm số đạt cực tiểu tại $x=- \\dfrac{7}{2}$ và đạt cực đại tại $x=\\dfrac{7}{3}$. Thay $x=\\dfrac{7}{3}$ vào hàm số ta được giá trị cực đại $y_{\\text{CĐ}}=\\dfrac{4313}{54}$."
+            },
+            {
+                text: "Cho hàm số $y=\\dfrac{- x^{2} - 2 x - 1}{x - 4}$.",
+                statements: [
+                    { text: "Hàm số đạt cực đại tại điểm $x=-1$", correct: false },
+                    { text: "Giá trị cực tiểu của hàm số là $y_{\\text{CT}}=0$", correct: true },
+                    { text: "Điểm cực tiểu của đồ thị hàm số là $\\left(-1;0\\right)$", correct: true },
+                    { text: "Giá trị cực đại của hàm số là $y_{\\text{CĐ}}=9$", correct: false }
+                ],
+                solution: "Tập xác định $\\mathscr{D}=\\mathbb{R}\\backslash \\{4\\}$. Ta có $y'=\\dfrac{- x^{2} + 8 x + 9}{\\left(x - 4\\right)^{2}} = 0 \\Leftrightarrow x=-1 \\text{ hoặc } x=9$. Qua xét dấu đạo hàm, hàm số đạt cực đại tại $x=9$, $y_{\\text{CĐ}}=-20$ và đạt cực tiểu tại $x=-1$, $y_{\\text{CT}}=0$."
+            },
+            {
+                text: "Cho hàm số $y=f(x)=-x^3-6x^2+15x-3$.",
+                statements: [
+                    { text: "Tập xác định của hàm số $f(x)$ là $\\mathscr{D}=\\mathbb{R}$", correct: true },
+                    { text: "Đạo hàm của hàm số $f(x)$ là $f'(x)=-3x^2-6x+15$", correct: false },
+                    { text: "Hàm số $f(x)$ đồng biến trên các khoảng $(-\\infty;-5)$ và $(1;+\\infty)$", correct: false },
+                    { text: "Hàm số $f(x)$ đạt cực tiểu tại điểm $x=-5$", correct: true }
+                ],
+                solution: "a) Tập xác định là $\\mathbb{R}$. b) $f'(x)=-3x^2-12x+15$. c) $f'(x)=0 \\Leftrightarrow x=-5 \\text{ hoặc } x=1$. Hàm số đồng biến trên khoảng $(-5;1)$ và nghịch biến trên các khoảng $(-\\infty;-5)$ và $(1;+\\infty)$. d) Hàm số đạt cực tiểu tại $x=-5$ và đạt cực đại tại $x=1$."
+            }
+        ],
+        part3: [
+            {
+                text: "Khoảng cách giữa hai điểm cực trị của đồ thị hàm số $y=\\dfrac{x^{2} + 39}{x - 5}$ bằng bao nhiêu? (làm tròn kết quả đến hàng đơn vị).",
+                answer: 36,
+                solution: "Tập xác định $\\mathscr{D}=\\mathbb{R}\\backslash \\{5\\}$. Ta có $y'=\\dfrac{x^{2} - 10 x - 39}{\\left(x - 5\\right)^{2}}=0 \\Leftrightarrow x=-3 \\text{ hoặc } x=13$. Điểm cực đại $A(-3;-6)$ và điểm cực tiểu $B(13;26)$. Khoảng cách $AB = \\sqrt{(13 - (-3))^2 + (26 - (-6))^2} = \\sqrt{16^2 + 32^2} = \\sqrt{1280} \\approx 36$."
+            },
+            {
+                text: "Trên một trục số thẳng đứng có chiều dương hướng lên trên, một chất điểm bắt đầu chuyển động dọc theo trục số. Giả sử, tại thời điểm $t$ giây ($t \\ge 0$) thì vị trí $s(t)$ của chất điểm trên trục số được xác định bởi công thức $s(t)=\\frac{t^{3}}{3} - 6 t^{2} + 27 t$ mét. Trong $18$ giây chuyển động đầu tiên chất điểm di chuyển được tổng quãng đường bằng bao nhiêu mét?",
+                answer: 558,
+                solution: "Vận tốc $v(t) = s'(t)=t^{2} - 12 t + 27$. Vật dừng lại đổi chiều khi $v(t)=0 \\Leftrightarrow t=3 \\text{ hoặc } t=9$.<br>Trong 3 giây đầu (vật hướng lên): Quãng đường là $|s(3) - s(0)| = |36 - 0| = 36$m.<br>Từ giây 3 đến 9 (vật hướng xuống): Quãng đường là $|s(9) - s(3)| = |0 - 36| = 36$m.<br>Từ giây 9 đến 18 (vật hướng lên): Quãng đường là $|s(18) - s(9)| = |486 - 0| = 486$m.<br>Tổng quãng đường là $36 + 36 + 486 = 558$ mét."
+            }
+        ]
+    };
+
+    const STORE_KEY = "exam_autosave_lths1_no_tikz";
+    let state = {
+        name: "", class: "", code: "",
+        ans1: {}, ans2: {}, ans3: {},
+        isSubmitted: false,
+        startTime: Date.now(),
+        endTime: null
+    };
+    
+    let map1 = [], map2 = [];
+
+    function generateCode() { return Math.floor(100 + Math.random() * 900).toString(); }
+
+    function shuffle(arr) {
+        let array = [...arr];
+        for (let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function parseFloatStrict(str) {
+        if(str === null || str === undefined || str.toString().trim() === "") return null;
+        let s = str.toString().replace(/,/g, '.').trim();
+        let num = parseFloat(s);
+        return isNaN(num) ? null : num;
+    }
+
+    function init() {
+        map1 = shuffle(DATA.part1.map((q, i) => {
+            let opts = shuffle(q.options.map((o, j) => ({...o, origIdx: j})));
+            return { origIdx: i, opts: opts };
+        }));
+        
+        map2 = shuffle(DATA.part2.map((q, i) => ({ origIdx: i }))); 
+
+        loadState();
+        
+        if(!state.code) state.code = generateCode();
+        document.getElementById("lbl_exam_code").innerText = state.code;
+        
+        renderPart1(); 
+        renderPart2(); 
+        renderPart3();
+        
+        MathJax.typesetPromise();
+        updateToolbar();
+
+        if (state.isSubmitted) {
+            evaluateExam();
+        }
+        
+        setInterval(saveState, 10000);
+    }
+
+    function renderPart1() {
+        const wrap = document.getElementById("wrap_p1");
+        let html = '';
+        map1.forEach((qMap, idx) => {
+            let q = DATA.part1[qMap.origIdx];
+            html += `<div class="question-card" id="card_p1_${idx}">
+                <div class="fw-bold mb-3 text-dark">Câu ${idx + 1}: <span class="fw-normal">${q.text}</span></div>
+                <div class="row g-3">`;
+            
+            const labels = ['A', 'B', 'C', 'D'];
+            qMap.opts.forEach((opt, oIdx) => {
+                let checked = state.ans1[idx] === oIdx ? "checked" : "";
+                let disabled = state.isSubmitted ? "disabled" : "";
+                html += `
+                <div class="col-md-6 col-12">
+                    <div class="form-check">
+                        <input class="form-check-input border-secondary" type="radio" name="p1_q${idx}" id="p1_q${idx}_o${oIdx}" value="${oIdx}" ${checked} ${disabled} onchange="ans1(${idx}, ${oIdx})">
+                        <label class="form-check-label" id="lbl_p1_q${idx}_o${oIdx}" for="p1_q${idx}_o${oIdx}">${labels[oIdx]}. ${opt.text}</label>
+                    </div>
+                </div>`;
+            });
+            html += `</div>
+                <div class="solution-box" id="sol_p1_${idx}">
+                    <strong class="text-primary">Lời giải chi tiết:</strong><br>${q.solution}
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    function renderPart2() {
+        const wrap = document.getElementById("wrap_p2");
+        let html = '';
+        map2.forEach((qMap, idx) => {
+            let q = DATA.part2[qMap.origIdx];
+            if(!state.ans2[idx]) state.ans2[idx] = {};
+            
+            html += `<div class="question-card" id="card_p2_${idx}">
+                <div class="fw-bold mb-3 text-dark">Câu ${idx + 1}: <span class="fw-normal">${q.text}</span></div>
+                <div class="table-responsive">
+                <table class="table table-bordered align-middle mb-0 bg-white">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%" class="text-center">Ý</th>
+                            <th>Phát biểu</th>
+                            <th width="10%" class="text-center text-success">Đúng</th>
+                            <th width="10%" class="text-center text-danger">Sai</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            
+            const labels = ['a)', 'b)', 'c)', 'd)'];
+            q.statements.forEach((stmt, sIdx) => {
+                let vT = state.ans2[idx][sIdx] === true ? "checked" : "";
+                let vF = state.ans2[idx][sIdx] === false ? "checked" : "";
+                let disabled = state.isSubmitted ? "disabled" : "";
+                html += `<tr>
+                    <td class="text-center fw-bold">${labels[sIdx]}</td>
+                    <td>${stmt.text}</td>
+                    <td class="text-center"><input class="form-check-input border-secondary" style="transform: scale(1.3)" type="radio" name="p2_q${idx}_s${sIdx}" ${vT} ${disabled} onchange="ans2(${idx}, ${sIdx}, true)"></td>
+                    <td class="text-center"><input class="form-check-input border-secondary" style="transform: scale(1.3)" type="radio" name="p2_q${idx}_s${sIdx}" ${vF} ${disabled} onchange="ans2(${idx}, ${sIdx}, false)"></td>
+                </tr>`;
+            });
+            html += `</tbody></table></div>
+                <div class="solution-box" id="sol_p2_${idx}">
+                    <strong class="text-primary">Lời giải chi tiết:</strong><br>${q.solution}
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    function renderPart3() {
+        const wrap = document.getElementById("wrap_p3");
+        let html = '';
+        DATA.part3.forEach((q, idx) => {
+            let val = state.ans3[idx] !== undefined ? state.ans3[idx] : "";
+            let disabled = state.isSubmitted ? "disabled" : "";
+            html += `<div class="question-card" id="card_p3_${idx}">
+                <div class="fw-bold mb-3 text-dark">Câu ${idx + 1}: <span class="fw-normal">${q.text}</span></div>
+                <div><input type="text" class="form-control border-secondary text-primary fw-bold w-50" id="inp_p3_${idx}" placeholder="Nhập đáp số (Ví dụ: 0,5 hoặc -1.25)" value="${val}" ${disabled} oninput="ans3(${idx}, this.value)"></div>
+                <div id="fb_p3_${idx}" class="mt-2 fw-bold" style="display:none;"></div>
+                <div class="solution-box" id="sol_p3_${idx}">
+                    <strong class="text-primary">Lời giải chi tiết:</strong><br>${q.solution}
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    function ans1(qIdx, val) { state.ans1[qIdx] = val; updateToolbar(); triggerSave(); }
+    function ans2(qIdx, sIdx, val) { state.ans2[qIdx][sIdx] = val; updateToolbar(); triggerSave(); }
+    function ans3(qIdx, val) { state.ans3[qIdx] = val; updateToolbar(); triggerSave(); }
+
+    function updateToolbar() {
+        let count = 0;
+        let total = DATA.part1.length + (DATA.part2.length * 4) + DATA.part3.length;
+        
+        count += Object.keys(state.ans1).length;
+        Object.keys(state.ans2).forEach(k => { count += Object.keys(state.ans2[k]).length; });
+        Object.keys(state.ans3).forEach(k => { if(state.ans3[k].toString().trim() !== "") count++; });
+        
+        document.getElementById("lbl_answered").innerText = count;
+        document.getElementById("lbl_total").innerText = total;
+        return {count, total};
+    }
+
+    function triggerSave() {
+        if(state.isSubmitted) return;
+        state.name = document.getElementById("input_name").value;
+        state.class = document.getElementById("input_class").value;
+        saveState();
+    }
+
+    function saveState() {
+        if(state.isSubmitted) return;
+        localStorage.setItem(STORE_KEY, JSON.stringify({state, map1, map2}));
+    }
+
+    function loadState() {
+        let saved = localStorage.getItem(STORE_KEY);
+        if(saved) {
+            let data = JSON.parse(saved);
+            state = data.state;
+            if(data.map1) map1 = data.map1;
+            if(data.map2) map2 = data.map2;
+            
+            document.getElementById("input_name").value = state.name;
+            document.getElementById("input_class").value = state.class;
+            
+            if(!state.isSubmitted) {
+                let toast = document.getElementById('toast-msg');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+        }
+    }
+
+    function submitExam() {
+        let {count, total} = updateToolbar();
+        if(count / total < 0.5) {
+            alert("Vui lòng hoàn thành ít nhất 50% tổng số câu hỏi (bao gồm các ý) trước khi nộp bài!");
+            return;
+        }
+        
+        state.name = document.getElementById("input_name").value.trim();
+        state.class = document.getElementById("input_class").value.trim();
+        if(!state.name) { alert("Vui lòng nhập Họ và Tên trước khi nộp bài!"); return; }
+
+        if(!confirm("Bạn có chắc chắn muốn nộp bài?")) return;
+
+        state.isSubmitted = true;
+        state.endTime = Date.now();
+        localStorage.setItem(STORE_KEY, JSON.stringify({state, map1, map2}));
+        
+        document.querySelectorAll('input').forEach(i => i.disabled = true);
+        document.getElementById("btn_submit").classList.add("d-none");
+        document.getElementById("btn_print").classList.remove("d-none");
+        
+        evaluateExam();
+    }
+
+    function evaluateExam() {
+        let score1 = 0, score2 = 0, score3 = 0;
+
+        // Part 1
+        map1.forEach((qMap, idx) => {
+            let isCorrect = false;
+            let chosenOpt = state.ans1[idx];
+            
+            qMap.opts.forEach((opt, oIdx) => {
+                let lbl = document.getElementById(`lbl_p1_q${idx}_o${oIdx}`);
+                if(opt.correct) {
+                    lbl.classList.add("opt-correct");
+                    if(chosenOpt === oIdx) isCorrect = true;
+                } else if (chosenOpt === oIdx) {
+                    lbl.classList.add("opt-wrong");
+                }
+            });
+
+            let card = document.getElementById(`card_p1_${idx}`);
+            if(isCorrect) { score1 += 0.25; card.style.borderLeft = "5px solid var(--success-color)"; }
+            else { card.style.borderLeft = "5px solid var(--danger-color)"; }
+            
+            document.getElementById(`sol_p1_${idx}`).style.display = "block";
+        });
+
+        // Part 2
+        map2.forEach((qMap, idx) => {
+            let q = DATA.part2[qMap.origIdx];
+            let numCorrect = 0;
+            q.statements.forEach((stmt, sIdx) => {
+                let ans = state.ans2[idx] ? state.ans2[idx][sIdx] : undefined;
+                if(ans === stmt.correct) numCorrect++;
+            });
+            
+            if(numCorrect === 1) score2 += 0.1;
+            else if(numCorrect === 2) score2 += 0.25;
+            else if(numCorrect === 3) score2 += 0.5;
+            else if(numCorrect === 4) score2 += 1.0;
+
+            let card = document.getElementById(`card_p2_${idx}`);
+            if(numCorrect === 4) card.style.borderLeft = "5px solid var(--success-color)";
+            else if(numCorrect > 0) card.style.borderLeft = "5px solid #ffc107";
+            else card.style.borderLeft = "5px solid var(--danger-color)";
+
+            document.getElementById(`sol_p2_${idx}`).style.display = "block";
+        });
+
+        // Part 3
+        DATA.part3.forEach((q, idx) => {
+            let ansNum = parseFloatStrict(state.ans3[idx]);
+            let targetNum = parseFloatStrict(q.answer);
+            
+            let isCorrect = (ansNum !== null && targetNum !== null && Math.abs(ansNum - targetNum) < 0.0001);
+            let card = document.getElementById(`card_p3_${idx}`);
+            let fb = document.getElementById(`fb_p3_${idx}`);
+            fb.style.display = "block";
+
+            if(isCorrect) {
+                score3 += 0.5;
+                card.style.borderLeft = "5px solid var(--success-color)";
+                document.getElementById(`inp_p3_${idx}`).classList.add("is-valid");
+            } else {
+                card.style.borderLeft = "5px solid var(--danger-color)";
+                document.getElementById(`inp_p3_${idx}`).classList.add("is-invalid");
+                fb.innerHTML = `Đáp án đúng: <span class="text-success">${q.answer}</span>`;
+            }
+            document.getElementById(`sol_p3_${idx}`).style.display = "block";
+        });
+
+        // Sum
+        let totalScore = score1 + score2 + score3;
+        document.getElementById("res_p1").innerText = score1.toFixed(2);
+        document.getElementById("res_p2").innerText = score2.toFixed(2);
+        document.getElementById("res_p3").innerText = score3.toFixed(2);
+        document.getElementById("res_total").innerText = totalScore.toFixed(2);
+        
+        let timeMin = Math.round(((state.endTime || Date.now()) - state.startTime) / 60000);
+        if(timeMin < 0) timeMin = 0;
+        document.getElementById("res_time").innerText = timeMin;
+        
+        let {count, total} = updateToolbar();
+        let pct = Math.round((count/total)*100);
+        document.getElementById("res_percent").innerText = pct;
+        
+        document.getElementById("result-board").style.display = "block";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        sendToGAS(state.name, state.class, score1, score2, score3, totalScore, timeMin, pct);
+    }
+
+    function sendToGAS(name, className, s1, s2, s3, total, time, pct) {
+    const URL = 'https://script.google.com/macros/s/AKfycbwNS0cReAR2RZ-SMibUBAXOitQkDuqW1QEDrpRSpBst9JfGzTUqZA0G8Ry7RusoAP4C/exec'; // Thay ID vào đây
+    
+    const payload = {
+        sheetName: "lths1", // Gọi đích danh tên sheet
+        student_name: name,
+        class_name: className,
+        part1_score: s1,
+        part2_score: s2,
+        part3_score: s3,
+        total_score: total,
+        submit_time: new Date().toISOString(),
+        duration_minutes: time,
+        percent: pct
+    };
+
+    // Có thể hiển thị trạng thái đang gửi cho học sinh biết
+    const btnSubmit = document.getElementById("btn_submit");
+    if(btnSubmit) btnSubmit.innerText = "ĐANG GỬI DỮ LIỆU...";
+
+    fetch(URL, {
+        method: 'POST',
+        // Gửi dưới dạng text/plain để né CORS Preflight
+        headers: { 
+            'Content-Type': 'text/plain;charset=utf-8' 
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("Mạng bị lỗi hoặc link Web App sai.");
+        return response.json(); // Phân tích JSON từ Apps Script trả về
+    })
+    .then(data => {
+        console.log("Phản hồi từ Server:", data);
+        if (data.status === "success") {
+            // Thay đổi giao diện dựa trên phản hồi từ server
+            alert(`${data.message}\nHọc sinh: ${data.saved_name}\nTổng điểm: ${data.final_score}`);
+        } else {
+            alert("Lưu thất bại: " + data.message);
+        }
+    })
+    .catch(err => {
+        console.error("Lỗi khi gửi dữ liệu: ", err);
+        alert("Lỗi kết nối tới hệ thống máy chủ!");
+    })
+    .finally(() => {
+        if(btnSubmit) btnSubmit.innerText = "NỘP BÀI"; // Trả lại text ban đầu
+    });
+}
+
+    window.onload = init;
+</script>
+</body>
+</html>
