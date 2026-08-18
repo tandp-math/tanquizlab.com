@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐỀ ÔN TẬP HỆ THỨC LƯỢNG TRONG TAM GIÁC</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                macros: {
+                    hoac: ["\\left[\\begin{aligned}#1\\end{aligned}\\right.", 1],
+                    heva: ["\\left\\{\\begin{aligned}#1\\end{aligned}\\right.", 1]
+                }
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-bg: #f8fbff;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+        .header-section {
+            background-color: var(--secondary-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(13, 110, 253, 0.1);
+        }
+        .part-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+            margin-top: 35px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .question-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fafafa;
+            transition: all 0.3s ease;
+        }
+        .solution-box {
+            background-color: #e9ecef;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+            border-radius: 0 4px 4px 0;
+        }
+        .sticky-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            padding: 15px 0;
+            border-bottom: 1px solid #ddd;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        #result-board {
+            display: none;
+            background-color: var(--secondary-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .opt-correct { color: var(--success-color); font-weight: bold; }
+        .opt-wrong { color: var(--danger-color); font-weight: bold; text-decoration: line-through;}
+        
+        .toast-notify {
+            position: fixed; 
+            bottom: 20px; 
+            right: 20px; 
+            background: var(--success-color); 
+            color: white;
+            padding: 12px 25px; 
+            border-radius: 8px; 
+            opacity: 0; 
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0.5s; 
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .toast-notify.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        @media print {
+            body { background-color: white; }
+            .sticky-toolbar, .no-print { display: none !important; }
+            .solution-box { display: block !important; break-inside: avoid; border-left-color: #6c757d; background-color: #f8f9fa; }
+            .question-card { break-inside: avoid; border: none; border-bottom: 1px dashed #ccc; background-color: transparent; padding: 10px 0; }
+            #result-board { display: block !important; border: 1px solid #000; box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-4">
+    <div class="header-section text-center">
+        <h2 class="fw-bold text-primary mb-3">ĐỀ ÔN TẬP: GIẢI TAM GIÁC</h2>
+        <div class="row justify-content-center g-3">
+            <div class="col-md-4">
+                <input type="text" id="input_name" class="form-control border-primary" placeholder="Họ và tên học sinh" oninput="triggerSave()">
+            </div>
+            <div class="col-md-3">
+                <input type="text" id="input_class" class="form-control border-primary" placeholder="Lớp" oninput="triggerSave()">
+            </div>
+            <div class="col-md-3">
+                <div class="form-control bg-white text-start border-primary">Mã đề: <strong id="lbl_exam_code" class="text-danger"></strong></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sticky-toolbar text-center no-print">
+        <span class="fw-bold text-primary fs-5 me-4">Đã làm: <span id="lbl_answered">0</span> / <span id="lbl_total">0</span></span>
+        <button id="btn_submit" class="btn btn-primary px-4 py-2 fw-bold" onclick="submitExam()">NỘP BÀI</button>
+        <button id="btn_print" class="btn btn-success px-4 py-2 fw-bold d-none" onclick="window.print()">IN KẾT QUẢ PDF</button>
+    </div>
+
+    <div id="result-board" class="text-center mt-3 shadow-sm">
+        <h3 class="text-success fw-bold mb-4">KẾT QUẢ BÀI LÀM</h3>
+        <div class="row fw-bold text-primary fs-5 mb-3">
+            <div class="col-md-3">Phần I: <span id="res_p1"></span> / 1.5</div>
+            <div class="col-md-3">Phần II: <span id="res_p2"></span> / 2.0</div>
+            <div class="col-md-3">Phần III: <span id="res_p3"></span> / 1.0</div>
+            <div class="col-md-3 text-danger fs-4">TỔNG: <span id="res_total"></span> / 4.5</div>
+        </div>
+        <hr>
+        <div class="row fs-6 text-muted">
+            <div class="col-md-6">Tỷ lệ hoàn thành: <span id="res_percent"></span>%</div>
+            <div class="col-md-6">Thời gian làm bài: <span id="res_time"></span> phút</div>
+        </div>
+    </div>
+
+    <div id="exam-content">
+        <h4 class="part-title">PHẦN I. Câu hỏi trắc nghiệm nhiều phương án lựa chọn</h4>
+        <p class="fst-italic text-muted">Thí sinh trả lời từ câu 1 đến câu 6. Mỗi câu trả lời đúng được 0,25 điểm.</p>
+        <div id="wrap_p1"></div>
+
+        <h4 class="part-title">PHẦN II. Câu hỏi trắc nghiệm đúng sai</h4>
+        <p class="fst-italic text-muted">Thí sinh trả lời từ câu 1 đến câu 2. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.<br>Đúng 1 ý: 0.1đ | Đúng 2 ý: 0.25đ | Đúng 3 ý: 0.5đ | Đúng 4 ý: 1.0đ.</p>
+        <div id="wrap_p2"></div>
+
+        <h4 class="part-title">PHẦN III. Câu trắc nghiệm trả lời ngắn</h4>
+        <p class="fst-italic text-muted">Thí sinh trả lời từ câu 1 đến câu 2. Mỗi câu trả lời đúng được 0,5 điểm.</p>
+        <div id="wrap_p3"></div>
+    </div>
+</div>
+
+<div id="toast-msg" class="toast-notify">Đã khôi phục bài làm trước đó.</div>
+
+<script>
+    const DATA = {
+        part1: [
+            {
+                text: "Cho tam giác $ABC$ có $\\widehat{A} = 30^\\circ$ và $AB=7, AC=3$. Diện tích tam giác là",
+                options: [
+                    { text: "$S \\approx 21$", correct: false },
+                    { text: "$S \\approx 31,5$", correct: false },
+                    { text: "$S \\approx 10,5$", correct: false },
+                    { text: "$S \\approx 5,2$", correct: true }
+                ],
+                solution: "Diện tích tam giác là <br> $S=\\dfrac{1}{2}AB \\cdot AC \\sin A =\\dfrac{1}{2} \\cdot 7 \\cdot 3 \\sin 30^\\circ = 5,25 \\approx 5,2$."
+            },
+            {
+                text: "Cho tam giác $ABC$ có $\\widehat{B} = 60^\\circ$ và $AB=7, BC=8$. Độ dài cạnh $AC$ là",
+                options: [
+                    { text: "$7,55$", correct: true },
+                    { text: "$7,45$", correct: false },
+                    { text: "$7,35$", correct: false },
+                    { text: "$7,65$", correct: false }
+                ],
+                solution: "Áp dụng định lí cosin cho tam giác $ABC$, ta có <br> $AC^2 = AB^2 + BC^2 -2 AB \\cdot BC \\cdot \\cos B$<br> $AC^2 = 7^2 + 8^2 -2 \\cdot 7 \\cdot 8 \\cdot \\cos 60^\\circ = 57$.<br> Vậy $AC = \\sqrt{57} \\approx 7,55$."
+            },
+            {
+                text: "Cho tam giác $ABC$ có $\\widehat{A} = 45^\\circ, \\widehat{B} = 60^\\circ$ và $AB=9$. Độ dài cạnh $BC$ là",
+                options: [
+                    { text: "$7,5$", correct: false },
+                    { text: "$7,4$", correct: false },
+                    { text: "$7,2$", correct: false },
+                    { text: "$7,3$", correct: true }
+                ],
+                solution: "Góc $\\widehat{C} = 180^\\circ - \\widehat{A} - \\widehat{B} = 180^\\circ -45^\\circ -60^\\circ = 75^\\circ$.<br> Áp dụng định lí sin cho tam giác $ABC$, ta có <br> $\\dfrac{AB}{\\sin C} = \\dfrac{BC}{\\sin A}$ suy ra $BC = \\dfrac{AB \\sin A}{\\sin C} = \\dfrac{9 \\cdot \\sin 45^\\circ}{\\sin 75^\\circ} \\approx  7,3$."
+            },
+            {
+                text: "Cho tam giác $ABC$ có $AB=7, BC=5, AC=6$. Diện tích tam giác là",
+                options: [
+                    { text: "$S=14,7$", correct: true },
+                    { text: "$S=7,3$", correct: false },
+                    { text: "$S=29,4$", correct: false },
+                    { text: "$S=9,8$", correct: false }
+                ],
+                solution: "Áp dụng định lí cosin cho tam giác $ABC$, ta có<br> $\\cos C = \\dfrac{AC^2+BC^2-AB^2}{2AC \\cdot BC} = \\dfrac{6^2+5^2-7^2}{2 \\cdot 6 \\cdot 5} = \\dfrac{1}{5}$.<br> Suy ra $\\widehat{C} \\approx 78^\\circ 27' 46,95''$.<br> Diện tích tam giác là $S=\\dfrac{1}{2} AC \\cdot BC \\sin C = \\dfrac{1}{2} \\cdot 6 \\cdot 5 \\sin \\left( 78^\\circ 27' 46,95'' \\right) \\approx 14,7$."
+            },
+            {
+                text: "Cho tam giác $ABC$ có $AB=5, BC=8, AC=4$. Số đo góc $\\widehat{C}$ là",
+                options: [
+                    { text: "$30^\\circ 45' 12,67''$", correct: true },
+                    { text: "$31^\\circ 45' 12,67''$", correct: false },
+                    { text: "$31^\\circ 45' 13,67''$", correct: false },
+                    { text: "$30^\\circ 46' 12,67''$", correct: false }
+                ],
+                solution: "Áp dụng định lí cosin cho tam giác $ABC$, ta có<br> $\\cos C = \\dfrac{AC^2+BC^2-AB^2}{2AC \\cdot BC} = \\dfrac{4^2+8^2-5^2}{2 \\cdot 4 \\cdot 8} = \\dfrac{55}{64}$.<br> Vậy $\\widehat{C} \\approx 30^\\circ 45' 12,67''$."
+            },
+            {
+                text: "Cho tam giác $ABC$ có góc $\\widehat{BAC} = 120^\\circ$ và cạnh $BC = 2 \\sqrt{3}$. Bán kính của đường tròn ngoại tiếp tam giác $ABC$ là",
+                options: [
+                    { text: "$R = 3$", correct: false },
+                    { text: "$R = 1$", correct: false },
+                    { text: "$R = 4$", correct: false },
+                    { text: "$R = 2$", correct: true }
+                ],
+                solution: "Áp dụng định lý Sin, ta có: $\\frac{BC}{\\sin A} = 2R \\Leftrightarrow R = \\frac{BC}{2\\sin A} = \\frac{2 \\sqrt{3}}{2 \\cdot \\frac{\\sqrt{3}}{2}} = 2$."
+            }
+        ],
+        part2: [
+            {
+                text: "Cho tam giác $ABC$ có $\\widehat{A} = 135^\\circ$ và $AB=7, AC=7$.",
+                statements: [
+                    { text: "Độ dài cạnh $BC\\approx 14,93$", correct: false },
+                    { text: "Số đo góc $\\widehat{B}\\approx 24^\\circ 4' 26,11''$", correct: false },
+                    { text: "Diện tích tam giác $ABC$ xấp xỉ bằng $18,3$", correct: false },
+                    { text: "Bán kính đường tròn nội tiếp tam giác là $r \\approx 2,3$", correct: false }
+                ],
+                solution: "a) Định lí cosin: $BC^2 = 7^2 + 7^2 -2 \\cdot 7 \\cdot 7 \\cdot \\cos 135^\\circ = 49 \\sqrt{2} + 98 \\Rightarrow BC \\approx 12,93$ (Sai).<br>b) $\\cos B = \\dfrac{AB^2+BC^2-AC^2}{2AB \\cdot BC} = \\dfrac{7^2+12,93^2-7^2}{2 \\cdot 7 \\cdot 12,93} \\approx 0,92 \\Rightarrow \\widehat{B} \\approx 23^\\circ 4' 26,11''$ (Sai).<br>c) Diện tích $S=\\dfrac{1}{2}AB \\cdot AC \\sin A =\\dfrac{1}{2} \\cdot 7 \\cdot 7 \\sin 135^\\circ \\approx 17,3$ (Sai).<br>d) $r = \\dfrac{2S}{AB+AC+BC} = \\dfrac{2 \\cdot 17,3}{7+7+12,93} \\approx 1,3$ (Sai)."
+            },
+            {
+                text: "Cho tam giác $ABC$ có $AB=5, BC=9, AC=7$.",
+                statements: [
+                    { text: "Góc $\\widehat{B} \\approx 50^\\circ 42' 12,67''$", correct: true },
+                    { text: "Diện tích tam giác $ABC$ là $S \\approx 18,4$", correct: false },
+                    { text: "Chiều cao của tam giác $ABC$ là $h_a \\approx 4,9$", correct: false },
+                    { text: "Bán kính đường tròn nội tiếp tam giác $ABC$ là $r \\approx 1,7$", correct: true }
+                ],
+                solution: "a) $\\cos B = \\dfrac{AB^2+BC^2-AC^2}{2AB \\cdot BC} = \\dfrac{5^2+9^2-7^2}{2 \\cdot 5 \\cdot 9} = \\dfrac{19}{30} \\Rightarrow \\widehat{B} \\approx 50^\\circ 42' 12,67''$ (Đúng).<br>b) $\\cos C = \\dfrac{7^2+9^2-5^2}{2 \\cdot 7 \\cdot 9} = \\dfrac{5}{6} \\Rightarrow \\widehat{C} \\approx 33^\\circ 33' 26,32''$. Diện tích $S=\\dfrac{1}{2} AC \\cdot BC \\sin C \\approx 17,4$ (Sai).<br>c) Chiều cao $h_a = \\dfrac{2S}{BC} = \\dfrac{2 \\cdot 17,4}{9} \\approx 3,9$ (Sai).<br>d) Bán kính nội tiếp $r = \\dfrac{2S}{BC+AC+AB} = \\dfrac{2 \\cdot 17,4}{9+7+5} \\approx 1,7$ (Đúng)."
+            }
+        ],
+        part3: [
+            {
+                text: "Hai chiếc tàu thủy cùng xuất phát từ vị trí $A$ đi thẳng theo hai hướng tạo với nhau một góc $150^\\circ$. Tàu thứ nhất chạy với tốc độ $40$ km/h, tàu thứ hai chạy với tốc độ $30$ km/h. Sau $3,5$ giờ khoảng cách giữa hai tàu là bao nhiêu km? (kết quả làm tròn đến hàng đơn vị).",
+                answer: 237,
+                solution: "Sau 3,5 giờ:<br>Quãng đường tàu thứ nhất: $S_1 = 40 \\cdot 3,5 = 140$ km.<br>Quãng đường tàu thứ hai: $S_2 = 30 \\cdot 3,5 = 105$ km.<br>Khoảng cách giữa hai tàu (theo định lí cosin): $S = \\sqrt{S_1^2+S_2^2-2 S_1 \\cdot S_2 \\cdot \\cos 150^\\circ} = \\sqrt{140^2+105^2-2 \\cdot 140 \\cdot 105 \\cdot \\cos 150^\\circ} \\approx 237$ km."
+            },
+            {
+                text: "Một tàu đánh cá xuất phát từ cảng $A$ đi theo hướng $S 40^\\circ E$ với vận tốc $50$ km/h, đi được $3,5$ giờ thì động cơ của tàu bị hỏng nên tàu trôi tự do theo hướng nam với vận tốc $10$ km/h. Sau $2$ giờ kể từ khi động cơ bị hỏng, tàu neo đậu được vào một hòn đảo. Khoảng cách từ cảng $A$ đến hòn đảo nơi tàu neo đậu là bao nhiêu km? (kết quả làm tròn đến hàng đơn vị).",
+                answer: 191,
+                solution: "Khoảng cách từ $A$ đến điểm tàu chết máy: $AB = 50 \\cdot 3,5 = 175$ km.<br>Khoảng cách từ điểm chết máy đến đảo: $BC = 10 \\cdot 2 = 20$ km.<br>Tàu đi hướng $S 40^\\circ E$ (Đông Nam $40^\\circ$ so với trục Nam) và trôi hướng Nam. Góc $\\widehat{ABC} = 180^\\circ - 40^\\circ = 140^\\circ$.<br>Khoảng cách $AC = \\sqrt{AB^2+BC^2-2AB \\cdot BC \\cdot \\cos B} = \\sqrt{175^2+20^2-2 \\cdot 175 \\cdot 20 \\cdot \\cos 140^\\circ} \\approx 191$ km."
+            }
+        ]
+    };
+
+    const STORE_KEY = "exam_autosave_giai_tam_giac_lt1";
+    let state = {
+        name: "", class: "", code: "",
+        ans1: {}, ans2: {}, ans3: {},
+        isSubmitted: false,
+        startTime: Date.now(),
+        endTime: null
+    };
+    
+    let map1 = [], map2 = [];
+
+    function generateCode() { return Math.floor(100 + Math.random() * 900).toString(); }
+
+    function shuffle(arr) {
+        let array = [...arr];
+        for (let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function parseFloatStrict(str) {
+        if(str === null || str === undefined || str.toString().trim() === "") return null;
+        let s = str.toString().replace(/,/g, '.').trim();
+        let num = parseFloat(s);
+        return isNaN(num) ? null : num;
+    }
+
+    function init() {
+        map1 = shuffle(DATA.part1.map((q, i) => {
+            let opts = shuffle(q.options.map((o, j) => ({...o, origIdx: j})));
+            return { origIdx: i, opts: opts };
+        }));
+        
+        map2 = shuffle(DATA.part2.map((q, i) => ({ origIdx: i }))); 
+
+        loadState();
+        
+        if(!state.code) state.code = generateCode();
+        document.getElementById("lbl_exam_code").innerText = state.code;
+        
+        renderPart1(); 
+        renderPart2(); 
+        renderPart3();
+        
+        MathJax.typesetPromise();
+        updateToolbar();
+
+        if (state.isSubmitted) {
+            evaluateExam();
+        }
+        
+        setInterval(saveState, 10000);
+    }
+
+    function renderPart1() {
+        const wrap = document.getElementById("wrap_p1");
+        let html = '';
+        map1.forEach((qMap, idx) => {
+            let q = DATA.part1[qMap.origIdx];
+            html += `<div class="question-card" id="card_p1_${idx}">
+                <div class="fw-bold mb-3 text-dark">Câu ${idx + 1}: <span class="fw-normal">${q.text}</span></div>
+                <div class="row g-3">`;
+            
+            const labels = ['A', 'B', 'C', 'D'];
+            qMap.opts.forEach((opt, oIdx) => {
+                let checked = state.ans1[idx] === oIdx ? "checked" : "";
+                let disabled = state.isSubmitted ? "disabled" : "";
+                html += `
+                <div class="col-md-6 col-12">
+                    <div class="form-check">
+                        <input class="form-check-input border-secondary" type="radio" name="p1_q${idx}" id="p1_q${idx}_o${oIdx}" value="${oIdx}" ${checked} ${disabled} onchange="ans1(${idx}, ${oIdx})">
+                        <label class="form-check-label" id="lbl_p1_q${idx}_o${oIdx}" for="p1_q${idx}_o${oIdx}">${labels[oIdx]}. ${opt.text}</label>
+                    </div>
+                </div>`;
+            });
+            html += `</div>
+                <div class="solution-box" id="sol_p1_${idx}">
+                    <strong class="text-primary">Lời giải chi tiết:</strong><br>${q.solution}
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    function renderPart2() {
+        const wrap = document.getElementById("wrap_p2");
+        let html = '';
+        map2.forEach((qMap, idx) => {
+            let q = DATA.part2[qMap.origIdx];
+            if(!state.ans2[idx]) state.ans2[idx] = {};
+            
+            html += `<div class="question-card" id="card_p2_${idx}">
+                <div class="fw-bold mb-3 text-dark">Câu ${idx + 1}: <span class="fw-normal">${q.text}</span></div>
+                <div class="table-responsive">
+                <table class="table table-bordered align-middle mb-0 bg-white">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%" class="text-center">Ý</th>
+                            <th>Phát biểu</th>
+                            <th width="10%" class="text-center text-success">Đúng</th>
+                            <th width="10%" class="text-center text-danger">Sai</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            
+            const labels = ['a)', 'b)', 'c)', 'd)'];
+            q.statements.forEach((stmt, sIdx) => {
+                let vT = state.ans2[idx][sIdx] === true ? "checked" : "";
+                let vF = state.ans2[idx][sIdx] === false ? "checked" : "";
+                let disabled = state.isSubmitted ? "disabled" : "";
+                html += `<tr>
+                    <td class="text-center fw-bold">${labels[sIdx]}</td>
+                    <td>${stmt.text}</td>
+                    <td class="text-center"><input class="form-check-input border-secondary" style="transform: scale(1.3)" type="radio" name="p2_q${idx}_s${sIdx}" ${vT} ${disabled} onchange="ans2(${idx}, ${sIdx}, true)"></td>
+                    <td class="text-center"><input class="form-check-input border-secondary" style="transform: scale(1.3)" type="radio" name="p2_q${idx}_s${sIdx}" ${vF} ${disabled} onchange="ans2(${idx}, ${sIdx}, false)"></td>
+                </tr>`;
+            });
+            html += `</tbody></table></div>
+                <div class="solution-box" id="sol_p2_${idx}">
+                    <strong class="text-primary">Lời giải chi tiết:</strong><br>${q.solution}
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    function renderPart3() {
+        const wrap = document.getElementById("wrap_p3");
+        let html = '';
+        DATA.part3.forEach((q, idx) => {
+            let val = state.ans3[idx] !== undefined ? state.ans3[idx] : "";
+            let disabled = state.isSubmitted ? "disabled" : "";
+            html += `<div class="question-card" id="card_p3_${idx}">
+                <div class="fw-bold mb-3 text-dark">Câu ${idx + 1}: <span class="fw-normal">${q.text}</span></div>
+                <div><input type="text" class="form-control border-secondary text-primary fw-bold w-50" id="inp_p3_${idx}" placeholder="Nhập đáp số (Ví dụ: 15 hoặc 237)" value="${val}" ${disabled} oninput="ans3(${idx}, this.value)"></div>
+                <div id="fb_p3_${idx}" class="mt-2 fw-bold" style="display:none;"></div>
+                <div class="solution-box" id="sol_p3_${idx}">
+                    <strong class="text-primary">Lời giải chi tiết:</strong><br>${q.solution}
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    function ans1(qIdx, val) { state.ans1[qIdx] = val; updateToolbar(); triggerSave(); }
+    function ans2(qIdx, sIdx, val) { state.ans2[qIdx][sIdx] = val; updateToolbar(); triggerSave(); }
+    function ans3(qIdx, val) { state.ans3[qIdx] = val; updateToolbar(); triggerSave(); }
+
+    function updateToolbar() {
+        let count = 0;
+        let total = DATA.part1.length + (DATA.part2.length * 4) + DATA.part3.length; // 6 + 8 + 2 = 16
+        
+        count += Object.keys(state.ans1).length;
+        Object.keys(state.ans2).forEach(k => { count += Object.keys(state.ans2[k]).length; });
+        Object.keys(state.ans3).forEach(k => { if(state.ans3[k].toString().trim() !== "") count++; });
+        
+        document.getElementById("lbl_answered").innerText = count;
+        document.getElementById("lbl_total").innerText = total;
+        return {count, total};
+    }
+
+    function triggerSave() {
+        if(state.isSubmitted) return;
+        state.name = document.getElementById("input_name").value;
+        state.class = document.getElementById("input_class").value;
+        saveState();
+    }
+
+    function saveState() {
+        if(state.isSubmitted) return;
+        localStorage.setItem(STORE_KEY, JSON.stringify({state, map1, map2}));
+    }
+
+    function loadState() {
+        let saved = localStorage.getItem(STORE_KEY);
+        if(saved) {
+            let data = JSON.parse(saved);
+            state = data.state;
+            if(data.map1) map1 = data.map1;
+            if(data.map2) map2 = data.map2;
+            
+            document.getElementById("input_name").value = state.name;
+            document.getElementById("input_class").value = state.class;
+            
+            if(!state.isSubmitted) {
+                let toast = document.getElementById('toast-msg');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+        }
+    }
+
+    function submitExam() {
+        let {count, total} = updateToolbar();
+        if(count / total < 0.5) {
+            alert("Vui lòng hoàn thành ít nhất 50% tổng số câu hỏi (bao gồm các ý) trước khi nộp bài!");
+            return;
+        }
+        
+        state.name = document.getElementById("input_name").value.trim();
+        state.class = document.getElementById("input_class").value.trim();
+        if(!state.name) { alert("Vui lòng nhập Họ và Tên trước khi nộp bài!"); return; }
+
+        if(!confirm("Bạn có chắc chắn muốn nộp bài?")) return;
+
+        state.isSubmitted = true;
+        state.endTime = Date.now();
+        localStorage.setItem(STORE_KEY, JSON.stringify({state, map1, map2}));
+        
+        document.querySelectorAll('input').forEach(i => i.disabled = true);
+        document.getElementById("btn_submit").classList.add("d-none");
+        document.getElementById("btn_print").classList.remove("d-none");
+        
+        evaluateExam();
+    }
+
+    function evaluateExam() {
+        let score1 = 0, score2 = 0, score3 = 0;
+
+        // Part 1
+        map1.forEach((qMap, idx) => {
+            let isCorrect = false;
+            let chosenOpt = state.ans1[idx];
+            
+            qMap.opts.forEach((opt, oIdx) => {
+                let lbl = document.getElementById(`lbl_p1_q${idx}_o${oIdx}`);
+                if(opt.correct) {
+                    lbl.classList.add("opt-correct");
+                    if(chosenOpt === oIdx) isCorrect = true;
+                } else if (chosenOpt === oIdx) {
+                    lbl.classList.add("opt-wrong");
+                }
+            });
+
+            let card = document.getElementById(`card_p1_${idx}`);
+            if(isCorrect) { score1 += 0.25; card.style.borderLeft = "5px solid var(--success-color)"; }
+            else { card.style.borderLeft = "5px solid var(--danger-color)"; }
+            
+            document.getElementById(`sol_p1_${idx}`).style.display = "block";
+        });
+
+        // Part 2
+        map2.forEach((qMap, idx) => {
+            let q = DATA.part2[qMap.origIdx];
+            let numCorrect = 0;
+            q.statements.forEach((stmt, sIdx) => {
+                let ans = state.ans2[idx] ? state.ans2[idx][sIdx] : undefined;
+                if(ans === stmt.correct) numCorrect++;
+            });
+            
+            if(numCorrect === 1) score2 += 0.1;
+            else if(numCorrect === 2) score2 += 0.25;
+            else if(numCorrect === 3) score2 += 0.5;
+            else if(numCorrect === 4) score2 += 1.0;
+
+            let card = document.getElementById(`card_p2_${idx}`);
+            if(numCorrect === 4) card.style.borderLeft = "5px solid var(--success-color)";
+            else if(numCorrect > 0) card.style.borderLeft = "5px solid #ffc107";
+            else card.style.borderLeft = "5px solid var(--danger-color)";
+
+            document.getElementById(`sol_p2_${idx}`).style.display = "block";
+        });
+
+        // Part 3
+        DATA.part3.forEach((q, idx) => {
+            let ansNum = parseFloatStrict(state.ans3[idx]);
+            let targetNum = parseFloatStrict(q.answer);
+            
+            let isCorrect = (ansNum !== null && targetNum !== null && Math.abs(ansNum - targetNum) < 0.0001);
+            let card = document.getElementById(`card_p3_${idx}`);
+            let fb = document.getElementById(`fb_p3_${idx}`);
+            fb.style.display = "block";
+
+            if(isCorrect) {
+                score3 += 0.5;
+                card.style.borderLeft = "5px solid var(--success-color)";
+                document.getElementById(`inp_p3_${idx}`).classList.add("is-valid");
+            } else {
+                card.style.borderLeft = "5px solid var(--danger-color)";
+                document.getElementById(`inp_p3_${idx}`).classList.add("is-invalid");
+                fb.innerHTML = `Đáp án đúng: <span class="text-success">${q.answer}</span>`;
+            }
+            document.getElementById(`sol_p3_${idx}`).style.display = "block";
+        });
+
+        // Sum
+        let totalScore = score1 + score2 + score3;
+        document.getElementById("res_p1").innerText = score1.toFixed(2);
+        document.getElementById("res_p2").innerText = score2.toFixed(2);
+        document.getElementById("res_p3").innerText = score3.toFixed(2);
+        document.getElementById("res_total").innerText = totalScore.toFixed(2);
+        
+        let timeMin = Math.round(((state.endTime || Date.now()) - state.startTime) / 60000);
+        if(timeMin < 0) timeMin = 0;
+        document.getElementById("res_time").innerText = timeMin;
+        
+        let {count, total} = updateToolbar();
+        let pct = Math.round((count/total)*100);
+        document.getElementById("res_percent").innerText = pct;
+        
+        document.getElementById("result-board").style.display = "block";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        sendToGAS(state.name, state.class, score1, score2, score3, totalScore, timeMin, pct);
+    }
+
+    function sendToGAS(name, className, s1, s2, s3, total, time, pct) {
+        // ========== CHÚ Ý: DÁN URL GOOGLE APPS SCRIPT CỦA BẠN VÀO DÒNG DƯỚI ĐÂY ==========
+        const URL = 'https://script.google.com/macros/s/AKfycbwgq1UZ315UkIn8JPJLYAdC8WHEiYJ5drb_9RxMfOQ8h8lQ2Kk-wOhC1o2BUgTmuopZBQ/exec'; 
+        
+        const payload = {
+            sheetName: "giai_tam_giac_lt1", // Cấu hình nhận diện tên sheet
+            student_name: name,
+            class_name: className,
+            part1_score: s1,
+            part2_score: s2,
+            part3_score: s3,
+            total_score: total,
+            submit_time: new Date().toISOString(),
+            duration_minutes: time,
+            percent: pct
+        };
+
+        const btnSubmit = document.getElementById("btn_submit");
+        if(btnSubmit) btnSubmit.innerText = "ĐANG GỬI DỮ LIỆU...";
+
+        fetch(URL, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'text/plain;charset=utf-8' 
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Mạng bị lỗi hoặc link Web App sai.");
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === "success") {
+                alert(`${data.message}\nHọc sinh: ${data.saved_name}\nTổng điểm: ${data.final_score}`);
+            } else {
+                alert("Lưu thất bại: " + data.message);
+            }
+        })
+        .catch(err => {
+            console.error("Lỗi khi gửi dữ liệu: ", err);
+        })
+        .finally(() => {
+            if(btnSubmit) btnSubmit.innerText = "NỘP BÀI"; 
+        });
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>
