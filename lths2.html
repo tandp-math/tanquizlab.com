@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐỀ ÔN TẬP TOÁN</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- MathJax for LaTeX -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                macros: {
+                    hoac: ["\\left[\\begin{aligned}#1\\end{aligned}\\right.", 1],
+                    heva: ["\\left\\{\\begin{aligned}#1\\end{aligned}\\right.", 1],
+                    mathscr: ["\\mathcal{#1}", 1]
+                }
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary-blue: #0d6efd;
+            --light-blue: #f0f8ff;
+            --correct-color: #198754;
+            --wrong-color: #dc3545;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+        .header-box {
+            background-color: var(--light-blue);
+            border: 2px solid var(--primary-blue);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .part-title {
+            color: var(--primary-blue);
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 8px;
+            margin-top: 40px;
+            margin-bottom: 25px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .question-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fafbfc;
+            transition: border-left 0.3s ease;
+        }
+        .solution-box {
+            background-color: #f1f5f9;
+            border-left: 4px solid var(--primary-blue);
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+        .sticky-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            padding: 15px 0;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        #result-board {
+            display: none;
+            background-color: var(--light-blue);
+            border: 2px solid var(--primary-blue);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .opt-correct { color: var(--correct-color); font-weight: bold; }
+        .opt-wrong { color: var(--wrong-color); font-weight: bold; text-decoration: line-through;}
+        
+        .toast-notify {
+            position: fixed; 
+            bottom: 20px; 
+            right: 20px; 
+            background: var(--correct-color); 
+            color: white;
+            padding: 12px 25px; 
+            border-radius: 8px; 
+            opacity: 0; 
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0.5s; 
+            z-index: 9999;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-weight: bold;
+        }
+        .toast-notify.show { opacity: 1; visibility: visible; }
+
+        .form-check-input:checked { background-color: var(--primary-blue); border-color: var(--primary-blue); }
+
+        /* Bảng biến thiên (BBT) CSS chuẩn */
+        .table-bbt {
+            width: 100%;
+            min-width: 350px;
+            max-width: 700px;
+            border-collapse: collapse;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.1rem;
+            background-color: #fff;
+            margin: 15px auto;
+        }
+        .table-bbt td { border: 1px solid #333; padding: 8px 4px; position: relative; }
+        .table-bbt tr:first-child td { border-top: 2px solid #333; }
+        .table-bbt tr:last-child td { border-bottom: 2px solid #333; }
+        .table-bbt td:first-child { border-left: 2px solid #333; border-right: 2px solid #333; font-weight: bold; font-style: italic; width: 60px; }
+        .table-bbt td:last-child { border-right: 2px solid #333; }
+        .dl-line { border-left: 1px solid #000; border-right: 1px solid #000; width: 4px; height: 100%; min-height: 25px; margin: 0 auto; }
+
+        @media print {
+            body { background-color: white; }
+            .sticky-toolbar, .no-print { display: none !important; }
+            .solution-box { display: block !important; break-inside: avoid; border-left-color: #94a3b8; background-color: #f8fafc; }
+            .question-card { break-inside: avoid; border: none; border-bottom: 1px dashed #cbd5e1; background-color: transparent; padding: 15px 0; }
+            #result-board { display: block !important; border: 1px solid #000; box-shadow: none; }
+            .table-bbt { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-4">
+    <div class="header-box text-center">
+        <h2 class="fw-bold text-primary mb-3">ĐỀ ÔN TẬP</h2>
+        <div class="row justify-content-center g-3">
+            <div class="col-md-4">
+                <input type="text" id="input_name" class="form-control border-primary" placeholder="Họ và tên: __________" oninput="triggerSave()">
+            </div>
+            <div class="col-md-3">
+                <input type="text" id="input_class" class="form-control border-primary" placeholder="Lớp: __________" oninput="triggerSave()">
+            </div>
+            <div class="col-md-3">
+                <div class="form-control bg-white text-start border-primary fw-bold text-muted">Mã đề: <span id="lbl_exam_code" class="text-danger"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sticky-toolbar text-center no-print">
+        <span class="fw-bold text-primary fs-5 me-4">Đã làm: <span id="lbl_answered">0</span> / <span id="lbl_total">0</span></span>
+        <button id="btn_submit" class="btn btn-primary px-4 py-2 fw-bold shadow-sm" onclick="submitExam()">NỘP BÀI</button>
+        <button id="btn_print" class="btn btn-success px-4 py-2 fw-bold shadow-sm d-none" onclick="window.print()">IN KẾT QUẢ PDF</button>
+    </div>
+
+    <div id="result-board" class="text-center shadow-sm">
+        <h3 class="text-success fw-bold mb-4">KẾT QUẢ BÀI LÀM</h3>
+        <div class="row fw-bold text-primary fs-5 mb-3">
+            <div class="col-md-3">Phần I: <span id="res_p1"></span> / 1.0</div>
+            <div class="col-md-3">Phần II: <span id="res_p2"></span> / 3.0</div>
+            <div class="col-md-3">Phần III: <span id="res_p3"></span> / 3.0</div>
+            <div class="col-md-3 text-danger fs-4">TỔNG: <span id="res_total"></span> / 7.0</div>
+        </div>
+        <hr>
+        <div class="row fs-6 text-muted">
+            <div class="col-md-6">Tỷ lệ hoàn thành: <span id="res_percent"></span>%</div>
+            <div class="col-md-6">Thời gian làm bài: <span id="res_time"></span> phút</div>
+        </div>
+    </div>
+
+    <div id="exam-content">
+        <!-- Phần I -->
+        <h4 class="part-title">PHẦN I. Câu hỏi trắc nghiệm nhiều phương án lựa chọn</h4>
+        <p class="fst-italic text-muted">Thí sinh trả lời từ câu 1 đến câu 4. Mỗi câu trả lời đúng được 0,25 điểm.</p>
+        <div id="wrap_p1"></div>
+
+        <!-- Phần II -->
+        <h4 class="part-title">PHẦN II. Câu hỏi trắc nghiệm đúng sai</h4>
+        <p class="fst-italic text-muted">Thí sinh trả lời từ câu 1 đến câu 3. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.<br>Điểm: Đúng 1 ý: 0.1đ | Đúng 2 ý: 0.25đ | Đúng 3 ý: 0.5đ | Đúng 4 ý: 1.0đ.</p>
+        <div id="wrap_p2"></div>
+
+        <!-- Phần III -->
+        <h4 class="part-title">PHẦN III. Câu trắc nghiệm trả lời ngắn</h4>
+        <p class="fst-italic text-muted">Thí sinh trả lời từ câu 1 đến câu 6. Mỗi câu trả lời đúng được 0,5 điểm.</p>
+        <div id="wrap_p3"></div>
+    </div>
+</div>
+
+<div id="toast-msg" class="toast-notify">Đã khôi phục bài làm trước đó.</div>
+
+<script>
+    // =====================================
+    // DATABASE EXCERPT FROM LATEX
+    // =====================================
+    const DATA = {
+        part1: [
+            {
+                text: `Cho hàm số $y=f(x)$ liên tục trên đoạn $[4;14]$ và có bảng biến thiên như sau:  
+                <div class="table-responsive">
+                    <table class="table-bbt">
+                        <tr><td>$x$</td><td>$4$</td><td></td><td>$8$</td><td></td><td>$13$</td><td></td><td>$14$</td></tr>
+                        <tr><td>$y'$</td><td></td><td>$+$</td><td>$0$</td><td>$-$</td><td>$0$</td><td>$+$</td><td></td></tr>
+                        <tr><td>$y$</td>
+                            <td colspan="7">
+                                <div class="d-flex justify-content-between px-2" style="min-height: 60px;">
+                                    <div class="align-self-end">$-18$</div>
+                                    <div class="align-self-center">$\\nearrow$</div>
+                                    <div class="align-self-start">$9$</div>
+                                    <div class="align-self-center">$\\searrow$</div>
+                                    <div class="align-self-end">$-10$</div>
+                                    <div class="align-self-center">$\\nearrow$</div>
+                                    <div class="align-self-start">$12$</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                Hiệu giá trị lớn nhất và giá trị nhỏ nhất của hàm số trên đoạn $[4;14]$ là`,
+                options: [
+                    { text: "$18$", correct: false },
+                    { text: "$30$", correct: true },
+                    { text: "$33$", correct: false },
+                    { text: "$-12$", correct: false }
+                ],
+                solution: `Từ bảng biến thiên của hàm số ta có, trên đoạn $[4;14]$: <br>
+                Giá trị lớn nhất của hàm số là $12$. <br>
+                Giá trị nhỏ nhất của hàm số là $-18$. <br>
+                Hiệu là: $12 - (-18) = 30$.`
+            },
+            {
+                text: "Cho hàm số $y=\\dfrac{9 x^{4}}{4} - \\dfrac{225 x^{2}}{2} - 8$. Giá trị lớn nhất của hàm số trên đoạn $[-8;-1]$ là",
+                options: [
+                    { text: "$2005$", correct: false },
+                    { text: "$2010$", correct: false },
+                    { text: "$2006$", correct: false },
+                    { text: "$2008$", correct: true }
+                ],
+                solution: `Tập xác định: $\\mathscr{D}=\\mathbb{R}$.<br>
+                Ta có $y'=9 x^{3} - 225 x=0 \\Leftrightarrow x=0 \\text{ hoặc } x=-5 \\text{ hoặc } x=5$.<br>
+                Bảng biến thiên:
+                <div class="table-responsive">
+                    <table class="table-bbt">
+                        <tr><td>$x$</td><td>$-\\infty$</td><td></td><td>$-5$</td><td></td><td>$0$</td><td></td><td>$5$</td><td></td><td>$+\\infty$</td></tr>
+                        <tr><td>$y'$</td><td></td><td>$-$</td><td>$0$</td><td>$+$</td><td>$0$</td><td>$-$</td><td>$0$</td><td>$+$</td><td></td></tr>
+                        <tr><td>$y$</td>
+                            <td colspan="9">
+                                <div class="d-flex justify-content-between px-2" style="min-height: 60px;">
+                                    <div class="align-self-start">$+\\infty$</div>
+                                    <div class="align-self-center">$\\searrow$</div>
+                                    <div class="align-self-end">$-\\dfrac{5657}{4}$</div>
+                                    <div class="align-self-center">$\\nearrow$</div>
+                                    <div class="align-self-start">$-8$</div>
+                                    <div class="align-self-center">$\\searrow$</div>
+                                    <div class="align-self-end">$-\\dfrac{5657}{4}$</div>
+                                    <div class="align-self-center">$\\nearrow$</div>
+                                    <div class="align-self-start">$+\\infty$</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                Mặt khác $y(-8)=2008$ và $y(-1)=- \\dfrac{473}{4}$.<br>
+                Hàm số có giá trị lớn nhất trên đoạn $[-8;-1]$ là $2008$.`
+            },
+            {
+                text: "Cho hàm số $y=\\dfrac{8 x - 3}{x - 8}$. Giá trị lớn nhất của hàm số trên đoạn $\\left[ 9;13 \\right]$ là",
+                options: [
+                    { text: "$\\dfrac{101}{5}$", correct: false },
+                    { text: "$69$", correct: true },
+                    { text: "$9$", correct: false },
+                    { text: "$13$", correct: false }
+                ],
+                solution: `Tập xác định $\\mathscr{D}=\\mathbb{R}\\backslash \\{8\\}$. <br> 
+                $y'=- \\dfrac{61}{\\left(x - 8\\right)^{2}} < 0 \\, \\forall x \\in \\mathscr{D} $. Hàm số luôn nghịch biến trên từng khoảng xác định. <br> 
+                Trên đoạn $[9;13]$, hàm số nghịch biến nên:<br> 
+                $\\underset{\\left[ 9;13 \\right]}{\\mathop{\\max }}\\,y = y(9) = 69$.`
+            },
+            {
+                text: "Trên đoạn $[3; 6]$, hàm số $y = x^{3} - 48 x + 5$ đạt giá trị nhỏ nhất tại điểm",
+                options: [
+                    { text: "$x = 5$", correct: false },
+                    { text: "$x = 4$", correct: true },
+                    { text: "$x = 7$", correct: false },
+                    { text: "$x = 6$", correct: false }
+                ],
+                solution: `Hàm số $y = x^{3} - 48 x + 5$ xác định và liên tục trên đoạn $[3; 6]$. <br>
+                Ta có $y' = 3 x^{2} - 48 = 0 \\Leftrightarrow x = 4 \\text{ hoặc } x = -4$. <br>
+                Vì $x \\in [3; 6]$ nên ta chỉ xét $x = 4$. <br>
+                Ta có: $y(3) = -112$; $y(4) = -123$; $y(6) = -67$. <br>
+                Vậy giá trị nhỏ nhất của hàm số trên đoạn $[3; 6]$ là $-123$, đạt tại điểm $x = 4$.`
+            }
+        ],
+        part2: [
+            {
+                text: "Cho hàm số $f(x)=- \\sqrt{3} x + 2 \\sin{x}$.",
+                statements: [
+                    { text: "$f(0)=0; f(\\pi)=- \\sqrt{3} \\pi + \\pi$", correct: false },
+                    { text: "Đạo hàm của hàm số đã cho là $f'(x)=2 \\cos{x} - \\sqrt{3} + 1$", correct: false },
+                    { text: "Nghiệm của phương trình $f'(x)=0$ trên đoạn $[0;\\pi]$ là $\\dfrac{7 \\pi}{6}$", correct: false },
+                    { text: "Giá trị nhỏ nhất của $f(x)$ trên đoạn $[0;\\pi]$ là $- \\dfrac{\\sqrt{3} \\pi}{6} + 1$", correct: false }
+                ],
+                solution: `a) Ta có $f(0)=0; f(\\pi)=- \\sqrt{3} \\pi$. Mệnh đề a sai.<br>
+                b) Đạo hàm của hàm số là $f'(x)=2 \\cos{x} - \\sqrt{3}$. Mệnh đề b sai.<br>
+                c) $f'(x)=0 \\Leftrightarrow \\cos x =\\dfrac{\\sqrt{3}}{2} \\Leftrightarrow x= \\pm \\dfrac{\\pi}{6}+k2\\pi$. Trên đoạn $[0;\\pi]$ phương trình có nghiệm là $x=\\dfrac{\\pi}{6}$. Mệnh đề c sai.<br>
+                d) Ta có $f(0)=0; f(\\pi)=-\\sqrt{3}\\pi; f\\left(\\dfrac{\\pi}{6} \\right)=- \\dfrac{\\sqrt{3} \\pi}{6} + 1$. Trên đoạn $[0;\\pi]$ giá trị nhỏ nhất của hàm số là $- \\sqrt{3} \\pi$. Mệnh đề d sai.`
+            },
+            {
+                text: "Một trang sách có hình dạng hình chữ nhật có diện tích $600$ cm$^2$. Giả sử trang sách được đặt dọc trên mặt bàn và lề trên, lề dưới đều để $3 \\text{cm}$, lề trái và lề phải để $2 \\text{cm}$. Phần còn lại của trang sách được in chữ. Gọi $x$ là chiều rộng của trang sách.",
+                statements: [
+                    { text: "Chiều rộng của phần in chữ là $(x-4) \\text{cm}$", correct: true },
+                    { text: "Diện tích phần in chữ là $(x-2)\\left(\\dfrac{600}{x}-3\\right)$ cm$^2$", correct: false },
+                    { text: "Phần in chữ của trang sách có diện tích lớn nhất khi $x=21 \\text{cm}$", correct: false },
+                    { text: "Khi phần in chữ có diện tích lớn nhất thì diện tích phần lề để trống bằng $217$ cm$^2$", correct: false }
+                ],
+                solution: `a) Vì lề trái và lề phải để $2\\text{cm}$ nên chiều rộng của phần in chữ là $(x-4) \\text{cm}$. (Đúng)<br>
+                b) Chiều dài của trang sách là $\\dfrac{600}{x} \\text{cm}$. Chiều dài phần in chữ là $\\left(\\dfrac{600}{x}-6\\right) \\text{cm}$. Diện tích phần in chữ là $S=(x-4)\\left(\\dfrac{600}{x}-6\\right)$ cm$^2$. (Sai)<br>
+                c) $S=-6x-\\dfrac{2400}{x}+624 \\Rightarrow S'=-6+\\dfrac{2400}{x^2}$. $S'=0 \\Leftrightarrow x=20$ (do $x>0$). Diện tích đạt lớn nhất khi $x=20\\text{cm}$. (Sai)<br>
+                d) Khi $x=20$, $S_{max} = (20-4)(600/20 - 6) = 16 \\times 24 = 384$. Diện tích lề để trống = $600 - 384 = 216$ cm$^2$. (Sai)`
+            },
+            {
+                text: "Cho hàm số $f(x)=\\frac{x^{3}}{3} - \\frac{3 x^{2}}{2} + 2 x - 3$.",
+                statements: [
+                    { text: "Hàm số có đạo hàm là $f'(x)=x^{2} - 3 x + 2$", correct: true },
+                    { text: "Phương trình $f'(x)=0$ có tập nghiệm là $S=\\left \\lbrace 1; 2 \\right \\rbrace$", correct: true },
+                    { text: "$f(1)=- \\frac{13}{6}; f(2)=- \\frac{7}{3}$", correct: true },
+                    { text: "Giá trị lớn nhất của hàm số trên đoạn $[0;4]$ là $\\frac{7}{3}$", correct: true }
+                ],
+                solution: `a) Hàm số có đạo hàm là $f'(x)=x^{2} - 3 x + 2$. (Đúng)<br>
+                b) $f'(x)=0 \\Leftrightarrow x^{2} - 3 x + 2=0 \\Leftrightarrow x=1$ hoặc $x=2$. Tập nghiệm $S=\\left \\lbrace 1; 2 \\right \\rbrace$. (Đúng)<br>
+                c) Tính: $f(1)=- \\frac{13}{6}; f(2)=- \\frac{7}{3}$. (Đúng)<br>
+                d) Tính: $f(0)=-3; f(4)=\\frac{7}{3}$. Vậy giá trị lớn nhất trên đoạn $[0;4]$ là $\\frac{7}{3}$. (Đúng)`
+            }
+        ],
+        part3: [
+            {
+                text: "Một chuyển động theo quy luật $s=- \\dfrac{t^{3}}{3} + 50 t^{2}$ với $t$ (giây) là khoảng thời gian tính từ khi vật bắt đầu chuyển động và $s$ (m) là quãng đường vật di chuyển được. Trong khoảng $69$ giây kể từ khi bắt đầu chuyển động, vận tốc lớn nhất của vật đạt được bằng bao nhiêu? (Làm tròn kết quả đến hàng đơn vị).",
+                answer: 2500,
+                solution: `Vận tốc của vật là $v=s'=- t^{2} + 100 t$.<br>
+                Ta có $v'=100 - 2 t=0 \\Leftrightarrow t=50$.<br>
+                Bảng biến thiên:
+                <div class="table-responsive">
+                    <table class="table-bbt" style="max-width:300px">
+                        <tr><td>$t$</td><td>$0$</td><td></td><td>$50$</td><td></td><td>$69$</td></tr>
+                        <tr><td>$v'$</td><td></td><td>$+$</td><td>$0$</td><td>$-$</td><td></td></tr>
+                        <tr><td>$v$</td><td colspan="5">
+                            <div class="d-flex justify-content-between px-2">
+                                <div>$0$</div> <div>$\\nearrow$</div> <div>$2500$</div> <div>$\\searrow$</div> <div>...</div>
+                            </div>
+                        </td></tr>
+                    </table>
+                </div>
+                Giá trị lớn nhất của hàm $v$ là $2500$ (tại $t=50$). Vận tốc lớn nhất là 2500 m/s.`
+            },
+            {
+                text: "Thể tích của một bể bơi sau $t$ phút bơm được tình theo công thức $V(t)=- \\dfrac{2 t^{3}}{3} + 20 t^{2} + 2 t + 1$ với $0 \\le t \\le 20$. Tốc độ bơm nước ở thời điểm $t$ được tính theo công thức $v(t)=V'(t)$. Thời điểm tốc độ bơm nước là lớn nhất bằng bao nhiêu?",
+                answer: 10,
+                solution: `Tốc độ bơm nước $v(t) = V'(t) = - 2 t^{2} + 40 t + 2$.<br>
+                Ta có $v'(t)=40 - 4 t = 0 \\Leftrightarrow t=10$. Lập BBT, ta thấy hàm số đạt lớn nhất tại $t=10$.`
+            },
+            {
+                text: "Một doanh nghiệp dự định sản xuất không quá $549$ sản phẩm. Doanh thu: $F(x)=2 x^{3} - 1844 x^{2} + 106245 x + 200000$ (đồng). Chi phí bình quân cho một sản phẩm: $G(x)=922 x - 531225 - \\dfrac{200000}{x}$ (đồng). Doanh nghiệp cần sản xuất bao nhiêu sản phẩm để lợi nhuận thu được là lớn nhất?",
+                answer: 135,
+                solution: `Lợi nhuận: $L(x) = F(x) - x \\cdot G(x) = 2 x^{3} - 2766 x^{2} + 637470 x + 400000$.<br>
+                $L'(x)=6 x^{2} - 5532 x + 637470 = 0 \\Leftrightarrow x=135 \\text{ hoặc } x=787$.<br>
+                Xét trên $[1; 549]$, ta có $L(135)$ là giá trị lớn nhất. Doanh nghiệp cần sản xuất 135 sản phẩm.`
+            },
+            {
+                text: `Giả sử hai nguồn sáng $S_1$, $S_2$ đặt cách nhau 2 mét, trong đó nguồn $S_1$ mạnh gấp 3 lần nguồn $S_2$. Cường độ chiếu sáng tỉ lệ thuận với độ mạnh và tỉ lệ nghịch với bình phương khoảng cách. Hỏi nên đặt vật trên đoạn nối hai nguồn và gần $S_1$ bao nhiêu mét để vật nhận được ít ánh sáng nhất? (kết quả làm tròn đến hàng phần trăm).`,
+                answer: 1.18,
+                solution: `Gọi $x$ (m) là khoảng cách từ vật đến $S_1$. Khoảng cách đến $S_2$ là $2-x$ ($0<x<2$).<br>
+                Tổng cường độ sáng $S(x) = \\frac{3I}{x^2} + \\frac{I}{(2 - x)^2}$.<br>
+                Xét $f(x)=\\frac{3}{x^2} + \\frac{1}{(2 - x)^2} \\Rightarrow f'(x) = \\frac{-6}{x^3} + \\frac{2}{(2 - x)^3} = 0 \\Rightarrow \\left(\\frac{x}{2 - x}\\right)^3 = 3 \\Rightarrow x = \\frac{2 \\sqrt[3]{3}}{1 + \\sqrt[3]{3}} \\approx 1,18$.<br>
+                Lập BBT ta thấy min tại $x \\approx 1,18$.`
+            },
+            {
+                text: "Một công ty nông sản có công suất chế biến không quá $200$ tấn. Chi phí sản xuất $C(x) = 0,001x^3 + 46x + 11$ (triệu đồng) và doanh thu $R(x) = 76x$. Lợi nhuận lớn nhất đạt được là bao nhiêu triệu đồng?",
+                answer: 1989,
+                solution: `Lợi nhuận $P(x) = R(x) - C(x) = -0,001x^3 + 30x - 11$ với $x \\in [1; 200]$.<br>
+                $P'(x) = -0,003x^2 + 30 = 0 \\Leftrightarrow x^2 = 10000 \\Leftrightarrow x = 100$.<br>
+                Tính: $P(1)=18.999$, $P(100)=1989$, $P(200)=-2011$. Lợi nhuận lớn nhất là 1989 triệu đồng.`
+            },
+            {
+                text: `Một người chèo thuyền từ điểm A trên bờ một con sông rộng $5$ km. Người đó muốn đến điểm B ở bờ đối diện, cách bờ đối diện $8$ km về phía hạ lưu trong thời gian nhanh nhất. Tốc độ chèo thuyền: $3$ km/h, tốc độ chạy bộ: $10$ km/h. Thời gian ngắn nhất là bao nhiêu giờ? (làm tròn đến phần trăm).
+                <br>
+                <div class="text-center my-3">
+                    <svg viewBox="0 0 500 800" width="150" height="240" style="background:#e0f7fa; border:2px solid #000;">
+                        <line x1="0" y1="0" x2="0" y2="800" stroke="#000" stroke-width="4"/>
+                        <line x1="500" y1="0" x2="500" y2="800" stroke="#000" stroke-width="4"/>
+                        <path d="M50 0 Q70 400 50 800 M150 0 Q130 400 150 800 M250 0 Q270 400 250 800 M350 0 Q330 400 350 800 M450 0 Q470 400 450 800" stroke="#fff" stroke-width="3" fill="none" opacity="0.6"/>
+                        <circle cx="0" cy="800" r="10" fill="#000"/> <text x="15" y="780" font-size="40" font-weight="bold">A</text>
+                        <circle cx="500" cy="0" r="10" fill="#000"/> <text x="450" y="40" font-size="40" font-weight="bold">B</text>
+                        <circle cx="500" cy="800" r="10" fill="#000"/> <text x="450" y="780" font-size="40" font-weight="bold">C</text>
+                        <circle cx="500" cy="400" r="10" fill="#000"/> <text x="450" y="400" font-size="40" font-weight="bold">D</text>
+                        <line x1="0" y1="800" x2="500" y2="800" stroke="blue" stroke-width="6" marker-end="url(#arrow)"/>
+                        <line x1="0" y1="800" x2="500" y2="400" stroke="magenta" stroke-width="6"/>
+                        <line x1="0" y1="800" x2="500" y2="0" stroke="green" stroke-width="6"/>
+                    </svg>
+                </div>`,
+                answer: 2.39,
+                solution: `Gọi khoảng cách $CD = x$ ($0 \\le x \\le 8$). Quãng đường chèo thuyền $AD = \\sqrt{25+x^2}$. Thời gian chèo: $t_1 = \\frac{\\sqrt{25+x^2}}{3}$.<br>
+                Quãng đường chạy bộ $DB = 8-x$. Thời gian chạy: $t_2 = \\frac{8-x}{10}$.<br>
+                Tổng thời gian $T(x) = \\frac{\\sqrt{25+x^2}}{3} + \\frac{8-x}{10}$.<br>
+                $T'(x) = \\frac{x}{3\\sqrt{25+x^2}} - \\frac{1}{10} = 0 \\Leftrightarrow x = \\frac{15\\sqrt{91}}{91} \\approx 1.57$.<br>
+                Thay vào $T(x)$ ta được $T_{min} \\approx 2.39$ giờ.`
+            }
+        ]
+    };
+
+    const STORE_KEY = "exam_autosave_ungdungdaoham";
+    let state = {
+        name: "", class: "", code: "",
+        ans1: {}, ans2: {}, ans3: {},
+        isSubmitted: false,
+        startTime: Date.now(),
+        endTime: null
+    };
+    
+    let map1 = [], map2 = [];
+
+    // =====================================
+    // CORE FUNCTIONS
+    // =====================================
+    function generateCode() { return Math.floor(100 + Math.random() * 900).toString(); }
+
+    function shuffle(arr) {
+        let array = [...arr];
+        for (let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function parseFloatStrict(str) {
+        if(str === null || str === undefined || str.toString().trim() === "") return null;
+        let s = str.toString().replace(/,/g, '.').trim();
+        let num = parseFloat(s);
+        return isNaN(num) ? null : num;
+    }
+
+    function init() {
+        map1 = shuffle(DATA.part1.map((q, i) => {
+            let opts = shuffle(q.options.map((o, j) => ({...o, origIdx: j})));
+            return { origIdx: i, opts: opts };
+        }));
+        map2 = shuffle(DATA.part2.map((q, i) => ({ origIdx: i }))); 
+
+        loadState();
+        
+        if(!state.code) state.code = generateCode();
+        document.getElementById("lbl_exam_code").innerText = state.code;
+        
+        renderPart1(); renderPart2(); renderPart3();
+        
+        MathJax.typesetPromise();
+        updateToolbar();
+
+        if (state.isSubmitted) evaluateExam();
+        
+        setInterval(saveState, 10000);
+    }
+
+    // =====================================
+    // RENDER UI
+    // =====================================
+    function renderPart1() {
+        const wrap = document.getElementById("wrap_p1");
+        let html = '';
+        map1.forEach((qMap, idx) => {
+            let q = DATA.part1[qMap.origIdx];
+            html += `<div class="question-card" id="card_p1_${idx}">
+                <div class="fw-bold mb-3 text-dark">Câu ${idx + 1}: <span class="fw-normal">${q.text}</span></div>
+                <div class="row g-3">`;
+            const labels = ['A', 'B', 'C', 'D'];
+            qMap.opts.forEach((opt, oIdx) => {
+                let checked = state.ans1[idx] === oIdx ? "checked" : "";
+                let disabled = state.isSubmitted ? "disabled" : "";
+                html += `
+                <div class="col-md-6 col-12">
+                    <div class="form-check">
+                        <input class="form-check-input border-secondary" type="radio" name="p1_q${idx}" id="p1_q${idx}_o${oIdx}" value="${oIdx}" ${checked} ${disabled} onchange="ans1(${idx}, ${oIdx})">
+                        <label class="form-check-label" id="lbl_p1_q${idx}_o${oIdx}" for="p1_q${idx}_o${oIdx}">${labels[oIdx]}. ${opt.text}</label>
+                    </div>
+                </div>`;
+            });
+            html += `</div>
+                <div class="solution-box" id="sol_p1_${idx}">
+                    <strong class="text-primary">Lời giải chi tiết:</strong><br>${q.solution}
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    function renderPart2() {
+        const wrap = document.getElementById("wrap_p2");
+        let html = '';
+        map2.forEach((qMap, idx) => {
+            let q = DATA.part2[qMap.origIdx];
+            if(!state.ans2[idx]) state.ans2[idx] = {};
+            
+            html += `<div class="question-card" id="card_p2_${idx}">
+                <div class="fw-bold mb-3 text-dark">Câu ${idx + 1}: <span class="fw-normal">${q.text}</span></div>
+                <div class="table-responsive">
+                <table class="table table-bordered align-middle mb-0 bg-white">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%" class="text-center">Ý</th>
+                            <th>Phát biểu</th>
+                            <th width="10%" class="text-center text-success">Đúng</th>
+                            <th width="10%" class="text-center text-danger">Sai</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            
+            const labels = ['a)', 'b)', 'c)', 'd)'];
+            q.statements.forEach((stmt, sIdx) => {
+                let vT = state.ans2[idx][sIdx] === true ? "checked" : "";
+                let vF = state.ans2[idx][sIdx] === false ? "checked" : "";
+                let disabled = state.isSubmitted ? "disabled" : "";
+                html += `<tr>
+                    <td class="text-center fw-bold">${labels[sIdx]}</td>
+                    <td>${stmt.text}</td>
+                    <td class="text-center"><input class="form-check-input border-secondary" style="transform: scale(1.3)" type="radio" name="p2_q${idx}_s${sIdx}" ${vT} ${disabled} onchange="ans2(${idx}, ${sIdx}, true)"></td>
+                    <td class="text-center"><input class="form-check-input border-secondary" style="transform: scale(1.3)" type="radio" name="p2_q${idx}_s${sIdx}" ${vF} ${disabled} onchange="ans2(${idx}, ${sIdx}, false)"></td>
+                </tr>`;
+            });
+            html += `</tbody></table></div>
+                <div class="solution-box" id="sol_p2_${idx}">
+                    <strong class="text-primary">Lời giải chi tiết:</strong><br>${q.solution}
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    function renderPart3() {
+        const wrap = document.getElementById("wrap_p3");
+        let html = '';
+        DATA.part3.forEach((q, idx) => {
+            let val = state.ans3[idx] !== undefined ? state.ans3[idx] : "";
+            let disabled = state.isSubmitted ? "disabled" : "";
+            html += `<div class="question-card" id="card_p3_${idx}">
+                <div class="fw-bold mb-3 text-dark">Câu ${idx + 1}: <span class="fw-normal">${q.text}</span></div>
+                <div><input type="text" class="form-control border-secondary text-primary fw-bold w-50" id="inp_p3_${idx}" placeholder="Nhập đáp số (Ví dụ: 135 hoặc 1.18)" value="${val}" ${disabled} oninput="ans3(${idx}, this.value)"></div>
+                <div id="fb_p3_${idx}" class="mt-2 fw-bold" style="display:none;"></div>
+                <div class="solution-box" id="sol_p3_${idx}">
+                    <strong class="text-primary">Lời giải chi tiết:</strong><br>${q.solution}
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    // =====================================
+    // STATE MANAGEMENT
+    // =====================================
+    function ans1(qIdx, val) { state.ans1[qIdx] = val; updateToolbar(); triggerSave(); }
+    function ans2(qIdx, sIdx, val) { state.ans2[qIdx][sIdx] = val; updateToolbar(); triggerSave(); }
+    function ans3(qIdx, val) { state.ans3[qIdx] = val; updateToolbar(); triggerSave(); }
+
+    function updateToolbar() {
+        let count = 0;
+        let total = DATA.part1.length + (DATA.part2.length * 4) + DATA.part3.length;
+        
+        count += Object.keys(state.ans1).length;
+        Object.keys(state.ans2).forEach(k => { count += Object.keys(state.ans2[k]).length; });
+        Object.keys(state.ans3).forEach(k => { if(state.ans3[k].toString().trim() !== "") count++; });
+        
+        document.getElementById("lbl_answered").innerText = count;
+        document.getElementById("lbl_total").innerText = total;
+        return {count, total};
+    }
+
+    function triggerSave() {
+        if(state.isSubmitted) return;
+        state.name = document.getElementById("input_name").value;
+        state.class = document.getElementById("input_class").value;
+        saveState();
+    }
+
+    function saveState() {
+        if(state.isSubmitted) return;
+        localStorage.setItem(STORE_KEY, JSON.stringify({state, map1, map2}));
+    }
+
+    function loadState() {
+        let saved = localStorage.getItem(STORE_KEY);
+        if(saved) {
+            let data = JSON.parse(saved);
+            state = data.state;
+            if(data.map1) map1 = data.map1;
+            if(data.map2) map2 = data.map2;
+            
+            document.getElementById("input_name").value = state.name;
+            document.getElementById("input_class").value = state.class;
+            
+            if(!state.isSubmitted) {
+                let toast = document.getElementById('toast-msg');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+        }
+    }
+
+    // =====================================
+    // EVALUATION & SUBMISSION
+    // =====================================
+    function submitExam() {
+        let {count, total} = updateToolbar();
+        if(count / total < 0.5) {
+            alert("Vui lòng hoàn thành ít nhất 50% tổng số câu hỏi (bao gồm các ý) trước khi nộp bài!");
+            return;
+        }
+        
+        state.name = document.getElementById("input_name").value.trim();
+        state.class = document.getElementById("input_class").value.trim();
+        if(!state.name) { alert("Vui lòng nhập Họ và Tên trước khi nộp bài!"); return; }
+
+        if(!confirm("Bạn có chắc chắn muốn nộp bài?")) return;
+
+        state.isSubmitted = true;
+        state.endTime = Date.now();
+        localStorage.setItem(STORE_KEY, JSON.stringify({state, map1, map2}));
+        
+        document.querySelectorAll('input').forEach(i => i.disabled = true);
+        document.getElementById("btn_submit").classList.add("d-none");
+        document.getElementById("btn_print").classList.remove("d-none");
+        
+        evaluateExam();
+    }
+
+    function evaluateExam() {
+        let score1 = 0, score2 = 0, score3 = 0;
+
+        // Part 1
+        map1.forEach((qMap, idx) => {
+            let isCorrect = false;
+            let chosenOpt = state.ans1[idx];
+            qMap.opts.forEach((opt, oIdx) => {
+                let lbl = document.getElementById(`lbl_p1_q${idx}_o${oIdx}`);
+                if(opt.correct) {
+                    lbl.classList.add("opt-correct");
+                    if(chosenOpt === oIdx) isCorrect = true;
+                } else if (chosenOpt === oIdx) {
+                    lbl.classList.add("opt-wrong");
+                }
+            });
+            let card = document.getElementById(`card_p1_${idx}`);
+            if(isCorrect) { score1 += 0.25; card.style.borderLeft = "5px solid var(--success-color)"; }
+            else { card.style.borderLeft = "5px solid var(--danger-color)"; }
+            document.getElementById(`sol_p1_${idx}`).style.display = "block";
+        });
+
+        // Part 2
+        map2.forEach((qMap, idx) => {
+            let q = DATA.part2[qMap.origIdx];
+            let numCorrect = 0;
+            q.statements.forEach((stmt, sIdx) => {
+                let ans = state.ans2[idx] ? state.ans2[idx][sIdx] : undefined;
+                if(ans === stmt.correct) numCorrect++;
+            });
+            if(numCorrect === 1) score2 += 0.1;
+            else if(numCorrect === 2) score2 += 0.25;
+            else if(numCorrect === 3) score2 += 0.5;
+            else if(numCorrect === 4) score2 += 1.0;
+
+            let card = document.getElementById(`card_p2_${idx}`);
+            if(numCorrect === 4) card.style.borderLeft = "5px solid var(--success-color)";
+            else if(numCorrect > 0) card.style.borderLeft = "5px solid #ffc107";
+            else card.style.borderLeft = "5px solid var(--danger-color)";
+            document.getElementById(`sol_p2_${idx}`).style.display = "block";
+        });
+
+        // Part 3
+        DATA.part3.forEach((q, idx) => {
+            let ansNum = parseFloatStrict(state.ans3[idx]);
+            let targetNum = parseFloatStrict(q.answer);
+            let isCorrect = (ansNum !== null && targetNum !== null && Math.abs(ansNum - targetNum) < 0.0001);
+            
+            let card = document.getElementById(`card_p3_${idx}`);
+            let fb = document.getElementById(`fb_p3_${idx}`);
+            fb.style.display = "block";
+            if(isCorrect) {
+                score3 += 0.5;
+                card.style.borderLeft = "5px solid var(--success-color)";
+                document.getElementById(`inp_p3_${idx}`).classList.add("is-valid");
+            } else {
+                card.style.borderLeft = "5px solid var(--danger-color)";
+                document.getElementById(`inp_p3_${idx}`).classList.add("is-invalid");
+                fb.innerHTML = `Đáp án đúng: <span class="text-success">${q.answer}</span>`;
+            }
+            document.getElementById(`sol_p3_${idx}`).style.display = "block";
+        });
+
+        // Tally & Render
+        let totalScore = score1 + score2 + score3;
+        document.getElementById("res_p1").innerText = score1.toFixed(2);
+        document.getElementById("res_p2").innerText = score2.toFixed(2);
+        document.getElementById("res_p3").innerText = score3.toFixed(2);
+        document.getElementById("res_total").innerText = totalScore.toFixed(2);
+        
+        let timeMin = Math.round(((state.endTime || Date.now()) - state.startTime) / 60000);
+        if(timeMin < 0) timeMin = 0;
+        document.getElementById("res_time").innerText = timeMin;
+        
+        let {count, total} = updateToolbar();
+        let pct = Math.round((count/total)*100);
+        document.getElementById("res_percent").innerText = pct;
+        
+        document.getElementById("result-board").style.display = "block";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        sendToGAS(state.name, state.class, score1, score2, score3, totalScore, timeMin, pct);
+    }
+
+    function sendToGAS(name, className, s1, s2, s3, total, time, pct) {
+        // DÁN URL GOOGLE APPS SCRIPT CỦA BẠN VÀO ĐÂY:
+        const URL = 'https://script.google.com/macros/s/AKfycbwNS0cReAR2RZ-SMibUBAXOitQkDuqW1QEDrpRSpBst9JfGzTUqZA0G8Ry7RusoAP4C/exec'; 
+        
+        const payload = {
+            sheetName: "lths2", 
+            student_name: name,
+            class_name: className,
+            part1_score: s1,
+            part2_score: s2,
+            part3_score: s3,
+            total_score: total,
+            submit_time: new Date().toISOString(),
+            duration_minutes: time,
+            percent: pct
+        };
+
+        const btnSubmit = document.getElementById("btn_submit");
+        if(btnSubmit) btnSubmit.innerText = "ĐANG GỬI DỮ LIỆU...";
+
+        fetch(URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Mạng bị lỗi hoặc link Web App sai.");
+            return res.json();
+        })
+        .then(data => {
+            if (data.status === "success") {
+                alert(`${data.message}\nHọc sinh: ${data.saved_name}\nTổng điểm: ${data.final_score}`);
+            } else {
+                alert("Lưu thất bại: " + data.message);
+            }
+        })
+        .catch(err => {
+            console.error("Lỗi khi gửi dữ liệu: ", err);
+        })
+        .finally(() => {
+            if(btnSubmit) btnSubmit.innerText = "NỘP BÀI"; 
+        });
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>
