@@ -495,12 +495,50 @@
                         Điểm số được tính bằng phương pháp trắc nghiệm hiện đại (IRT), trong đó các câu hỏi khó sẽ có trọng số điểm cao hơn.</p>
                 </a>
 
-                <!-- Thẻ 2 -->
-                <a href="thucte_ch2" style="background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px; text-decoration: none; color: #333; transition: transform 0.3s, box-shadow 0.3s; display: block; border-top: 4px solid #28a745;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
-                    <i class="fas fa-book-open" style="font-size: 2rem; color: #28a745; margin-bottom: 15px;"></i>
-                    <h3 style="font-size: 1.2rem; margin-bottom: 10px;">Từ điển toán thực tế theo chương</h3>
-                    <p style="font-size: 0.9rem; color: #666;">Tóm tắt các thuật ngữ liên quan giữa thực tế và toán học theo chương.</p>
-                </a>
+                <!-- Thẻ 2: Từ điển toán thực tế theo chương (Đã cấu trúc lại thành thẻ div) -->
+<div style="background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px; color: #333; transition: transform 0.3s, box-shadow 0.3s; display: block; border-top: 4px solid #28a745;" 
+     onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.1)';" 
+     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+    
+    <!-- Phần Tiêu đề & Mô tả chung -->
+    <div style="margin-bottom: 15px; border-bottom: 1px dashed #ccc; padding-bottom: 15px;">
+        <i class="fas fa-book-open" style="font-size: 2rem; color: #28a745; margin-bottom: 15px;"></i>
+        <h3 style="font-size: 1.2rem; margin-bottom: 10px;">Từ điển toán thực tế theo chương</h3>
+        <p style="font-size: 0.9rem; color: #666; margin-bottom: 0;">Tóm tắt các thuật ngữ liên quan giữa thực tế và toán học theo chương.</p>
+    </div>
+
+    <!-- Phần Danh sách các mục con (Các chương) -->
+    <ul style="list-style-type: none; padding-left: 0; margin: 0;">
+        
+        <!-- Mục con 1 -->
+        <li style="margin-bottom: 12px;">
+            <a href="thucte_ch1" style="text-decoration: none; color: #0056b3; font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; transition: color 0.2s;"
+               onmouseover="this.style.color='#28a745'" onmouseout="this.style.color='#0056b3'">
+                <i class="fas fa-chevron-right" style="font-size: 0.8rem; margin-right: 8px; color: #28a745;"></i> 
+                Chương 1: Ứng dụng đạo hàm
+            </a>
+        </li>
+
+        <!-- Mục con 2 -->
+        <li style="margin-bottom: 12px;">
+            <a href="thucte_ch2" style="text-decoration: none; color: #0056b3; font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; transition: color 0.2s;"
+               onmouseover="this.style.color='#28a745'" onmouseout="this.style.color='#0056b3'">
+                <i class="fas fa-chevron-right" style="font-size: 0.8rem; margin-right: 8px; color: #28a745;"></i> 
+                Chương 2: Vector và tọa độ không gian
+            </a>
+        </li>
+
+        <!-- Mục con 3 -->
+        <li style="margin-bottom: 0;">
+            <a href="thucte_ch3" style="text-decoration: none; color: #0056b3; font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; transition: color 0.2s;"
+               onmouseover="this.style.color='#28a745'" onmouseout="this.style.color='#0056b3'">
+                <i class="fas fa-chevron-right" style="font-size: 0.8rem; margin-right: 8px; color: #28a745;"></i> 
+                Chương 3: Các số đặc trưng đo mức độ phân tán
+            </a>
+        </li>
+
+    </ul>
+</div>
 
                 <!-- Thẻ 3 -->
                 <div style="background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px; color: #333; transition: transform 0.3s, box-shadow 0.3s; border-top: 4px solid #dc3545; display: flex; flex-direction: column;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
