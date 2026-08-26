@@ -593,15 +593,16 @@
         <i class="fas fa-bullseye" style="color: var(--primary-color);"></i> Mục Tiêu & Hành Trang 2027
     </h2>
     
-    <!-- Mục 1: Đếm ngược -->
-    <div style="display: flex; align-items: center; margin-bottom: 15px;">
-        <div style="min-width: 30px; height: 30px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; margin-right: 15px;">
-            1
-        </div>
-        <div style="line-height: 1.5;">
-            Đếm ngược đến ngày thi tốt nghiệp THPT năm 2027 (dự kiến 11/6/2027).
-        </div>
+    <!-- Mục 1: Đếm ngược (HTML) -->
+<div style="display: flex; align-items: center; margin-bottom: 15px;">
+    <div style="min-width: 30px; height: 30px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; margin-right: 15px;">
+        1
     </div>
+    <div id="countdown-text" style="line-height: 1.5;">
+        <!-- Dòng này sẽ được Javascript tự động điền số ngày vào -->
+        Đang tính toán số ngày...
+    </div>
+</div>
     
     <!-- Mục 2: Định hướng -->
     <div style="display: flex; align-items: center; margin-bottom: 15px;">
@@ -628,6 +629,33 @@
 
         </main>
     </div>
+<script>
+    function updateCountdown() {
+        // Đặt ngày thi dự kiến: 11/06/2027
+        const examDate = new Date('2027-06-11T00:00:00').getTime();
+        
+        // Lấy thời gian hiện tại
+        const now = new Date().getTime();
+        
+        // Tính khoảng cách thời gian (tính bằng mili-giây)
+        const distance = examDate - now;
+        
+        // Quy đổi từ mili-giây sang số ngày
+        const days = Math.ceil(distance / (1000 * 60 * 60 * 24));
+        
+        // Tìm vị trí thẻ HTML có id là countdown-text để ghi kết quả
+        const countdownElement = document.getElementById("countdown-text");
+        
+        // Kiểm tra nếu chưa tới ngày thi
+        if (distance > 0) {
+            countdownElement.innerHTML = `Chỉ còn <strong>${days} ngày</strong> nữa là đến kỳ thi Tốt nghiệp THPT (11/06/2027).`;
+        } else {
+            countdownElement.innerHTML = `Kỳ thi Tốt nghiệp THPT 2027 đã diễn ra!`;
+        }
+    }
 
+    // Cho hàm chạy ngay lập tức khi trang vừa load xong
+    updateCountdown();
+</script>
 </body>
 </html>
