@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐỀ ÔN TẬP VACT-P1</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- MathJax for LaTeX Support -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                macros: {
+                    hoac: ["\\left[\\begin{aligned}#1\\end{aligned}\\right.", 1],
+                    heva: ["\\left\\{\\begin{aligned}#1\\end{aligned}\\right.", 1],
+                    mathscr: ["\\mathcal{#1}", 1]
+                }
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --bg-color: #f8fbff;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+
+        /* Header Styles */
+        .header-box {
+            background-color: var(--bg-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.05);
+        }
+
+        .header-box h2 {
+            letter-spacing: 1px;
+        }
+
+        /* Section Titles */
+        .part-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 40px;
+            margin-bottom: 25px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        /* Question Cards */
+        .question-card {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            background-color: #fcfcfc;
+            transition: all 0.3s ease;
+        }
+
+        /* Solution Box */
+        .solution-box {
+            background-color: #f1f5f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            border-radius: 0 8px 8px 0;
+            overflow-x: auto;
+        }
+
+        /* Sticky Toolbar */
+        .sticky-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        /* Result Board */
+        #result-board {
+            display: none;
+            background-color: var(--bg-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .opt-correct { color: var(--success-color); font-weight: 700; }
+        .opt-wrong { color: var(--danger-color); font-weight: 700; text-decoration: line-through; }
+        
+        /* Toast Notification */
+        .toast-notify {
+            position: fixed; 
+            bottom: 30px; 
+            right: 30px; 
+            background: var(--success-color); 
+            color: white;
+            padding: 15px 25px; 
+            border-radius: 8px; 
+            opacity: 0; 
+            visibility: hidden;
+            transition: all 0.5s ease; 
+            z-index: 9999;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            font-weight: 600;
+            transform: translateY(20px);
+        }
+        .toast-notify.show { 
+            opacity: 1; 
+            visibility: visible; 
+            transform: translateY(0);
+        }
+
+        /* Input Customizations */
+        .form-check-input {
+            cursor: pointer;
+            width: 1.2em;
+            height: 1.2em;
+        }
+        .form-check-input:checked { 
+            background-color: var(--primary-color); 
+            border-color: var(--primary-color); 
+        }
+        .form-check-label {
+            cursor: pointer;
+            margin-left: 5px;
+            font-size: 1.05rem;
+        }
+
+        /* Print Media Queries */
+        @media print {
+            body { background-color: white; color: black; }
+            .sticky-toolbar, .no-print, .toast-notify { display: none !important; }
+            .solution-box { 
+                display: block !important; 
+                break-inside: avoid; 
+                border-left-color: #6c757d; 
+                background-color: transparent; 
+                border: 1px solid #ccc;
+            }
+            .question-card { 
+                break-inside: avoid; 
+                border: none; 
+                border-bottom: 2px solid #000; 
+                background-color: transparent; 
+                padding: 15px 0; 
+            }
+            #result-board { 
+                display: block !important; 
+                border: 2px solid #000; 
+                box-shadow: none; 
+            }
+            .header-box { border: 2px solid #000; background-color: transparent;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-4">
+    <!-- Header Section -->
+    <div class="header-box text-center">
+        <h2 class="fw-bold text-primary mb-4">ĐỀ ÔN TẬP VACT-P1</h2>
+        <div class="row justify-content-center g-3">
+            <div class="col-md-4">
+                <input type="text" id="input_name" class="form-control border-primary shadow-sm" placeholder="Nhập Họ và Tên" oninput="triggerSave()">
+            </div>
+            <div class="col-md-3">
+                <input type="text" id="input_class" class="form-control border-primary shadow-sm" placeholder="Nhập Lớp" oninput="triggerSave()">
+            </div>
+            <div class="col-md-3">
+                <div class="form-control bg-white text-start border-primary shadow-sm fw-bold">
+                    Mã đề: <span id="lbl_exam_code" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Toolbar -->
+    <div class="sticky-toolbar text-center no-print">
+        <span class="fw-bold text-primary fs-5 me-4">
+            Đã hoàn thành: <span id="lbl_answered" class="text-danger">0</span> / <span id="lbl_total" class="text-danger">0</span>
+        </span>
+        <button id="btn_submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm" onclick="submitExam()">NỘP BÀI</button>
+        <button id="btn_print" class="btn btn-success px-4 py-2 fw-bold shadow-sm d-none" onclick="window.print()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer me-2" viewBox="0 0 16 16"><path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/></svg>IN KẾT QUẢ PDF
+        </button>
+    </div>
+
+    <!-- Results Board -->
+    <div id="result-board" class="text-center">
+        <h3 class="text-success fw-bold mb-4">KẾT QUẢ BÀI LÀM</h3>
+        <div class="row fw-bold text-primary fs-5 mb-4">
+            <div class="col-md-3">Phần I: <span id="res_p1" class="text-danger"></span> / 2.75</div>
+            <div class="col-md-3">Phần II: <span id="res_p2" class="text-danger"></span> / 0.0</div>
+            <div class="col-md-3">Phần III: <span id="res_p3" class="text-danger"></span> / 0.0</div>
+            <div class="col-md-3 text-danger fs-4 border-start border-danger">TỔNG: <span id="res_total"></span> / 2.75</div>
+        </div>
+        <hr class="border-secondary">
+        <div class="row fs-6 text-muted fw-semibold">
+            <div class="col-md-6">Tỷ lệ hoàn thành: <span id="res_percent" class="text-dark"></span>%</div>
+            <div class="col-md-6">Thời gian làm bài: <span id="res_time" class="text-dark"></span> phút</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="exam-content">
+        <!-- Part 1 -->
+        <h4 class="part-title">PHẦN I. CÂU HỎI TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN</h4>
+        <div id="wrap_p1"></div>
+
+        <!-- Part 2 -->
+        <h4 class="part-title" style="display: none;">PHẦN II. CÂU HỎI TRẮC NGHIỆM ĐÚNG SAI</h4>
+        <div id="wrap_p2"></div>
+
+        <!-- Part 3 -->
+        <h4 class="part-title" style="display: none;">PHẦN III. CÂU TRẮC NGHIỆM TRẢ LỜI NGẮN</h4>
+        <div id="wrap_p3"></div>
+    </div>
+</div>
+
+<!-- Notification Toast -->
+<div id="toast-msg" class="toast-notify">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle me-2" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/></svg>
+    Đã khôi phục bài làm trước đó.
+</div>
+
+<script>
+    // =====================================
+    // DATABASE (From LaTeX Content)
+    // =====================================
+    const DATA = {
+        part1: [
+            {
+                text: "Tập hợp $S$ tất cả các giá trị thực của tham số $m$ để hàm số $f(x)=\\dfrac{mx-2}{x+m-3}$ nghịch biến trên từng khoảng xác định là",
+                options: [
+                    { text: "$S=[1;2]$", correct: false },
+                    { text: "$S=(1;2)$", correct: true },
+                    { text: "$S=(-\\infty;1) \\cup (2;+\\infty)$", correct: false },
+                    { text: "$S=(1;+\\infty)$", correct: false }
+                ],
+                solution: "Tập xác định: $D=\\mathbb{R} \\setminus \\{3-m\\}$.<br>Ta có đạo hàm: $f'(x)=\\dfrac{m(m-3) - 1 \\cdot (-2)}{(x+m-3)^2} = \\dfrac{m^2-3m+2}{(x+m-3)^2}$.<br>Hàm số $f(x)$ nghịch biến trên từng khoảng xác định khi và chỉ khi $f'(x) < 0, \\, \\forall x \\neq 3-m$<br>$\\Leftrightarrow \\dfrac{m^2-3m+2}{(x+m-3)^2} < 0 \\Leftrightarrow m^2-3m+2 < 0 \\Leftrightarrow 1 < m < 2$.<br>Vậy $S=(1;2)$."
+            },
+            {
+                text: "Tìm tất cả các giá trị thực của tham số $m$ để hàm số $y=\\dfrac{x^2-2mx+m+6}{x-1}$ đồng biến trên khoảng $(3; +\\infty)$.",
+                options: [
+                    { text: "$m \\le 3$", correct: false },
+                    { text: "$m \\ge 3$", correct: true },
+                    { text: "$m > 3$", correct: false },
+                    { text: "$m \\ge -3$", correct: false }
+                ],
+                solution: "Tập xác định: $D=\\mathbb{R} \\setminus \\{1\\}$.<br>Ta có $y' = \\dfrac{(2x-2m)(x-1) - (x^2-2mx+m+6)}{(x-1)^2} = \\dfrac{x^2-2x+m-6}{(x-1)^2}$.<br>Hàm số đồng biến trên khoảng $(3; +\\infty)$ khi và chỉ khi $y' \\ge 0, \\, \\forall x \\in (3; +\\infty)$<br>$\\Leftrightarrow x^2-2x+m-6 \\ge 0, \\, \\forall x > 3 \\Leftrightarrow m \\ge -x^2+2x+6, \\, \\forall x > 3$.<br>Xét hàm số $g(x)=-x^2+2x+6$ trên khoảng $(3; +\\infty)$.<br>Ta có $g'(x)=-2x+2 < 0, \\, \\forall x > 3$. Do đó hàm số $g(x)$ nghịch biến trên $(3; +\\infty)$.<br>Để $m \\ge g(x), \\, \\forall x \\in (3; +\\infty)$ thì $m \\ge \\lim\\limits_{x \\to 3^+} g(x) = g(3) = 3$.<br>Vậy $m \\ge 3$."
+            },
+            {
+                text: "Cho hàm số $y=-\\dfrac{1}{3}x^3+mx^2-(2m+3)x+1$, với $m$ là tham số. Số giá trị nguyên của $m$ để hàm số đã cho nghịch biến trên $\\mathbb{R}$ là",
+                options: [
+                    { text: "$4$", correct: false },
+                    { text: "$5$", correct: true },
+                    { text: "$6$", correct: false },
+                    { text: "$7$", correct: false }
+                ],
+                solution: "Tập xác định: $D=\\mathbb{R}$.<br>Ta có $y'=-x^2+2mx-(2m+3)$.<br>Hàm số nghịch biến trên $\\mathbb{R}$ khi và chỉ khi $y' \\le 0, \\, \\forall x \\in \\mathbb{R}$<br>$\\Leftrightarrow \\begin{cases} a = -1 < 0 \\\\ \\Delta' = m^2 - (-1)[-(2m+3)] \\le 0 \\end{cases} \\Leftrightarrow m^2 - 2m - 3 \\le 0 \\Leftrightarrow -1 \\le m \\le 3$.<br>Vì $m \\in \\mathbb{Z}$ nên $m \\in \\{-1; 0; 1; 2; 3\\}$. Vậy có $5$ giá trị nguyên."
+            },
+            {
+                text: "Có tất cả bao nhiêu giá trị nguyên của tham số $m$ thuộc đoạn $[-5;5]$ để hàm số $y=-\\dfrac{1}{3}x^3+x^2+(m-1)x+2026$ nghịch biến trên khoảng $(1;4)$?",
+                options: [
+                    { text: "$5$", correct: false },
+                    { text: "$6$", correct: true },
+                    { text: "$7$", correct: false },
+                    { text: "$4$", correct: false }
+                ],
+                solution: "Ta có: $y'=-x^2+2x+m-1$.<br>Hàm số nghịch biến trên khoảng $(1;4) \\Leftrightarrow y' \\le 0, \\, \\forall x \\in (1;4)$<br>$\\Leftrightarrow -x^2+2x+m-1 \\le 0 \\Leftrightarrow m \\le x^2-2x+1, \\, \\forall x \\in (1;4)$.<br>Xét $g(x)=x^2-2x+1=(x-1)^2$ trên khoảng $(1;4)$. $g'(x) = 2(x-1) > 0, \\, \\forall x \\in (1;4)$ nên $g(x)$ đồng biến.<br>Để $m \\le g(x), \\, \\forall x \\in (1;4)$ thì $m \\le \\lim\\limits_{x \\to 1^+} g(x) = g(1) = 0$. Suy ra $m \\le 0$.<br>Kết hợp $m \\in [-5;5]$ và $m \\in \\mathbb{Z}$, ta được $m \\in \\{-5; -4; -3; -2; -1; 0\\}$. Có $6$ giá trị."
+            },
+            {
+                text: "Có bao nhiêu giá trị nguyên của tham số $m$ để hàm số $y=\\dfrac{mx-9}{x-m}$ đồng biến trên khoảng $(2;+\\infty)$?",
+                options: [
+                    { text: "$4$", correct: false },
+                    { text: "$5$", correct: true },
+                    { text: "$6$", correct: false },
+                    { text: "$3$", correct: false }
+                ],
+                solution: "Tập xác định: $D = \\mathbb{R} \\setminus \\{m\\}$. Ta có $y' = \\dfrac{9-m^2}{(x-m)^2}$.<br>Hàm số đồng biến trên khoảng $(2; +\\infty)$ khi và chỉ khi: $\\begin{cases} y' > 0 \\\\ m \\notin (2; +\\infty) \\end{cases} \\Leftrightarrow \\begin{cases} 9-m^2 > 0 \\\\ m \\le 2 \\end{cases} \\Leftrightarrow \\begin{cases} -3 < m < 3 \\\\ m \\le 2 \\end{cases} \\Leftrightarrow -3 < m \\le 2$.<br>Vì $m \\in \\mathbb{Z}$ nên $m \\in \\{-2; -1; 0; 1; 2\\}$. Có $5$ giá trị."
+            },
+            {
+                text: "Tìm tất cả các giá trị thực của tham số $m$ để hàm số $y = \\dfrac{1}{3}x^3 - (m-1)x^2 + (m^2 - 3m + 2)x + 2$ đạt cực tiểu tại điểm $x = 2$.",
+                options: [
+                    { text: "$m = 5$", correct: false },
+                    { text: "$m = 2$", correct: true },
+                    { text: "$m = 2$ hoặc $m = 5$", correct: false },
+                    { text: "Không có giá trị của $m$", correct: false }
+                ],
+                solution: "Ta có $y' = x^2 - 2(m-1)x + m^2 - 3m + 2$. Điều kiện cần: $y'(2) = 0 \\Leftrightarrow m^2 - 7m + 10 = 0 \\Leftrightarrow m = 2 \\text{ hoặc } m = 5$.<br>Kiểm tra điều kiện đủ: <br>- Với $m = 5$: $y'' = 2x - 8 \\Rightarrow y''(2) = -4 < 0$ (Cực đại - Loại).<br>- Với $m = 2$: $y'' = 2x - 2 \\Rightarrow y''(2) = 2 > 0$ (Cực tiểu - Nhận).<br>Vậy $m = 2$."
+            },
+            {
+                text: "Tìm các giá trị thực của tham số $m$ để đồ thị hàm số $y = -x^3 + 3x^2 + 1$ cắt đường thẳng $y = m$ tại ba điểm phân biệt.",
+                options: [
+                    { text: "$1 \\le m \\le 5$", correct: false },
+                    { text: "$m > 5$", correct: false },
+                    { text: "$1 < m < 5$", correct: true },
+                    { text: "$m < 1$", correct: false }
+                ],
+                solution: "Xét $f(x) = -x^3 + 3x^2 + 1$. Ta có $f'(x) = -3x^2 + 6x = 0 \\Leftrightarrow x = 0 \\Rightarrow y_{\\text{CT}} = 1$ hoặc $x = 2 \\Rightarrow y_{\\text{CĐ}} = 5$.<br>Để đồ thị cắt đường thẳng $y = m$ tại 3 điểm phân biệt thì $y_{\\text{CT}} < m < y_{\\text{CĐ}} \\Leftrightarrow 1 < m < 5$."
+            },
+            {
+                text: "Tìm điều kiện của tham số $m$ để đồ thị hàm số $y = x^4 - (m+2)x^2 + m + 1$ cắt trục hoành tại $4$ điểm phân biệt.",
+                options: [
+                    { text: "$m > -1$", correct: false },
+                    { text: "$m > 0, m \\neq 1$", correct: false },
+                    { text: "$m \\ge -1$", correct: false },
+                    { text: "$m > -1, m \\neq 0$", correct: true }
+                ],
+                solution: "Phương trình hoành độ giao điểm: $x^4 - (m+2)x^2 + m + 1 = 0$. Đặt $t = x^2 \\ge 0$, ta có $t^2 - (m+2)t + m + 1 = 0$.<br>Để có 4 nghiệm phân biệt thì phương trình ẩn $t$ phải có 2 nghiệm dương phân biệt:<br>$\\begin{cases} \\Delta = (m+2)^2 - 4(m+1) = m^2 > 0 \\Leftrightarrow m \\neq 0 \\\\ S = m + 2 > 0 \\Leftrightarrow m > -2 \\\\ P = m + 1 > 0 \\Leftrightarrow m > -1 \\end{cases} \\Leftrightarrow m > -1 \\text{ và } m \\neq 0$."
+            },
+            {
+                text: "Có bao nhiêu giá trị nguyên của tham số $m$ để hàm số $y = x^3 - 3(m-1)x^2 + 3(m^2-2m-15)x + 2026$ nghịch biến trên khoảng $(1; 5)$?",
+                options: [
+                    { text: "$4$", correct: false },
+                    { text: "$5$", correct: true },
+                    { text: "$6$", correct: false },
+                    { text: "$3$", correct: false }
+                ],
+                solution: "Ta có $y' = 3x^2 - 6(m-1)x + 3(m^2-2m-15)$. $y' = 0 \\Leftrightarrow x^2 - 2(m-1)x + (m^2-2m-15) = 0$.<br>$\\Delta' = 16 > 0, \\forall m$. PT có 2 nghiệm: $x_1 = m-5, x_2 = m+3$. Hàm số nghịch biến trên $[m-5; m+3]$.<br>Để hàm nghịch biến trên $(1; 5)$ thì $(1; 5) \\subset [m-5; m+3] \\Leftrightarrow m-5 \\le 1$ và $m+3 \\ge 5 \\Leftrightarrow 2 \\le m \\le 6$.<br>Do $m \\in \\mathbb{Z}$ nên $m \\in \\{2; 3; 4; 5; 6\\}$. Có 5 giá trị."
+            },
+            {
+                text: "Phương trình đường thẳng đi qua hai điểm cực trị của đồ thị hàm số $y = 2x^3 + 3x^2 - 12x + 1$ là",
+                options: [
+                    { text: "$y = 9x - 3$", correct: false },
+                    { text: "$y = -9x + 3$", correct: true },
+                    { text: "$y = -9x - 3$", correct: false },
+                    { text: "$y = 9x + 3$", correct: false }
+                ],
+                solution: "Cách 1: Ta có $y' = 6x^2 + 6x - 12$. Thực hiện phép chia đa thức $y$ cho $y'$: $y = y' \\cdot \\left( \\dfrac{1}{3}x + \\dfrac{1}{6} \\right) + (-9x + 3)$. Phương trình đường thẳng qua hai cực trị là phần dư $y = -9x + 3$.<br>Cách 2: Giải $y'=0 \\Rightarrow A(1;-6), B(-2;21)$. Lập PT đường thẳng $AB$ thu được $y = -9x + 3$."
+            },
+            {
+                text: "Số các giá trị của tham số thực $m$ sao cho đồ thị hàm số $y = x^3 - 3mx^2 + 4m^3$ có hai điểm cực trị thuộc đường thẳng vuông góc với đường thẳng $d: x - 8y + 2026 = 0$ là",
+                options: [
+                    { text: "$1$", correct: false },
+                    { text: "$2$", correct: true },
+                    { text: "$3$", correct: false },
+                    { text: "$0$", correct: false }
+                ],
+                solution: "Ta có $y' = 3x^2 - 6mx = 0 \\Leftrightarrow x = 0$ hoặc $x = 2m$. Hàm số có hai cực trị $\\Leftrightarrow m \\neq 0$.<br>Tọa độ 2 cực trị là $A(0; 4m^3)$ và $B(2m; 0)$. Hệ số góc đt $AB$ là $k_{AB} = \\dfrac{0 - 4m^3}{2m} = -2m^2$.<br>Đường thẳng $d$ có hệ số góc $k_d = \\dfrac{1}{8}$. Để $AB \\perp d$ thì $k_{AB} \\cdot k_d = -1 \\Leftrightarrow -2m^2 \\cdot \\dfrac{1}{8} = -1 \\Leftrightarrow m^2 = 4 \\Leftrightarrow m = \\pm 2$ (TM $m \\neq 0$). Có 2 giá trị."
+            }
+        ],
+        part2: [],
+        part3: []
+    };
+
+    const STORE_KEY = "exam_autosave_ltvact1";
+    let state = {
+        name: "", class: "", code: "",
+        ans1: {}, ans2: {}, ans3: {},
+        isSubmitted: false,
+        startTime: Date.now(),
+        endTime: null
+    };
+    
+    let map1 = [], map2 = [];
+
+    // =====================================
+    // CORE FUNCTIONS
+    // =====================================
+    function generateCode() { return Math.floor(100 + Math.random() * 900).toString(); }
+
+    function shuffle(arr) {
+        let array = [...arr];
+        for (let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function parseFloatStrict(str) {
+        if(str === null || str === undefined || str.toString().trim() === "") return null;
+        let s = str.toString().replace(/,/g, '.').trim();
+        let num = parseFloat(s);
+        return isNaN(num) ? null : num;
+    }
+
+    function init() {
+        if(DATA.part1.length > 0) {
+            map1 = shuffle(DATA.part1.map((q, i) => {
+                let opts = shuffle(q.options.map((o, j) => ({...o, origIdx: j})));
+                return { origIdx: i, opts: opts };
+            }));
+        }
+        
+        if(DATA.part2.length > 0) {
+            document.querySelectorAll('.part-title')[1].style.display = 'block';
+            map2 = shuffle(DATA.part2.map((q, i) => ({ origIdx: i }))); 
+        }
+
+        if(DATA.part3.length > 0) {
+            document.querySelectorAll('.part-title')[2].style.display = 'block';
+        }
+
+        loadState();
+        
+        if(!state.code) state.code = generateCode();
+        document.getElementById("lbl_exam_code").innerText = state.code;
+        
+        if(DATA.part1.length > 0) renderPart1(); 
+        if(DATA.part2.length > 0) renderPart2(); 
+        if(DATA.part3.length > 0) renderPart3();
+        
+        MathJax.typesetPromise();
+        updateToolbar();
+
+        if (state.isSubmitted) evaluateExam();
+        
+        setInterval(saveState, 10000);
+    }
+
+    // =====================================
+    // RENDER UI
+    // =====================================
+    function renderPart1() {
+        const wrap = document.getElementById("wrap_p1");
+        let html = '';
+        map1.forEach((qMap, idx) => {
+            let q = DATA.part1[qMap.origIdx];
+            html += `<div class="question-card shadow-sm" id="card_p1_${idx}">
+                <div class="fw-bold mb-3 text-dark" style="font-size: 1.1rem;">
+                    Câu ${idx + 1}: <span class="fw-normal">${q.text}</span>
+                </div>
+                <div class="row g-3 ms-2">`;
+            const labels = ['A', 'B', 'C', 'D'];
+            qMap.opts.forEach((opt, oIdx) => {
+                let checked = state.ans1[idx] === oIdx ? "checked" : "";
+                let disabled = state.isSubmitted ? "disabled" : "";
+                html += `
+                <div class="col-md-6 col-12">
+                    <div class="form-check">
+                        <input class="form-check-input border-secondary" type="radio" name="p1_q${idx}" id="p1_q${idx}_o${oIdx}" value="${oIdx}" ${checked} ${disabled} onchange="ans1(${idx}, ${oIdx})">
+                        <label class="form-check-label" id="lbl_p1_q${idx}_o${oIdx}" for="p1_q${idx}_o${oIdx}">${labels[oIdx]}. ${opt.text}</label>
+                    </div>
+                </div>`;
+            });
+            html += `</div>
+                <div class="solution-box shadow-sm" id="sol_p1_${idx}">
+                    <strong class="text-primary fs-5 mb-2 d-block">Lời giải chi tiết:</strong>
+                    <div>${q.solution}</div>
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    function renderPart2() {
+        // Functionality ready, data is empty in this LaTeX source
+    }
+
+    function renderPart3() {
+        // Functionality ready, data is empty in this LaTeX source
+    }
+
+    // =====================================
+    // STATE MANAGEMENT
+    // =====================================
+    function ans1(qIdx, val) { state.ans1[qIdx] = val; updateToolbar(); triggerSave(); }
+    function ans2(qIdx, sIdx, val) { state.ans2[qIdx][sIdx] = val; updateToolbar(); triggerSave(); }
+    function ans3(qIdx, val) { state.ans3[qIdx] = val; updateToolbar(); triggerSave(); }
+
+    function updateToolbar() {
+        let count = 0;
+        let total = DATA.part1.length + (DATA.part2.length * 4) + DATA.part3.length;
+        
+        count += Object.keys(state.ans1).length;
+        Object.keys(state.ans2).forEach(k => { count += Object.keys(state.ans2[k]).length; });
+        Object.keys(state.ans3).forEach(k => { if(state.ans3[k].toString().trim() !== "") count++; });
+        
+        document.getElementById("lbl_answered").innerText = count;
+        document.getElementById("lbl_total").innerText = total;
+        return {count, total};
+    }
+
+    function triggerSave() {
+        if(state.isSubmitted) return;
+        state.name = document.getElementById("input_name").value;
+        state.class = document.getElementById("input_class").value;
+        saveState();
+    }
+
+    function saveState() {
+        if(state.isSubmitted) return;
+        localStorage.setItem(STORE_KEY, JSON.stringify({state, map1, map2}));
+    }
+
+    function loadState() {
+        let saved = localStorage.getItem(STORE_KEY);
+        if(saved) {
+            let data = JSON.parse(saved);
+            state = data.state;
+            if(data.map1) map1 = data.map1;
+            if(data.map2) map2 = data.map2;
+            
+            document.getElementById("input_name").value = state.name || "";
+            document.getElementById("input_class").value = state.class || "";
+            
+            if(!state.isSubmitted) {
+                let toast = document.getElementById('toast-msg');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+        }
+    }
+
+    // =====================================
+    // EVALUATION & SUBMISSION
+    // =====================================
+    function submitExam() {
+        let {count, total} = updateToolbar();
+        if(count / total < 0.5) {
+            alert("Vui lòng hoàn thành ít nhất 50% tổng số câu hỏi (bao gồm các ý) trước khi nộp bài!");
+            return;
+        }
+        
+        state.name = document.getElementById("input_name").value.trim();
+        state.class = document.getElementById("input_class").value.trim();
+        if(!state.name) { alert("Vui lòng nhập Họ và Tên trước khi nộp bài!"); return; }
+
+        if(!confirm("Bạn có chắc chắn muốn nộp bài?")) return;
+
+        state.isSubmitted = true;
+        state.endTime = Date.now();
+        localStorage.setItem(STORE_KEY, JSON.stringify({state, map1, map2}));
+        
+        document.querySelectorAll('input').forEach(i => i.disabled = true);
+        document.getElementById("btn_submit").classList.add("d-none");
+        document.getElementById("btn_print").classList.remove("d-none");
+        
+        evaluateExam();
+    }
+
+    function evaluateExam() {
+        let score1 = 0, score2 = 0, score3 = 0;
+
+        // Part 1
+        map1.forEach((qMap, idx) => {
+            let isCorrect = false;
+            let chosenOpt = state.ans1[idx];
+            qMap.opts.forEach((opt, oIdx) => {
+                let lbl = document.getElementById(`lbl_p1_q${idx}_o${oIdx}`);
+                if(opt.correct) {
+                    lbl.classList.add("opt-correct");
+                    if(chosenOpt === oIdx) isCorrect = true;
+                } else if (chosenOpt === oIdx) {
+                    lbl.classList.add("opt-wrong");
+                }
+            });
+            let card = document.getElementById(`card_p1_${idx}`);
+            if(isCorrect) { score1 += 0.25; card.style.borderLeft = "6px solid var(--success-color)"; }
+            else { card.style.borderLeft = "6px solid var(--danger-color)"; }
+            document.getElementById(`sol_p1_${idx}`).style.display = "block";
+        });
+
+        // Tally & Render
+        let totalScore = score1 + score2 + score3;
+        
+        document.getElementById("res_p1").innerText = score1.toFixed(2);
+        document.getElementById("res_p2").innerText = score2.toFixed(2);
+        document.getElementById("res_p3").innerText = score3.toFixed(2);
+        document.getElementById("res_total").innerText = totalScore.toFixed(2);
+        
+        let timeMin = Math.round(((state.endTime || Date.now()) - state.startTime) / 60000);
+        if(timeMin < 0) timeMin = 0;
+        document.getElementById("res_time").innerText = timeMin;
+        
+        let {count, total} = updateToolbar();
+        let pct = total > 0 ? Math.round((count/total)*100) : 0;
+        document.getElementById("res_percent").innerText = pct;
+        
+        document.getElementById("result-board").style.display = "block";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        sendToGAS(state.name, state.class, score1, score2, score3, totalScore, timeMin, pct);
+    }
+
+    function sendToGAS(name, className, s1, s2, s3, total, time, pct) {
+        // DÁN URL GOOGLE APPS SCRIPT CỦA BẠN VÀO ĐÂY:
+        const URL = 'https://script.google.com/macros/s/AKfycbwNS0cReAR2RZ-SMibUBAXOitQkDuqW1QEDrpRSpBst9JfGzTUqZA0G8Ry7RusoAP4C/exec'; 
+        
+        const payload = {
+            sheetName: "ltvact1", 
+            student_name: name,
+            class_name: className,
+            part1_score: s1,
+            part2_score: s2,
+            part3_score: s3,
+            total_score: total,
+            submit_time: new Date().toISOString(),
+            duration_minutes: time,
+            percent: pct
+        };
+
+        const btnSubmit = document.getElementById("btn_submit");
+        if(btnSubmit) btnSubmit.innerText = "ĐANG GỬI DỮ LIỆU...";
+
+        fetch(URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Mạng bị lỗi hoặc link Web App sai.");
+            return res.json();
+        })
+        .then(data => {
+            if (data.status === "success") {
+                alert(`${data.message}\nHọc sinh: ${data.saved_name}\nTổng điểm: ${data.final_score}`);
+            } else {
+                alert("Lưu thất bại: " + data.message);
+            }
+        })
+        .catch(err => {
+            console.error("Lỗi khi gửi dữ liệu: ", err);
+        })
+        .finally(() => {
+            if(btnSubmit) btnSubmit.innerText = "NỘP BÀI"; 
+        });
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>
