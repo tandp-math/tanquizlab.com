@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐỀ ÔN TẬP TOÁN</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- MathJax -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                macros: {
+                    hoac: ["\\left[\\begin{aligned}#1\\end{aligned}\\right.", 1],
+                    heva: ["\\left\\{\\begin{aligned}#1\\end{aligned}\\right.", 1],
+                    mathscr: ["\\mathcal{#1}", 1]
+                }
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --bg-color: #f8fbff;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+
+        /* Header Styles */
+        .header-box {
+            background-color: var(--bg-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.05);
+        }
+
+        /* Section Titles */
+        .part-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 40px;
+            margin-bottom: 25px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        /* Question Cards */
+        .question-card {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            background-color: #fcfcfc;
+            transition: all 0.3s ease;
+        }
+
+        /* Solution Box */
+        .solution-box {
+            background-color: #f1f5f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            border-radius: 0 8px 8px 0;
+            overflow-x: auto;
+        }
+
+        /* Sticky Toolbar */
+        .sticky-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        /* Result Board */
+        #result-board {
+            display: none;
+            background-color: var(--bg-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .opt-correct { color: var(--success-color); font-weight: 700; }
+        .opt-wrong { color: var(--danger-color); font-weight: 700; text-decoration: line-through; }
+        
+        /* Toast Notification */
+        .toast-notify {
+            position: fixed; 
+            bottom: 30px; 
+            right: 30px; 
+            background: var(--success-color); 
+            color: white;
+            padding: 15px 25px; 
+            border-radius: 8px; 
+            opacity: 0; 
+            visibility: hidden;
+            transition: all 0.5s ease; 
+            z-index: 9999;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            font-weight: 600;
+            transform: translateY(20px);
+        }
+        .toast-notify.show { 
+            opacity: 1; 
+            visibility: visible; 
+            transform: translateY(0);
+        }
+
+        /* Input Customizations */
+        .form-check-input {
+            cursor: pointer;
+            width: 1.2em;
+            height: 1.2em;
+        }
+        .form-check-input:checked { 
+            background-color: var(--primary-color); 
+            border-color: var(--primary-color); 
+        }
+        
+        .svg-container {
+            text-align: center;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        /* Print Media Queries */
+        @media print {
+            body { background-color: white; color: black; }
+            .sticky-toolbar, .no-print, .toast-notify { display: none !important; }
+            .solution-box { 
+                display: block !important; 
+                break-inside: avoid; 
+                border-left-color: #6c757d; 
+                background-color: transparent; 
+                border: 1px solid #ccc;
+            }
+            .question-card { 
+                break-inside: avoid; 
+                border: none; 
+                border-bottom: 2px solid #000; 
+                background-color: transparent; 
+                padding: 15px 0; 
+            }
+            #result-board { 
+                display: block !important; 
+                border: 2px solid #000; 
+                box-shadow: none; 
+            }
+            .header-box { border: 2px solid #000; background-color: transparent;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-4">
+    <!-- Header Section -->
+    <div class="header-box text-center">
+        <h2 class="fw-bold text-primary mb-4">ĐỀ ÔN TẬP</h2>
+        <div class="row justify-content-center g-3">
+            <div class="col-md-4">
+                <input type="text" id="input_name" class="form-control border-primary shadow-sm" placeholder="Nhập Họ và Tên" oninput="triggerSave()">
+            </div>
+            <div class="col-md-3">
+                <input type="text" id="input_class" class="form-control border-primary shadow-sm" placeholder="Nhập Lớp" oninput="triggerSave()">
+            </div>
+            <div class="col-md-3">
+                <div class="form-control bg-white text-start border-primary shadow-sm fw-bold">
+                    Mã đề: <span id="lbl_exam_code" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Toolbar -->
+    <div class="sticky-toolbar text-center no-print">
+        <span class="fw-bold text-primary fs-5 me-4">
+            Đã làm: <span id="lbl_answered" class="text-danger">0</span> / <span id="lbl_total" class="text-danger">0</span> câu
+        </span>
+        <button id="btn_submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm" onclick="submitExam()">NỘP BÀI</button>
+        <button id="btn_retake" class="btn btn-warning px-4 py-2 fw-bold shadow-sm d-none ms-2" onclick="retakeExam()">LÀM LẠI</button>
+        <button id="btn_print" class="btn btn-success px-4 py-2 fw-bold shadow-sm d-none ms-2" onclick="window.print()">IN KẾT QUẢ PDF</button>
+    </div>
+
+    <!-- Results Board -->
+    <div id="result-board" class="text-center">
+        <h3 class="text-success fw-bold mb-4">KẾT QUẢ BÀI LÀM</h3>
+        <div class="row fw-bold text-primary fs-5 mb-4">
+            <div class="col-md-3">Phần I: <span id="res_p1" class="text-danger"></span> / <span id="max_p1"></span></div>
+            <div class="col-md-3">Phần II: <span id="res_p2" class="text-danger"></span> / <span id="max_p2"></span></div>
+            <div class="col-md-3">Phần III: <span id="res_p3" class="text-danger"></span> / <span id="max_p3"></span></div>
+            <div class="col-md-3 text-danger fs-4 border-start border-danger">TỔNG: <span id="res_total"></span> / <span id="max_total"></span></div>
+        </div>
+        <hr class="border-secondary">
+        <div class="row fs-6 text-muted fw-semibold">
+            <div class="col-md-6">Tỷ lệ hoàn thành: <span id="res_percent" class="text-dark"></span>%</div>
+            <div class="col-md-6">Thời gian làm bài: <span id="res_time" class="text-dark"></span> phút</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="exam-content">
+        <!-- Part 1 -->
+        <h4 class="part-title">PHẦN I. CÂU HỎI TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN</h4>
+        <p class="fst-italic text-muted">Mỗi câu trả lời đúng được 0.25 điểm.</p>
+        <div id="wrap_p1"></div>
+
+        <!-- Part 2 -->
+        <h4 class="part-title">PHẦN II. CÂU HỎI TRẮC NGHIỆM ĐÚNG SAI</h4>
+        <p class="fst-italic text-muted">Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai. Điểm: Đúng 1 ý: 0.1đ | Đúng 2 ý: 0.25đ | Đúng 3 ý: 0.5đ | Đúng 4 ý: 1.0đ.</p>
+        <div id="wrap_p2"></div>
+
+        <!-- Part 3 -->
+        <h4 class="part-title">PHẦN III. CÂU TRẮC NGHIỆM TRẢ LỜI NGẮN</h4>
+        <p class="fst-italic text-muted">Mỗi câu trả lời đúng được 0.5 điểm.</p>
+        <div id="wrap_p3"></div>
+    </div>
+</div>
+
+<!-- Notification Toast -->
+<div id="toast-msg" class="toast-notify">
+    Đã khôi phục bài làm trước đó.
+</div>
+
+<script>
+    // =====================================
+    // DATABASE (Extracted from LaTeX)
+    // =====================================
+    const DATA = {
+        part1: [
+            {
+                text: "Đồ thị hàm số $y=\\dfrac{9 x + 6}{7 - 6 x}$ có tâm đối xứng là $I(h;k)$. Giá trị của biểu thức $P=-3h-3k$ bằng",
+                options: [
+                    { text: "$P=1$", correct: true },
+                    { text: "$P=2$", correct: false },
+                    { text: "$P=0$", correct: false },
+                    { text: "$P=3$", correct: false }
+                ],
+                solution: "Tiệm cận đứng của đồ thị hàm số là $x=\\dfrac{7}{6}$. Tiệm cận ngang là $y=- \\dfrac{3}{2}$. <br> Suy ra tâm đối xứng $I\\left(\\dfrac{7}{6};- \\dfrac{3}{2}\\right)$.<br> Vậy $P=-3\\cdot\\left(\\dfrac{7}{6}\\right) + \\left(-3\\right)\\cdot\\left(- \\dfrac{3}{2}\\right)=1$."
+            },
+            {
+                text: "Đồ thị hàm số $y=\\dfrac{x^{2} - 8 x - 2}{x - 2}$ có tâm đối xứng là $I(h;k)$. Độ dài $OI$ bằng",
+                options: [
+                    { text: "$P=2 \\sqrt{10}$", correct: false },
+                    { text: "$P=\\sqrt{10}$", correct: false },
+                    { text: "$P=0$", correct: false },
+                    { text: "$P=2 \\sqrt{5}$", correct: true }
+                ],
+                solution: "Thực hiện phép chia đa thức, ta được $y = x - 6 - \\dfrac{14}{x-2}$.<br> Do đó, đồ thị hàm số có tiệm cận xiên là $y=x - 6$. Tiệm cận đứng là $x=2$.<br> Tâm đối xứng $I$ là giao điểm của $y=x - 6$ và $x=2 \\Rightarrow I(2;-4)$.<br> Vậy $OI=\\sqrt{2^2 + (-4)^2}=2 \\sqrt{5}$."
+            },
+            {
+                text: "Tọa độ tâm đối xứng của đồ thị hàm số $y=\\dfrac{2 x^{3}}{3} + \\dfrac{15 x^{2}}{2} - 27 x + 18$ là",
+                options: [
+                    { text: "$\\left(\\dfrac{3}{2};- \\dfrac{27}{8}\\right)$", correct: false },
+                    { text: "$\\left(- \\dfrac{15}{4};\\dfrac{3033}{16}\\right)$", correct: true },
+                    { text: "$\\left(-9;\\dfrac{765}{2}\\right)$", correct: false },
+                    { text: "$\\left(-9;\\dfrac{3}{2}\\right)$", correct: false }
+                ],
+                solution: "Tập xác định: $\\mathscr{D}=\\mathbb{R}$.<br> Ta có $y'=2 x^{2} + 15 x - 27$ và $y''=4 x + 15$.<br> $y''=0 \\Leftrightarrow 4 x + 15=0 \\Leftrightarrow x=- \\dfrac{15}{4}$.<br> Khi đó $y\\left(- \\dfrac{15}{4}\\right)=\\dfrac{3033}{16}$. Vậy tâm đối xứng là $\\left(- \\dfrac{15}{4};\\dfrac{3033}{16}\\right)$."
+            },
+            {
+                text: "Toạ độ giao điểm của đồ thị hàm số $y=\\dfrac{2 x + 3}{8 x - 6}$ với trục hoành là",
+                options: [
+                    { text: "$(- \\dfrac{3}{2};0)$", correct: true },
+                    { text: "$(\\dfrac{1}{2};0)$", correct: false },
+                    { text: "$(\\dfrac{9}{2};0)$", correct: false },
+                    { text: "$(\\dfrac{3}{2};0)$", correct: false }
+                ],
+                solution: "Giao điểm với trục hoành $\\Rightarrow y=0 \\Rightarrow \\dfrac{2 x + 3}{8 x - 6}=0 \\Rightarrow 2x+3=0 \\Leftrightarrow x=- \\dfrac{3}{2}$.<br> Vậy tọa độ giao điểm là $(- \\dfrac{3}{2};0)$."
+            }
+        ],
+        part2: [
+            {
+                text: `Cho hàm số $y = \\dfrac{ax^2+bx+c}{mx+n}$ ($a \\neq 0, m \\neq 0$) với $a, b, c, m, n$ là các số thực và đồ thị có dạng như hình vẽ sau.
+                <div class="svg-container">
+                    <svg viewBox="-3 -8 10 10" width="100%" style="max-width: 420px; font-family: sans-serif;">
+                        <defs>
+                            <marker id="arrow1" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                                <polygon points="0 0, 6 3, 0 6" fill="black"/>
+                            </marker>
+                        </defs>
+                        <!-- Axes (SVG y grows downward, so tikz-y is negated throughout: Y = -y) -->
+                        <line x1="-2.5" y1="0" x2="6.5" y2="0" stroke="black" stroke-width="0.05" marker-end="url(#arrow1)"/>
+                        <line x1="0" y1="1.5" x2="0" y2="-7.5" stroke="black" stroke-width="0.05" marker-end="url(#arrow1)"/>
+                        <text x="-0.3" y="0.45" font-size="0.4">O</text>
+                        <text x="6.55" y="0.45" font-size="0.4">x</text>
+                        <text x="-0.35" y="-7.6" font-size="0.4">y</text>
+
+                        <!-- x-axis ticks -->
+                        <g font-size="0.38" text-anchor="middle">
+                            <line x1="-2" y1="0.1" x2="-2" y2="-0.1" stroke="black" stroke-width="0.04"/><text x="-2" y="0.45">-2</text>
+                            <line x1="-1" y1="0.1" x2="-1" y2="-0.1" stroke="black" stroke-width="0.04"/><text x="-1" y="0.45">-1</text>
+                            <line x1="1" y1="0.1" x2="1" y2="-0.1" stroke="black" stroke-width="0.04"/><text x="1" y="0.45">1</text>
+                            <line x1="2" y1="0.1" x2="2" y2="-0.1" stroke="black" stroke-width="0.04"/><text x="2.3" y="0.45">2</text>
+                            <line x1="3" y1="0.1" x2="3" y2="-0.1" stroke="black" stroke-width="0.04"/><text x="3" y="0.45">3</text>
+                            <line x1="4" y1="0.1" x2="4" y2="-0.1" stroke="black" stroke-width="0.04"/><text x="4" y="0.45">4</text>
+                            <line x1="5" y1="0.1" x2="5" y2="-0.1" stroke="black" stroke-width="0.04"/><text x="5" y="0.45">5</text>
+                        </g>
+                        <!-- y-axis ticks -->
+                        <g font-size="0.38" text-anchor="end">
+                            <line x1="0.1" y1="1" x2="-0.1" y2="1" stroke="black" stroke-width="0.04"/><text x="-0.2" y="1.13">-1</text>
+                            <line x1="0.1" y1="-1" x2="-0.1" y2="-1" stroke="black" stroke-width="0.04"/><text x="-0.2" y="-0.87">1</text>
+                            <line x1="0.1" y1="-2" x2="-0.1" y2="-2" stroke="black" stroke-width="0.04"/><text x="-0.2" y="-1.87">2</text>
+                            <line x1="0.1" y1="-3" x2="-0.1" y2="-3" stroke="black" stroke-width="0.04"/><text x="-0.2" y="-2.87">3</text>
+                            <line x1="0.1" y1="-4" x2="-0.1" y2="-4" stroke="black" stroke-width="0.04"/>
+                            <line x1="0.1" y1="-5" x2="-0.1" y2="-5" stroke="black" stroke-width="0.04"/><text x="-0.2" y="-4.87">5</text>
+                            <line x1="0.1" y1="-6" x2="-0.1" y2="-6" stroke="black" stroke-width="0.04"/><text x="-0.2" y="-5.87">6</text>
+                        </g>
+
+                        <!-- Asymptotes -->
+                        <line x1="2" y1="1.5" x2="2" y2="-7.5" stroke="red" stroke-width="0.035" stroke-dasharray="0,0"/>
+                        <text x="1.65" y="-5.5" font-size="0.32" fill="red" transform="rotate(-90 1.65 -5.5)">x = 2</text>
+
+                        <line x1="-2.5" y1="1.5" x2="5.8" y2="-6.8" stroke="blue" stroke-width="0.035"/>
+                        <text x="4.55" y="-5.0" font-size="0.32" fill="blue">y = x + 1</text>
+
+                        <!-- Dashed guides -->
+                        <line x1="0" y1="-3" x2="2" y2="-3" stroke="gray" stroke-width="0.025" stroke-dasharray="0.12,0.12"/>
+                        <line x1="1" y1="0" x2="1" y2="-1" stroke="gray" stroke-width="0.025" stroke-dasharray="0.12,0.12"/>
+                        <line x1="3" y1="0" x2="3" y2="-5" stroke="gray" stroke-width="0.025" stroke-dasharray="0.12,0.12"/>
+                        <line x1="3" y1="-5" x2="0" y2="-5" stroke="gray" stroke-width="0.025" stroke-dasharray="0.12,0.12"/>
+
+                        <circle cx="1" cy="-1" r="0.08" fill="black"/>
+                        <circle cx="3" cy="-5" r="0.08" fill="black"/>
+                        <circle cx="2" cy="-3" r="0.08" fill="black"/>
+                        <text x="2.2" y="-2.9" font-size="0.4">I</text>
+
+                        <!-- Curve branches: y = x + 1 + 1/(x-2) -->
+                        <path d="M -2.500 1.722 L -2.355 1.585 L -2.210 1.448 L -2.065 1.311 L -1.920 1.175 L -1.775 1.040 L -1.630 0.905 L -1.485 0.772 L -1.340 0.639 L -1.195 0.508 L -1.050 0.378 L -0.905 0.249 L -0.760 0.122 L -0.615 -0.003 L -0.470 -0.125 L -0.325 -0.245 L -0.180 -0.361 L -0.035 -0.474 L 0.110 -0.581 L 0.255 -0.682 L 0.400 -0.775 L 0.545 -0.858 L 0.690 -0.927 L 0.835 -0.977 L 0.980 -1.000 L 1.125 -0.982 L 1.270 -0.900 L 1.415 -0.706 L 1.560 -0.287 L 1.765 1.490" stroke="black" stroke-width="0.055" fill="none"/>
+                        <path d="M 2.240 -7.407 L 2.438 -5.721 L 2.636 -5.208 L 2.834 -5.033 L 3.032 -5.001 L 3.230 -5.043 L 3.428 -5.128 L 3.626 -5.241 L 3.824 -5.372 L 4.022 -5.517 L 4.220 -5.670 L 4.418 -5.832 L 4.616 -5.998 L 4.814 -6.169 L 5.012 -6.344 L 5.210 -6.522 L 5.408 -6.701 L 5.606 -6.883 L 5.804 -7.067 L 6.002 -7.252 L 6.200 -7.438" stroke="black" stroke-width="0.055" fill="none"/>
+                    </svg>
+                </div>`,
+                statements: [
+                    { text: "Hàm số $y = f(x)$ đồng biến trên các khoảng $(-\\infty;1)$ và $(3;+\\infty)$, nghịch biến trên các khoảng $(1;2)$ và $(2;3)$", correct: true },
+                    { text: "Đồ thị hàm số $y = f(x)$ có tiệm cận đứng là $x = 3$ và tiệm cận xiên là $y = x + 2$", correct: false },
+                    { text: "Đồ thị hàm số $y = f(x)$ có điểm cực đại $(2;3)$ và điểm cực tiểu $(3;5)$", correct: false },
+                    { text: "Trên khoảng $(2;+\\infty)$, hàm số $y = f(x)$ có giá trị nhỏ nhất bằng $2$", correct: false }
+                ],
+                solution: `a) Dựa vào đồ thị, hàm số đi lên trên $(-\\infty;1)$ và $(3;+\\infty)$ (đồng biến); đi xuống trên $(1;2)$ và $(2;3)$ (nghịch biến). (Đúng)<br> b) Tiệm cận đứng là $x = 2$, tiệm cận xiên đi qua $(0;1)$ và $(1;2)$ là $y = x + 1$. (Sai)<br> c) Điểm cực đại là $(1;1)$, điểm cực tiểu là $(3;5)$. Điểm $(2;3)$ là tâm đối xứng. (Sai)<br> d) Trên khoảng $(2;+\\infty)$, giá trị nhỏ nhất của hàm số là $5$ đạt tại điểm cực tiểu $(3;5)$. (Sai)`
+            },
+            {
+                text: "Cho hàm số $y = \\dfrac{x^{2} + 1}{x - 2}$ có đồ thị là $(C)$.",
+                statements: [
+                    { text: "Đồ thị hàm số $(C)$ có tiệm cận ngang $y = 1$", correct: false },
+                    { text: "Đường tiệm cận xiên của đồ thị $(C)$ vuông góc với đường thẳng $x + y - 2026 = 0$", correct: true },
+                    { text: "Đường tiệm cận xiên của đồ thị $(C)$ tạo với hai trục tọa độ một tam giác có diện tích bằng $3$", correct: false },
+                    { text: "Giao điểm hai tiệm cận của đồ thị $(C)$ nằm trên parabol $y = 2 x^{2} - 4$", correct: true }
+                ],
+                solution: `a) Bậc tử lớn hơn bậc mẫu nên không có tiệm cận ngang. (Sai)<br> b) Chia đa thức: $y = x + 2 + \\dfrac{5}{x - 2}$. Tiệm cận xiên $\\Delta: y = x + 2$ có hệ số góc $k_1 = 1$. Đường thẳng kia $y = -x + 2026$ có $k_2 = -1$. Vì $k_1 \\cdot k_2 = -1$ nên vuông góc. (Đúng)<br> c) TCX $\\Delta: y = x + 2$ cắt $Ox$ tại $(-2;0)$ và $Oy$ tại $(0;2)$. Diện tích $S = \\dfrac{1}{2} \\cdot 2 \\cdot 2 = 2$. (Sai)<br> d) Tiệm cận đứng $x = 2$. Giao điểm 2 tiệm cận là $I(2;4)$. Thay vào parabol: $4 = 2(2)^2 - 4 \\Leftrightarrow 4=4$ (luôn đúng). (Đúng)`
+            },
+            {
+                text: "Cho hàm số $y=x^{3} - 48 x + 3$ có đồ thị $(C)$.",
+                statements: [
+                    { text: "Hàm số đã cho có tập xác định $D=\\mathbb{R}$", correct: true },
+                    { text: "Hàm số đã cho nghịch biến trên khoảng $(-\\infty; -4)$", correct: false },
+                    { text: "Đồ thị $(C)$ có điểm cực đại là $(4; -125)$ và điểm cực tiểu là $(-4; 131)$", correct: false },
+                    { text: "Điểm $(0; 3)$ là tâm đối xứng đồ thị $(C)$", correct: true }
+                ],
+                solution: `a) Hàm đa thức bậc ba có tập xác định $D=\\mathbb{R}$. (Đúng)<br> b) $y'=3 x^{2} - 48 = 0 \\Leftrightarrow x = \\pm 4$. Hàm số nghịch biến trên $(-4; 4)$ và đồng biến trên $(-\\infty; -4), (4; +\\infty)$. (Sai)<br> c) Điểm cực đại là $x=-4 \\Rightarrow y=131$. Cực tiểu là $x=4 \\Rightarrow y=-125$. (Sai)<br> d) $y''=6x = 0 \\Leftrightarrow x=0 \\Rightarrow y=3$. Tâm đối xứng là $(0;3)$. (Đúng)`
+            },
+            {
+                text: `Cho hàm số $y=f(x)=\\dfrac{ax+b}{cx+1}$ với $a,b,c \\in \\mathbb{R}$ có đồ thị như hình vẽ dưới:
+                <div class="svg-container">
+                    <svg viewBox="-4.4 -4.4 8.8 8.8" width="100%" style="max-width: 320px; font-family: sans-serif;">
+                        <defs>
+                            <marker id="arrow2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                                <polygon points="0 0, 6 3, 0 6" fill="black"/>
+                            </marker>
+                        </defs>
+                        <!-- Axes (Y = -y) -->
+                        <line x1="-4" y1="0" x2="4" y2="0" stroke="black" stroke-width="0.05" marker-end="url(#arrow2)"/>
+                        <line x1="0" y1="4" x2="0" y2="-4" stroke="black" stroke-width="0.05" marker-end="url(#arrow2)"/>
+                        <text x="-0.35" y="0.5" font-size="0.4">O</text>
+                        <text x="3.75" y="0.5" font-size="0.4">x</text>
+                        <text x="-0.4" y="-3.8" font-size="0.4">y</text>
+
+                        <!-- Asymptotes -->
+                        <line x1="-1" y1="4" x2="-1" y2="-4" stroke="gray" stroke-width="0.03" stroke-dasharray="0.12,0.12"/>
+                        <line x1="-4" y1="2" x2="4" y2="2" stroke="gray" stroke-width="0.03" stroke-dasharray="0.12,0.12"/>
+
+                        <!-- Points -->
+                        <circle cx="-1" cy="0" r="0.08" fill="black"/> <text x="-1.3" y="0.5" font-size="0.4">-1</text>
+                        <circle cx="0" cy="2" r="0.08" fill="black"/> <text x="0.2" y="2.4" font-size="0.4">-2</text>
+                        <circle cx="1" cy="0" r="0.08" fill="black"/> <text x="1.2" y="-0.15" font-size="0.4">1</text>
+                        <circle cx="0" cy="-2" r="0.08" fill="black"/> <text x="-0.35" y="-2.15" font-size="0.4">2</text>
+
+                        <!-- Curve branches: y = (-2x+2)/(x+1) -->
+                        <path d="M -4.000 3.333 L -3.800 3.429 L -3.600 3.538 L -3.400 3.667 L -3.200 3.818 L -3.000 4.000" stroke="blue" stroke-width="0.06" fill="none"/>
+                        <path d="M -0.333 -3.997 L -0.133 -2.614 L 0.067 -1.749 L 0.267 -1.157 L 0.467 -0.727 L 0.667 -0.400 L 0.867 -0.142 L 1.067 0.065 L 1.267 0.236 L 1.467 0.379 L 1.667 0.500 L 1.867 0.605 L 2.067 0.696 L 2.267 0.776 L 2.467 0.846 L 2.667 0.909 L 2.867 0.966 L 3.067 1.016 L 3.267 1.063 L 3.467 1.105 L 3.667 1.143 L 3.867 1.178 L 4.000 1.200" stroke="blue" stroke-width="0.06" fill="none"/>
+                    </svg>
+                </div>`,
+                statements: [
+                    { text: "Đạo hàm: $f'(x) < 0, \\forall x \\in \\mathbb{R} \\setminus \\{-1\\}$", correct: true },
+                    { text: "Hàm số $y=f(x)$ đồng biến trên khoảng $(-\\infty; -1)$ và $(-1; +\\infty)$", correct: false },
+                    { text: "Đồ thị hàm số $y=f(x)$ có đường tiệm cận đứng là $x=-1$ và đường tiệm cận ngang là $y=-2$", correct: true },
+                    { text: "Tổng $a+b+c=-1$", correct: false }
+                ],
+                solution: `a) Dựa vào đồ thị, đồ thị đi xuống từ trái sang phải trên các khoảng xác định, do đó hàm số nghịch biến $\\Rightarrow f'(x) < 0$. (Đúng)<br> b) Hàm số nghịch biến, không phải đồng biến. (Sai)<br> c) Quan sát đồ thị thấy rõ tiệm cận đứng $x=-1$ và tiệm cận ngang $y=-2$. (Đúng)<br> d) TCĐ $x = -1/c = -1 \\Rightarrow c=1$. TCN $y = a/c = -2 \\Rightarrow a=-2$. Cắt $Oy$ tại $(0;2) \\Rightarrow b/1 = 2 \\Rightarrow b=2$. Tổng $a+b+c = -2+2+1=1$. (Sai)`
+            }
+        ],
+        part3: [
+            {
+                text: "Chi phí sản xuất $x$ sản phẩm của một cơ sở sản xuất là $C(x)=300+80 x$ triệu đồng. Khi cơ sở sản xuất càng nhiều sản phẩm thì chi phí sản xuất trung bình của mỗi sản phẩm càng gần giá trị nào?",
+                answer: 80,
+                solution: "Chi phí sản xuất trung bình: $f(x) = \\dfrac{C(x)}{x} = \\dfrac{300+80 x}{x} = 80 + \\dfrac{300}{x}$.<br> Khi $x \\to +\\infty$, $\\lim_{x \\to +\\infty} \\left(80 + \\dfrac{300}{x}\\right) = 80$. Vậy chi phí trung bình càng gần 80 triệu đồng."
+            },
+            {
+                text: "Một bể chứa ban đầu có $400$ lít nước. Sau đó, cứ mỗi phút người ta bơm thêm $60$ lít nước và $20$ gam chất khử trùng. Nồng độ chất khử trùng không vượt ngưỡng $\\dfrac{1}{a}$ gam/lít. Giá trị của $a$ bằng bao nhiêu?",
+                answer: 3,
+                solution: "Khối lượng chất: $M(t) = 20t$. Thể tích: $V(t) = 400 + 60t$.<br> Nồng độ $f(t) = \\dfrac{20t}{400 + 60t}$.<br> Giới hạn khi $t \\to +\\infty$ là $\\dfrac{20}{60} = \\dfrac{1}{3}$.<br> Theo đề, ngưỡng là $\\dfrac{1}{a}$, vậy $\\dfrac{1}{a} = \\dfrac{1}{3} \\Rightarrow a=3$."
+            },
+            {
+                text: "Biết đồ thị hàm số $f(x) = \\dfrac{- 3 x^{2} - 5 x + 4}{x - 5}$ có tiệm cận xiên là đường thẳng $d: y = ax + b$. Hỏi đường thẳng $d$ có hệ số góc bằng bao nhiêu?",
+                answer: -3,
+                solution: "Thực hiện phép chia đa thức: $f(x) = - 3 x - 20 - \\dfrac{96}{x - 5}$.<br> Tiệm cận xiên là $y = -3x - 20$. Hệ số góc của $d$ là $a = -3$."
+            },
+            {
+                text: "Đồ thị hàm số $y=f(x)=4 x^{3} - 5 x^{2} + 5 x - 3$ có tâm đối xứng là điểm $I(a;b)$. Tổng $a+b$ bằng bao nhiêu? (làm tròn kết quả đến hàng phần chục).",
+                answer: -1.1,
+                solution: "Ta có $y'=12 x^{2} - 10 x + 5$ và $y''=24 x - 10$.<br> $y''=0 \\Leftrightarrow x=\\dfrac{5}{12}$. Thế vào hàm số: $f\\left(\\dfrac{5}{12}\\right)=- \\dfrac{323}{216}$.<br> Tâm đối xứng $I\\left(\\dfrac{5}{12};- \\dfrac{323}{216}\\right)$. Tổng $a+b = \\dfrac{5}{12} - \\dfrac{323}{216} = -\\dfrac{233}{216} \\approx -1,078 \\approx -1,1$."
+            },
+            {
+                text: `Lát cắt ngang của một vùng đất ven biển được mô hình hóa thành một hàm số bậc ba $y = f(x)$ có đồ thị như hình vẽ (đơn vị: km). Biết khoảng cách $OA = 2$ km, độ rộng của hồ $AB = \\dfrac{7}{4}$ km và chiều cao của ngọn đồi là $1225$ m. Độ sâu của hồ tại điểm sâu nhất bằng bao nhiêu mét?
+                <div class="svg-container">
+                    <svg viewBox="-0.9 -3.3 5.4 4.9" width="100%" style="max-width: 420px; font-family: sans-serif;">
+                        <defs>
+                            <marker id="arrow3" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                                <polygon points="0 0, 6 3, 0 6" fill="black"/>
+                            </marker>
+                        </defs>
+                        <!-- Fill regions (Y = -y) -->
+                        <path d="M 0.000 -0.000 L 0.094 -0.388 L 0.188 -0.712 L 0.281 -0.975 L 0.375 -1.181 L 0.469 -1.335 L 0.562 -1.440 L 0.656 -1.500 L 0.750 -1.519 L 0.844 -1.501 L 0.938 -1.450 L 1.031 -1.370 L 1.125 -1.266 L 1.219 -1.140 L 1.312 -0.997 L 1.406 -0.840 L 1.500 -0.675 L 1.594 -0.504 L 1.688 -0.332 L 1.781 -0.163 L 1.875 0.000 L 1.875 0.000 L 0.000 0.000 Z" fill="#bdbdbd" opacity="0.5"/>
+                        <path d="M 1.875 0.000 L 1.931 0.093 L 1.988 0.181 L 2.044 0.264 L 2.100 0.340 L 2.156 0.409 L 2.212 0.470 L 2.269 0.523 L 2.325 0.565 L 2.381 0.597 L 2.438 0.617 L 2.494 0.625 L 2.550 0.620 L 2.606 0.600 L 2.663 0.566 L 2.719 0.516 L 2.775 0.450 L 2.831 0.365 L 2.888 0.263 L 2.944 0.142 L 3.000 -0.000 L 3.000 0.000 L 1.875 0.000 Z" fill="#90caf9" opacity="0.7"/>
+                        <path d="M 3.000 -0.000 L 3.030 -0.084 L 3.060 -0.174 L 3.090 -0.270 L 3.120 -0.373 L 3.150 -0.482 L 3.180 -0.598 L 3.210 -0.720 L 3.240 -0.849 L 3.270 -0.985 L 3.300 -1.129 L 3.330 -1.279 L 3.360 -1.437 L 3.390 -1.602 L 3.420 -1.775 L 3.450 -1.956 L 3.480 -2.145 L 3.510 -2.341 L 3.540 -2.546 L 3.570 -2.759 L 3.600 -2.981 L 3.600 0.000 L 3.000 0.000 Z" fill="#bdbdbd" opacity="0.5"/>
+
+                        <!-- Axes -->
+                        <line x1="-0.6" y1="0" x2="4.2" y2="0" stroke="black" stroke-width="0.035" marker-end="url(#arrow3)"/>
+                        <line x1="0" y1="1.2" x2="0" y2="-2.2" stroke="black" stroke-width="0.035" marker-end="url(#arrow3)"/>
+                        <text x="-0.22" y="0.28" font-size="0.22">O</text>
+                        <text x="4.15" y="0.28" font-size="0.22">x</text>
+                        <text x="0.15" y="-2.15" font-size="0.22">y</text>
+
+                        <!-- Curve: y = 0.8x(x-1.875)(x-3) -->
+                        <path d="M -0.200 1.062 L -0.100 0.490 L 0.000 -0.000 L 0.100 -0.412 L 0.200 -0.750 L 0.300 -1.021 L 0.400 -1.227 L 0.500 -1.375 L 0.600 -1.469 L 0.700 -1.513 L 0.800 -1.514 L 0.900 -1.474 L 1.000 -1.400 L 1.100 -1.296 L 1.200 -1.166 L 1.300 -1.017 L 1.400 -0.851 L 1.500 -0.675 L 1.600 -0.493 L 1.700 -0.309 L 1.800 -0.130 L 1.900 0.042 L 2.000 0.200 L 2.100 0.340 L 2.200 0.458 L 2.300 0.547 L 2.400 0.605 L 2.500 0.625 L 2.600 0.603 L 2.700 0.535 L 2.800 0.414 L 2.900 0.238 L 3.000 -0.000 L 3.100 -0.304 L 3.200 -0.678 L 3.300 -1.129 L 3.400 -1.659 L 3.500 -2.275 L 3.600 -2.981" stroke="#c62828" stroke-width="0.035" fill="none"/>
+
+                        <!-- Points -->
+                        <circle cx="0" cy="0" r="0.035" fill="black"/>
+                        <circle cx="1.875" cy="0" r="0.035" fill="black"/> <text x="1.93" y="-0.15" font-size="0.22">A</text>
+                        <circle cx="3" cy="0" r="0.035" fill="black"/> <text x="3.05" y="-0.15" font-size="0.22">B</text>
+
+                        <text x="-0.75" y="0.15" font-size="0.2">Biển</text>
+                        <text x="0.55" y="-0.85" font-size="0.2">Đồi</text>
+                        <text x="2.25" y="0.75" font-size="0.2">Hồ</text>
+                        <text x="3.4" y="-0.45" font-size="0.2">Núi</text>
+                    </svg>
+                </div>`,
+                answer: 972,
+                solution: "Các giao điểm với trục hoành là $O(0; 0)$, $A(2; 0)$ và $B(\\frac{15}{4}; 0)$.<br> Phương trình có dạng $f(x) = kx(x - 2)(x - \\frac{15}{4}) = k(x^3 - \\frac{23}{4}x^2 + \\frac{15}{2}x)$.<br> $f'(x) = k(3x^2 - \\frac{23}{2}x + \\frac{15}{2}) = 0 \\Leftrightarrow x = \\frac{5}{6}$ (cực đại) hoặc $x = 3$ (cực tiểu).<br> Chiều cao đồi là 1225m = $\\frac{49}{40}$ km $\\Rightarrow f(\\frac{5}{6}) = \\frac{49}{40} \\Rightarrow k \\cdot \\frac{1225}{432} = \\frac{49}{40} \\Rightarrow k = \\frac{54}{125}$.<br> Độ sâu hồ là $|f(3)|$. $f(3) = \\frac{54}{125} \\cdot \\left(-\\frac{9}{4}\\right) = -\\frac{243}{250}$ km = -972m. Vậy độ sâu là 972m."
+            },
+            {
+                text: "Học sinh khối 12 trường thả chùm bóng bay. Độ cao $h$ (tính bằng $km$) của chùm bóng bay so với mặt đất vào thời điểm $t$ (giờ) là $h(t) = - t^{3} + 3 t^{2}, (0 \\le t \\le 3)$. Hỏi chùm bóng bay đạt độ cao lớn nhất so với mặt đất là bao nhiêu mét?",
+                answer: 4000,
+                solution: "Ta có $h'(t) = - 3 t^{2} + 6 t = 0 \\Leftrightarrow t = 0$ hoặc $t = 2$ (đều thuộc $[0; 3]$).<br> Tính: $h(0) = 0$, $h(2) = 4$, $h(3) = 0$.<br> Độ cao lớn nhất là 4 km = 4000 mét."
+            }
+        ]
+    };
+
+    const STORE_KEY = "exam_autosave_lths4";
+    let state = {
+        name: "", class: "", code: "",
+        ans1: {}, ans2: {}, ans3: {},
+        isSubmitted: false,
+        startTime: Date.now(),
+        endTime: null
+    };
+    
+    let map1 = [], map2 = [];
+
+    // =====================================
+    // CORE FUNCTIONS
+    // =====================================
+    function generateCode() { return Math.floor(100 + Math.random() * 900).toString(); }
+
+    function shuffle(arr) {
+        let array = [...arr];
+        for (let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function parseFloatStrict(str) {
+        if(str === null || str === undefined || str.toString().trim() === "") return null;
+        let s = str.toString().replace(/,/g, '.').trim();
+        let num = parseFloat(s);
+        return isNaN(num) ? null : num;
+    }
+
+    function init() {
+        loadState();
+        
+        // Trộn đề mới nếu chưa làm hoặc yêu cầu làm lại (chưa có code)
+        if(!state.code) {
+            state.code = generateCode();
+            state.startTime = Date.now();
+            if(DATA.part1.length > 0) {
+                map1 = shuffle(DATA.part1.map((q, i) => {
+                    let opts = shuffle(q.options.map((o, j) => ({...o, origIdx: j})));
+                    return { origIdx: i, opts: opts };
+                }));
+            }
+            if(DATA.part2.length > 0) {
+                map2 = shuffle(DATA.part2.map((q, i) => ({ origIdx: i }))); 
+            }
+            saveState(); // Lưu ngay cấu trúc trộn
+        }
+
+        document.getElementById("lbl_exam_code").innerText = state.code;
+        
+        // Render Title
+        if(DATA.part2.length > 0) document.querySelectorAll('.part-title')[1].style.display = 'block';
+        if(DATA.part3.length > 0) document.querySelectorAll('.part-title')[2].style.display = 'block';
+
+        if(DATA.part1.length > 0) renderPart1(); 
+        if(DATA.part2.length > 0) renderPart2(); 
+        if(DATA.part3.length > 0) renderPart3();
+        
+        MathJax.typesetPromise();
+        updateToolbar();
+
+        if (state.isSubmitted) {
+            evaluateExam();
+        }
+        
+        setInterval(saveState, 10000);
+    }
+
+    function retakeExam() {
+        if(confirm("Bạn có chắc chắn muốn làm lại bài thi? Lịch sử điểm của bạn sẽ bị xóa trên máy này.")) {
+            localStorage.removeItem(STORE_KEY);
+            location.reload();
+        }
+    }
+
+    // =====================================
+    // RENDER UI
+    // =====================================
+    function renderPart1() {
+        const wrap = document.getElementById("wrap_p1");
+        let html = '';
+        map1.forEach((qMap, idx) => {
+            let q = DATA.part1[qMap.origIdx];
+            html += `<div class="question-card shadow-sm" id="card_p1_${idx}">
+                <div class="fw-bold mb-3 text-dark" style="font-size: 1.1rem;">
+                    Câu ${idx + 1}: <span class="fw-normal">${q.text}</span>
+                </div>
+                <div class="row g-3 ms-2">`;
+            const labels = ['A', 'B', 'C', 'D'];
+            qMap.opts.forEach((opt, oIdx) => {
+                let checked = state.ans1[idx] === oIdx ? "checked" : "";
+                let disabled = state.isSubmitted ? "disabled" : "";
+                html += `
+                <div class="col-md-6 col-12">
+                    <div class="form-check">
+                        <input class="form-check-input border-secondary" type="radio" name="p1_q${idx}" id="p1_q${idx}_o${oIdx}" value="${oIdx}" ${checked} ${disabled} onchange="ans1(${idx}, ${oIdx})">
+                        <label class="form-check-label" id="lbl_p1_q${idx}_o${oIdx}" for="p1_q${idx}_o${oIdx}">${labels[oIdx]}. ${opt.text}</label>
+                    </div>
+                </div>`;
+            });
+            html += `</div>
+                <div class="solution-box shadow-sm" id="sol_p1_${idx}">
+                    <strong class="text-primary fs-5 mb-2 d-block">Lời giải chi tiết:</strong>
+                    <div>${q.solution}</div>
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    function renderPart2() {
+        const wrap = document.getElementById("wrap_p2");
+        let html = '';
+        map2.forEach((qMap, idx) => {
+            let q = DATA.part2[qMap.origIdx];
+            if(!state.ans2[idx]) state.ans2[idx] = {};
+            
+            html += `<div class="question-card shadow-sm" id="card_p2_${idx}">
+                <div class="fw-bold mb-3 text-dark" style="font-size: 1.1rem;">
+                    Câu ${idx + 1}: <span class="fw-normal">${q.text}</span>
+                </div>
+                <div class="table-responsive ms-2">
+                <table class="table table-bordered align-middle mb-0 bg-white">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%" class="text-center">Ý</th>
+                            <th>Phát biểu</th>
+                            <th width="10%" class="text-center text-success">Đúng</th>
+                            <th width="10%" class="text-center text-danger">Sai</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            
+            const labels = ['a)', 'b)', 'c)', 'd)'];
+            q.statements.forEach((stmt, sIdx) => {
+                let vT = state.ans2[idx][sIdx] === true ? "checked" : "";
+                let vF = state.ans2[idx][sIdx] === false ? "checked" : "";
+                let disabled = state.isSubmitted ? "disabled" : "";
+                html += `<tr>
+                    <td class="text-center fw-bold">${labels[sIdx]}</td>
+                    <td>${stmt.text}</td>
+                    <td class="text-center"><input class="form-check-input border-secondary mx-auto" type="radio" name="p2_q${idx}_s${sIdx}" ${vT} ${disabled} onchange="ans2(${idx}, ${sIdx}, true)"></td>
+                    <td class="text-center"><input class="form-check-input border-secondary mx-auto" type="radio" name="p2_q${idx}_s${sIdx}" ${vF} ${disabled} onchange="ans2(${idx}, ${sIdx}, false)"></td>
+                </tr>`;
+            });
+            html += `</tbody></table></div>
+                <div class="solution-box shadow-sm" id="sol_p2_${idx}">
+                    <strong class="text-primary fs-5 mb-2 d-block">Lời giải chi tiết:</strong>
+                    <div>${q.solution}</div>
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    function renderPart3() {
+        const wrap = document.getElementById("wrap_p3");
+        let html = '';
+        DATA.part3.forEach((q, idx) => {
+            let val = state.ans3[idx] !== undefined ? state.ans3[idx] : "";
+            let disabled = state.isSubmitted ? "disabled" : "";
+            html += `<div class="question-card shadow-sm" id="card_p3_${idx}">
+                <div class="fw-bold mb-3 text-dark" style="font-size: 1.1rem;">
+                    Câu ${idx + 1}: <span class="fw-normal">${q.text}</span>
+                </div>
+                <div class="ms-2">
+                    <input type="text" class="form-control border-secondary text-primary fw-bold" style="max-width: 250px;" id="inp_p3_${idx}" placeholder="Nhập đáp số..." value="${val}" ${disabled} oninput="ans3(${idx}, this.value)">
+                </div>
+                <div id="fb_p3_${idx}" class="mt-2 ms-2 fw-bold" style="display:none;"></div>
+                <div class="solution-box shadow-sm" id="sol_p3_${idx}">
+                    <strong class="text-primary fs-5 mb-2 d-block">Lời giải chi tiết:</strong>
+                    <div>${q.solution}</div>
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    // =====================================
+    // STATE MANAGEMENT
+    // =====================================
+    function ans1(qIdx, val) { state.ans1[qIdx] = val; updateToolbar(); triggerSave(); }
+    function ans2(qIdx, sIdx, val) { state.ans2[qIdx][sIdx] = val; updateToolbar(); triggerSave(); }
+    function ans3(qIdx, val) { state.ans3[qIdx] = val; updateToolbar(); triggerSave(); }
+
+    function updateToolbar() {
+        let count = 0;
+        let total = DATA.part1.length + (DATA.part2.length * 4) + DATA.part3.length;
+        
+        count += Object.keys(state.ans1).length;
+        Object.keys(state.ans2).forEach(k => { count += Object.keys(state.ans2[k]).length; });
+        Object.keys(state.ans3).forEach(k => { if(state.ans3[k].toString().trim() !== "") count++; });
+        
+        document.getElementById("lbl_answered").innerText = count;
+        document.getElementById("lbl_total").innerText = total;
+
+        document.getElementById("max_p1").innerText = (DATA.part1.length * 0.25).toFixed(2);
+        document.getElementById("max_p2").innerText = (DATA.part2.length * 1.0).toFixed(2);
+        document.getElementById("max_p3").innerText = (DATA.part3.length * 0.5).toFixed(2);
+        document.getElementById("max_total").innerText = ((DATA.part1.length * 0.25) + (DATA.part2.length * 1.0) + (DATA.part3.length * 0.5)).toFixed(2);
+
+        return {count, total};
+    }
+
+    function triggerSave() {
+        if(state.isSubmitted) return;
+        state.name = document.getElementById("input_name").value;
+        state.class = document.getElementById("input_class").value;
+        saveState();
+    }
+
+    function saveState() {
+        if(state.isSubmitted) return;
+        localStorage.setItem(STORE_KEY, JSON.stringify({state, map1, map2}));
+    }
+
+    function loadState() {
+        let saved = localStorage.getItem(STORE_KEY);
+        if(saved) {
+            let data = JSON.parse(saved);
+            state = data.state;
+            if(data.map1) map1 = data.map1;
+            if(data.map2) map2 = data.map2;
+            
+            document.getElementById("input_name").value = state.name || "";
+            document.getElementById("input_class").value = state.class || "";
+            
+            if(!state.isSubmitted) {
+                let toast = document.getElementById('toast-msg');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+        }
+    }
+
+    // =====================================
+    // EVALUATION & SUBMISSION
+    // =====================================
+    function submitExam() {
+        let {count, total} = updateToolbar();
+        if(count / total < 0.5) {
+            alert("Vui lòng hoàn thành ít nhất 50% tổng số câu hỏi (bao gồm các ý) trước khi nộp bài!");
+            return;
+        }
+        
+        state.name = document.getElementById("input_name").value.trim();
+        state.class = document.getElementById("input_class").value.trim();
+        if(!state.name) { alert("Vui lòng nhập Họ và Tên trước khi nộp bài!"); return; }
+
+        if(!confirm("Bạn có chắc chắn muốn nộp bài?")) return;
+
+        state.isSubmitted = true;
+        state.endTime = Date.now();
+        localStorage.setItem(STORE_KEY, JSON.stringify({state, map1, map2}));
+        
+        document.querySelectorAll('input').forEach(i => i.disabled = true);
+        document.getElementById("btn_submit").classList.add("d-none");
+        document.getElementById("btn_print").classList.remove("d-none");
+        document.getElementById("btn_retake").classList.remove("d-none");
+        
+        evaluateExam();
+    }
+
+    function evaluateExam() {
+        let score1 = 0, score2 = 0, score3 = 0;
+
+        // Part 1
+        map1.forEach((qMap, idx) => {
+            let isCorrect = false;
+            let chosenOpt = state.ans1[idx];
+            qMap.opts.forEach((opt, oIdx) => {
+                let lbl = document.getElementById(`lbl_p1_q${idx}_o${oIdx}`);
+                if(opt.correct) {
+                    lbl.classList.add("opt-correct");
+                    if(chosenOpt === oIdx) isCorrect = true;
+                } else if (chosenOpt === oIdx) {
+                    lbl.classList.add("opt-wrong");
+                }
+            });
+            let card = document.getElementById(`card_p1_${idx}`);
+            if(isCorrect) { score1 += 0.25; card.style.borderLeft = "6px solid var(--success-color)"; }
+            else { card.style.borderLeft = "6px solid var(--danger-color)"; }
+            document.getElementById(`sol_p1_${idx}`).style.display = "block";
+        });
+
+        // Part 2
+        map2.forEach((qMap, idx) => {
+            let q = DATA.part2[qMap.origIdx];
+            let numCorrect = 0;
+            q.statements.forEach((stmt, sIdx) => {
+                let ans = state.ans2[idx] ? state.ans2[idx][sIdx] : undefined;
+                if(ans === stmt.correct) numCorrect++;
+            });
+            if(numCorrect === 1) score2 += 0.1;
+            else if(numCorrect === 2) score2 += 0.25;
+            else if(numCorrect === 3) score2 += 0.5;
+            else if(numCorrect === 4) score2 += 1.0;
+
+            let card = document.getElementById(`card_p2_${idx}`);
+            if(numCorrect === 4) card.style.borderLeft = "6px solid var(--success-color)";
+            else if(numCorrect > 0) card.style.borderLeft = "6px solid #ffc107";
+            else card.style.borderLeft = "6px solid var(--danger-color)";
+            document.getElementById(`sol_p2_${idx}`).style.display = "block";
+        });
+
+        // Part 3
+        DATA.part3.forEach((q, idx) => {
+            let ansNum = parseFloatStrict(state.ans3[idx]);
+            let targetNum = parseFloatStrict(q.answer);
+            let isCorrect = (ansNum !== null && targetNum !== null && Math.abs(ansNum - targetNum) < 0.001);
+            
+            let card = document.getElementById(`card_p3_${idx}`);
+            let fb = document.getElementById(`fb_p3_${idx}`);
+            fb.style.display = "block";
+            if(isCorrect) {
+                score3 += 0.5;
+                card.style.borderLeft = "6px solid var(--success-color)";
+                document.getElementById(`inp_p3_${idx}`).classList.add("is-valid");
+            } else {
+                card.style.borderLeft = "6px solid var(--danger-color)";
+                document.getElementById(`inp_p3_${idx}`).classList.add("is-invalid");
+                fb.innerHTML = `Đáp án đúng: <span class="text-success">${q.answer}</span>`;
+            }
+            document.getElementById(`sol_p3_${idx}`).style.display = "block";
+        });
+
+        // Tally & Render
+        let totalScore = score1 + score2 + score3;
+        
+        document.getElementById("res_p1").innerText = score1.toFixed(2);
+        document.getElementById("res_p2").innerText = score2.toFixed(2);
+        document.getElementById("res_p3").innerText = score3.toFixed(2);
+        document.getElementById("res_total").innerText = totalScore.toFixed(2);
+        
+        let timeMin = Math.round(((state.endTime || Date.now()) - state.startTime) / 60000);
+        if(timeMin < 0) timeMin = 0;
+        document.getElementById("res_time").innerText = timeMin;
+        
+        let {count, total} = updateToolbar();
+        let pct = total > 0 ? Math.round((count/total)*100) : 0;
+        document.getElementById("res_percent").innerText = pct;
+        
+        document.getElementById("result-board").style.display = "block";
+        
+        // Hide Retake/Print when in Print Mode, so scroll up works nicely
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        sendToGAS(state.name, state.class, score1, score2, score3, totalScore, timeMin, pct);
+    }
+
+    function sendToGAS(name, className, s1, s2, s3, total, time, pct) {
+        // DÁN URL GOOGLE APPS SCRIPT CỦA BẠN VÀO ĐÂY:
+        const URL = 'https://script.google.com/macros/s/AKfycbwNS0cReAR2RZ-SMibUBAXOitQkDuqW1QEDrpRSpBst9JfGzTUqZA0G8Ry7RusoAP4C/exec'; 
+        
+        const payload = {
+            sheetName: "lths4", 
+            student_name: name,
+            class_name: className,
+            part1_score: s1,
+            part2_score: s2,
+            part3_score: s3,
+            total_score: total,
+            submit_time: new Date().toISOString(),
+            duration_minutes: time,
+            percent: pct
+        };
+
+        const btnSubmit = document.getElementById("btn_submit");
+        if(btnSubmit) btnSubmit.innerText = "ĐANG GỬI DỮ LIỆU...";
+
+        fetch(URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Mạng bị lỗi hoặc link Web App sai.");
+            return res.json();
+        })
+        .then(data => {
+            if (data.status === "success") {
+                alert(`${data.message}\nHọc sinh: ${data.saved_name}\nTổng điểm: ${data.final_score}`);
+            } else {
+                alert("Lưu thất bại: " + data.message);
+            }
+        })
+        .catch(err => {
+            console.error("Lỗi khi gửi dữ liệu: ", err);
+        })
+        .finally(() => {
+            if(btnSubmit) btnSubmit.innerText = "NỘP BÀI"; 
+        });
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>
