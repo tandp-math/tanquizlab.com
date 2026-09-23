@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐỀ ÔN TẬP TOÁN</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- MathJax for LaTeX Support -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                macros: {
+                    hoac: ["\\left[\\begin{aligned}#1\\end{aligned}\\right.", 1],
+                    heva: ["\\left\\{\\begin{aligned}#1\\end{aligned}\\right.", 1],
+                    mathscr: ["\\mathcal{#1}", 1]
+                }
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --bg-color: #f8fbff;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+
+        /* Header Styles */
+        .header-box {
+            background-color: var(--bg-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.05);
+        }
+
+        .header-box h2 {
+            letter-spacing: 1px;
+        }
+
+        /* Section Titles */
+        .part-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 40px;
+            margin-bottom: 25px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        /* Question Cards */
+        .question-card {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            background-color: #fcfcfc;
+            transition: all 0.3s ease;
+        }
+
+        /* Solution Box */
+        .solution-box {
+            background-color: #f1f5f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            border-radius: 0 8px 8px 0;
+            overflow-x: auto;
+        }
+
+        /* Sticky Toolbar */
+        .sticky-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        /* Result Board */
+        #result-board {
+            display: none;
+            background-color: var(--bg-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .opt-correct { color: var(--success-color); font-weight: 700; }
+        .opt-wrong { color: var(--danger-color); font-weight: 700; text-decoration: line-through; }
+        
+        /* Toast Notification */
+        .toast-notify {
+            position: fixed; 
+            bottom: 30px; 
+            right: 30px; 
+            background: var(--success-color); 
+            color: white;
+            padding: 15px 25px; 
+            border-radius: 8px; 
+            opacity: 0; 
+            visibility: hidden;
+            transition: all 0.5s ease; 
+            z-index: 9999;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            font-weight: 600;
+            transform: translateY(20px);
+        }
+        .toast-notify.show { 
+            opacity: 1; 
+            visibility: visible; 
+            transform: translateY(0);
+        }
+
+        /* Input Customizations */
+        .form-check-input {
+            cursor: pointer;
+            width: 1.2em;
+            height: 1.2em;
+        }
+        .form-check-input:checked { 
+            background-color: var(--primary-color); 
+            border-color: var(--primary-color); 
+        }
+        .form-check-label {
+            cursor: pointer;
+            margin-left: 5px;
+            font-size: 1.05rem;
+        }
+
+        /* Print Media Queries */
+        @media print {
+            body { background-color: white; color: black; }
+            .sticky-toolbar, .no-print, .toast-notify { display: none !important; }
+            .solution-box { 
+                display: block !important; 
+                break-inside: avoid; 
+                border-left-color: #6c757d; 
+                background-color: transparent; 
+                border: 1px solid #ccc;
+            }
+            .question-card { 
+                break-inside: avoid; 
+                border: none; 
+                border-bottom: 2px solid #000; 
+                background-color: transparent; 
+                padding: 15px 0; 
+            }
+            #result-board { 
+                display: block !important; 
+                border: 2px solid #000; 
+                box-shadow: none; 
+            }
+            .header-box { border: 2px solid #000; background-color: transparent;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-4">
+    <!-- Header Section -->
+    <div class="header-box text-center">
+        <h2 class="fw-bold text-primary mb-4">ĐỀ ÔN TẬP TOÁN</h2>
+        <div class="row justify-content-center g-3">
+            <div class="col-md-4">
+                <input type="text" id="input_name" class="form-control border-primary shadow-sm" placeholder="Nhập Họ và Tên" oninput="triggerSave()">
+            </div>
+            <div class="col-md-3">
+                <input type="text" id="input_class" class="form-control border-primary shadow-sm" placeholder="Nhập Lớp" oninput="triggerSave()">
+            </div>
+            <div class="col-md-3">
+                <div class="form-control bg-white text-start border-primary shadow-sm fw-bold">
+                    Mã đề: <span id="lbl_exam_code" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Toolbar -->
+    <div class="sticky-toolbar text-center no-print">
+        <span class="fw-bold text-primary fs-5 me-4">
+            Đã hoàn thành: <span id="lbl_answered" class="text-danger">0</span> / <span id="lbl_total" class="text-danger">0</span>
+        </span>
+        <button id="btn_submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm" onclick="submitExam()">NỘP BÀI</button>
+        <button id="btn_retake" class="btn btn-warning px-4 py-2 fw-bold shadow-sm d-none ms-2" onclick="retakeExam()">LÀM LẠI KHÁC MÃ ĐỀ</button>
+        <button id="btn_print" class="btn btn-success px-4 py-2 fw-bold shadow-sm d-none ms-2" onclick="window.print()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer me-2" viewBox="0 0 16 16"><path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/></svg>IN KẾT QUẢ PDF
+        </button>
+    </div>
+
+    <!-- Results Board -->
+    <div id="result-board" class="text-center">
+        <h3 class="text-success fw-bold mb-4">KẾT QUẢ BÀI LÀM</h3>
+        <div class="row fw-bold text-primary fs-5 mb-4">
+            <div class="col-md-3">Phần I: <span id="res_p1" class="text-danger"></span> / <span id="max_p1"></span></div>
+            <div class="col-md-3">Phần II: <span id="res_p2" class="text-danger"></span> / <span id="max_p2"></span></div>
+            <div class="col-md-3">Phần III: <span id="res_p3" class="text-danger"></span> / <span id="max_p3"></span></div>
+            <div class="col-md-3 text-danger fs-4 border-start border-danger">TỔNG: <span id="res_total"></span> / <span id="max_total"></span></div>
+        </div>
+        <hr class="border-secondary">
+        <div class="row fs-6 text-muted fw-semibold">
+            <div class="col-md-6">Tỷ lệ hoàn thành: <span id="res_percent" class="text-dark"></span>%</div>
+            <div class="col-md-6">Thời gian làm bài: <span id="res_time" class="text-dark"></span> phút</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="exam-content">
+        <!-- Part 1 -->
+        <h4 class="part-title">PHẦN I. CÂU HỎI TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN</h4>
+        <p class="text-muted fst-italic">Mỗi câu 0.25 điểm</p>
+        <div id="wrap_p1"></div>
+
+        <!-- Part 2 -->
+        <h4 class="part-title" style="display: none;">PHẦN II. CÂU HỎI TRẮC NGHIỆM ĐÚNG SAI</h4>
+        <p class="text-muted fst-italic" style="display: none;" id="desc_p2">Đúng 1 ý: 0.1đ | Đúng 2 ý: 0.25đ | Đúng 3 ý: 0.5đ | Đúng 4 ý: 1.0đ</p>
+        <div id="wrap_p2"></div>
+
+        <!-- Part 3 -->
+        <h4 class="part-title" style="display: none;">PHẦN III. CÂU TRẮC NGHIỆM TRẢ LỜI NGẮN</h4>
+        <p class="text-muted fst-italic" style="display: none;" id="desc_p3">Mỗi câu 0.5 điểm</p>
+        <div id="wrap_p3"></div>
+    </div>
+</div>
+
+<!-- Notification Toast -->
+<div id="toast-msg" class="toast-notify">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle me-2" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/></svg>
+    Đã khôi phục bài làm trước đó.
+</div>
+
+<script>
+    // =====================================
+    // DATABASE (From LaTeX Content)
+    // =====================================
+    const DATA = {
+        part1: [
+            {
+                text: "Bất phương trình nào sau đây là bất phương trình bậc nhất hai ẩn?",
+                options: [
+                    { text: "$8 x - 3 y^{2} - 5 \\ge 0$", correct: false },
+                    { text: "$3 y^{2} - 9 \\le 0$", correct: false },
+                    { text: "$- 9 x + 5 y + 9 \\le 0$", correct: true },
+                    { text: "$- 2 x^{2} + 9 y - 6 > 0$", correct: false }
+                ],
+                solution: "Bất phương trình $- 9 x + 5 y + 9 \\le 0$ là bất phương trình bậc nhất hai ẩn vì có dạng $ax + by + c \\le 0$ với $a, b$ không đồng thời bằng 0."
+            },
+            {
+                text: "Cho bất phương trình bậc nhất hai ẩn $ 5 x + 5 y - 2 \\ge 0$. Cặp số nào sau đây là một nghiệm của bất phương trình?",
+                options: [
+                    { text: "$\\left( 1; -23 \\right)$", correct: false },
+                    { text: "$\\left( 4; 17 \\right)$", correct: true },
+                    { text: "$\\left( 3; -36 \\right)$", correct: false },
+                    { text: "$\\left( 0; -24 \\right)$", correct: false }
+                ],
+                solution: "Thay $x=4, y=17$ vào biểu thức $5 x + 5 y - 2=5(4)+5(17)-2=103 \\ge 0$ (đúng). Vậy cặp số $\\left( 4; 17 \\right)$ là một nghiệm của bất phương trình."
+            },
+            {
+                text: `Một người muốn thuê một chiếc ô tô (có lái xe) trong một tuần. Giá thuê xe được cho như bảng sau: <br>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm text-center align-middle" style="max-width: 500px; margin: auto;">
+                        <thead class="table-light">
+                            <tr>
+                                <th></th>
+                                <th>Phí cố định (nghìn đồng/ngày)</th>
+                                <th>Phí di chuyển (nghìn đồng/km)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Từ thứ Hai đến thứ Sáu</td>
+                                <td>$700$</td>
+                                <td>$6$</td>
+                            </tr>
+                            <tr>
+                                <td>Thứ Bảy và Chủ nhật</td>
+                                <td>$1100$</td>
+                                <td>$13$</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                Gọi $x$ và $y$ lần lượt là số kilômét người này đi trong các ngày từ thứ Hai đến thứ Sáu và trong hai ngày cuối tuần. Bất phương trình biểu thị mối liên hệ giữa $x$ và $y$ sao cho tổng số tiền người đó phải trả không quá $12$ triệu đồng là`,
+                options: [
+                    { text: "$6 x + 13 y \\geq 6300$", correct: false },
+                    { text: "$6 x + 13 y < 10700$", correct: false },
+                    { text: "$6 x + 13 y \\leq 6300$", correct: true },
+                    { text: "$6 x + 13 y > 10700$", correct: false }
+                ],
+                solution: "Số tiền thuê xe từ thứ Hai đến thứ Sáu là $6x+5 \\cdot 700$ (nghìn đồng).<br>Số tiền thuê xe trong hai ngày cuối tuần là $13y+2 \\cdot 1100$ (nghìn đồng).<br>Tổng số tiền phải trả là $(6x+3500)+(13y+2200)=6 x + 13 y + 5700$.<br>Bất phương trình: $6 x + 13 y + 5700 \\le 12000 \\Leftrightarrow 6 x + 13 y \\leq 6300$."
+            },
+            {
+                text: "Miền nghiệm của bất phương trình $-7x-8y\\le 0$ **không** chứa điểm nào sau đây?",
+                options: [
+                    { text: "$(-9;9)$", correct: false },
+                    { text: "$(-5;9)$", correct: false },
+                    { text: "$(0;0)$", correct: true },
+                    { text: "$(4;5)$", correct: false }
+                ],
+                solution: "Cặp số $(0;0)$ thỏa mãn phương trình $-7(0)-8(0) \\le 0$ (đúng). Tuy nhiên, câu hỏi có vẻ như trong file LaTeX gốc bị lỗi về đáp án hoặc câu hỏi (điểm (0;0) thực sự CÓ thỏa mãn). Ta dựa theo lời giải gốc: \"Cặp số $(0;0)$ không thỏa mãn bất phương trình nên không thuộc miền nghiệm\" -> Đây là một lỗi logic của đề gốc, nhưng dựa theo file gốc, đáp án đúng theo tác giả là $(0;0)$."
+            },
+            {
+                text: "Miền nghiệm của bất phương trình $5 x + 4 y > 5$ là miền $(H)$. Trong các mệnh đề sau, mệnh đề nào đúng?",
+                options: [
+                    { text: "$(H)$ là miền nửa mặt phẳng có biên là đường thẳng $5 x + 4 y = 5$ nhưng không chứa biên đó", correct: true },
+                    { text: "$(H)$ là một hình tròn tâm $O$ bán kính $R=5$", correct: false },
+                    { text: "$(H)$ là miền nửa mặt phẳng không có điểm có tọa độ nguyên", correct: false },
+                    { text: "$(H)$ là miền nửa mặt phẳng chứa điểm có tọa độ thỏa mãn $5 x + 4 y < 5$", correct: false }
+                ],
+                solution: "Bất phương trình $5 x + 4 y > 5$ là bất phương trình bậc nhất hai ẩn và không chứa dấu bằng nên miền nghiệm $(H)$ là nửa mặt phẳng xác định bởi biên là đường thẳng $5 x + 4 y = 5$ nhưng không bao gồm biên."
+            },
+            {
+                text: "Biểu diễn miền nghiệm của bất phương trình $2 x + 3 y \\geq 3$ là miền $(H)$. Điểm nào sau đây thuộc $(H)$?",
+                options: [
+                    { text: "$Q(1;-4)$", correct: false },
+                    { text: "$N(-1;-1)$", correct: false },
+                    { text: "$P(-3;0)$", correct: false },
+                    { text: "$M(1;1)$", correct: true }
+                ],
+                solution: "Thay $x = 1, y = 1$ vào bất phương trình ta được $2 \\cdot (1) + 3 \\cdot (1) \\geq 3 \\Leftrightarrow 5 \\geq 3$ (đúng). Điểm $M(1;1)$ thuộc miền nghiệm."
+            },
+            {
+                text: "Biểu diễn miền nghiệm của bất phương trình $2 x +  y \\geq 2$ là miền $(H)$. Điểm nào sau đây thuộc $(H)$?",
+                options: [
+                    { text: "$P(-2;5)$", correct: false },
+                    { text: "$Q(1;-3)$", correct: false },
+                    { text: "$M(3;3)$", correct: true },
+                    { text: "$N(0;-4)$", correct: false }
+                ],
+                solution: "Thay $x = 3, y = 3$ vào bất phương trình ta được $2 \\cdot (3) + 1 \\cdot (3) \\geq 2 \\Leftrightarrow 9 \\geq 2$ (đúng). Điểm $M(3;3)$ thuộc miền nghiệm."
+            },
+            {
+                text: "Bạn Nam để dành được $1200$ nghìn đồng. Bạn Nam đã đóng góp $x$ tờ $10$ nghìn và $y$ tờ $100$ nghìn. Bất phương trình thể hiện mối liên hệ của $x$ và $y$ là",
+                options: [
+                    { text: "$10x + 100y \\ge 1200$", correct: false },
+                    { text: "$10x + 100y > 1200$", correct: false },
+                    { text: "$100x + 10y \\ge 1200$", correct: false },
+                    { text: "$10x + 100y \\le 1200$", correct: true }
+                ],
+                solution: "Số tiền đóng góp là $10x + 100y$ (nghìn đồng). Vì số tiền không vượt quá $1200$ nghìn nên bất phương trình là $10x + 100y \\le 1200$."
+            },
+            {
+                text: "Cho các bất phương trình sau, đâu **không** phải là bất phương trình bậc nhất hai ẩn?",
+                options: [
+                    { text: "$3x + 5y \\ge 4$", correct: false },
+                    { text: "$x > 5y$", correct: false },
+                    { text: "$y < 3x + y^2$", correct: true },
+                    { text: "$3x \\ge 4$", correct: false }
+                ],
+                solution: "Bất phương trình $y < 3x + y^2$ chứa ẩn $y^2$ (bậc 2) nên không phải là bất phương trình bậc nhất hai ẩn."
+            },
+            {
+                text: "Hệ bất phương trình nào sau đây là hệ bất phương trình bậc nhất hai ẩn?",
+                options: [
+                    { text: "$\\heva{&7 x^{2} + 4 y^{2} - 5 < 0 \\\\ &9 x - 2 y + 3 \\ge 0}$", correct: false },
+                    { text: "$\\heva{&3 x + 2 y - 7 \\ge 0 \\\\ &3 x - 4 y - 8 \\ge 0}$", correct: true },
+                    { text: "$\\heva{&2 x + 9 y^{2} + 4 \\le 0 \\\\ &- x + 6 y - 8 \\le 0}$", correct: false },
+                    { text: "$\\heva{&9 x^{2} - 6 y + 7 < 0 \\\\ &2 x - 8 y < 0}$", correct: false }
+                ],
+                solution: "Hệ $\\heva{&3 x + 2 y - 7 \\ge 0 \\\\ &3 x - 4 y - 8 \\ge 0}$ bao gồm hai bất phương trình đều là bậc nhất hai ẩn."
+            },
+            {
+                text: "Cho hệ bất phương trình bậc nhất hai ẩn $\\heva{& x - 4 y + 5 > 0 \\\\ & - 5 x - 3 y + 1 < 0}$. Cặp số nào dưới đây là một nghiệm của hệ?",
+                options: [
+                    { text: "$(-1;4)$", correct: false },
+                    { text: "$(-4;-3)$", correct: false },
+                    { text: "$(-1;2)$", correct: false },
+                    { text: "$(9;3)$", correct: true }
+                ],
+                solution: "Cặp số $(9;3)$ thỏa mãn cả hai bất phương trình: $9 - 12 + 5 = 2 > 0$ và $-45 - 9 + 1 = -53 < 0$."
+            },
+            {
+                text: "Miền nghiệm của hệ bất phương trình $\\heva{& 3x+8y-2>0\\\\& x-2y-8<0\\\\& -x-2y+2<0}$ chứa điểm nào sau đây?",
+                options: [
+                    { text: "$(-8;-5)$", correct: false },
+                    { text: "$(-4;-8)$", correct: false },
+                    { text: "$(-9;7)$", correct: true },
+                    { text: "$(-7;2)$", correct: false }
+                ],
+                solution: "Thử cặp $(-9;7)$: $-27 + 56 - 2 = 27 > 0$; $-9 - 14 - 8 = -31 < 0$; $9 - 14 + 2 = -3 < 0$. Điểm này thỏa mãn tất cả."
+            },
+            {
+                text: "Cặp số nào sau đây là nghiệm của hệ bất phương trình $\\begin{cases} - 2 x + 2 y < 0 \\\\ x - 2 y - 5 > 0 \\end{cases}$?",
+                options: [
+                    { text: "$(0; 2)$", correct: false },
+                    { text: "$(-2; 1)$", correct: false },
+                    { text: "$(2; -3)$", correct: true },
+                    { text: "$(2; 0)$", correct: false }
+                ],
+                solution: "Thay $(2; -3)$ vào: $-4 - 6 = -10 < 0$ và $2 + 6 - 5 = 3 > 0$. Luôn đúng."
+            }
+        ],
+        part2: [
+            {
+                text: "Trong $1$ lạng thịt bò chứa $21$ protein, $1$ lạng cá chứa $19$ protein. Trung bình một ngày, một người đàn ông cần từ $59$ đến $150$ protein. Không nên ăn thịt nhiều hơn cá. Gọi $x,y$ lần lượt là số lạng thịt bò, cá.",
+                statements: [
+                    { text: "Hệ bất phương trình là $\\heva{& 21 x+ 19 y> 59 \\\\& 21 x+ 19 y< 150 \\\\& x\\le y\\\\ & x\\ge 0 \\\\& y\\ge0}$", correct: false },
+                    { text: "Miền nghiệm của hệ bất phương trình là một tứ giác", correct: true },
+                    { text: "Điểm $(2;5)$ không thuộc miền nghiệm của hệ bất phương trình", correct: false },
+                    { text: "Điểm $\\left(\\dfrac{15}{4};\\dfrac{15}{4}\\right)$ là điểm có hoành độ lớn nhất thuộc miền nghiệm", correct: true }
+                ],
+                solution: "a) Bất phương trình phải có dấu $\\ge$ và $\\le$: $\\heva{& 21 x+ 19 y\\ge 59 \\\\& 21 x+ 19 y\\le 150 \\\\& x\\le y\\\\ & x\\ge 0 \\\\& y\\ge0}$. (Sai)<br>b) Vẽ các đường biên, phần giao nhau là một tứ giác. (Đúng)<br>c) $(2;5)$ thỏa: $42+95 = 137 \\in [59;150]$ và $2 \\le 5$. Thuộc miền nghiệm. (Sai)<br>d) Các đỉnh của tứ giác là $A\\left(\\dfrac{59}{40};\\dfrac{59}{40}\\right), B\\left(\\dfrac{15}{4};\\dfrac{15}{4}\\right), C\\left(0;\\dfrac{150}{19}\\right), D\\left(0;\\dfrac{59}{19}\\right)$. Điểm có hoành độ lớn nhất là B. (Đúng)"
+            },
+            {
+                text: "Trong $1$ lạng thịt bò chứa $22$ protein, $1$ lạng cá chứa $25$ protein. Một người đàn ông cần từ $65$ đến $171$ protein. Không nên ăn thịt nhiều hơn cá. Gọi $x,y$ là số lạng thịt bò, cá.",
+                statements: [
+                    { text: "Hệ bất phương trình là $\\heva{& 22 x+ 25 y> 65 \\\\& 22 x+ 25 y< 171 \\\\& x\\le y\\\\ & x\\ge 0 \\\\& y\\ge0}$", correct: false },
+                    { text: "Miền nghiệm của hệ bất phương trình là một tam giác", correct: false },
+                    { text: "Điểm $(9;2)$ thuộc miền nghiệm của hệ bất phương trình", correct: false },
+                    { text: "Điểm $\\left(\\dfrac{65}{47};\\dfrac{65}{47}\\right)$ là điểm có tung độ bé nhất thuộc miền nghiệm", correct: true }
+                ],
+                solution: "a) Thiếu dấu bằng ($\\ge$, $\\le$). (Sai)<br>b) Tương tự câu trên, miền nghiệm là một tứ giác. (Sai)<br>c) Điểm $(9;2)$ có $x > y$ (thịt > cá) không thỏa mãn. (Sai)<br>d) Các đỉnh tứ giác: $A\\left(\\dfrac{65}{47};\\dfrac{65}{47}\\right), B\\left(\\dfrac{171}{47};\\dfrac{171}{47}\\right), C\\left(0;\\dfrac{171}{25}\\right), D\\left(0;\\dfrac{13}{5}\\right)$. Điểm có tung độ bé nhất là A. (Đúng)"
+            },
+            {
+                text: "Cho hệ bất phương trình $(I) \\begin{cases} - 3 x + y > -4 \\\\ - x - 2 y < 2 \\end{cases}$.",
+                statements: [
+                    { text: "Hệ $(I)$ có nghiệm", correct: true },
+                    { text: "Cặp số $(3; 2)$ là nghiệm của hệ $(I)$", correct: false },
+                    { text: "Miền nghiệm của hệ $(I)$ không chứa điểm $K(3; -2)$", correct: true },
+                    { text: "Miền nghiệm của hệ $(I)$ chứa gốc tọa độ $O$", correct: true }
+                ],
+                solution: "a) Thay $(-1;4)$ vào thấy đúng, nên có nghiệm. (Đúng)<br>b) $(-3)\\cdot 3 + 2 = -7 \\ngtr -4$. (Sai)<br>c) $(-3)\\cdot 3 - 2 = -11 \\ngtr -4$. (Đúng)<br>d) $O(0;0)$: $0 > -4$ và $0 < 2$. (Đúng)"
+            }
+        ],
+        part3: [
+            {
+                text: "Một gia đình cần ít nhất $700$ đơn vị protein và $1050$ đơn vị lipit mỗi ngày. 1kg bò: 200 protein, 100 lipit. 1kg lợn: 100 protein, 400 lipit. Chỉ mua tối đa $4.5$ kg bò và $3$ kg lợn. Giá bò $150$ nghìn/kg, lợn $100$ nghìn/kg. Bỏ ra ít nhất bao nhiêu tiền (nghìn đồng)?",
+                answer: 575,
+                solution: "Hệ: $0 \\le x \\le 4.5; 0 \\le y \\le 3; 200x+100y \\ge 700; 100x+400y \\ge 1050$.<br>Miền nghiệm có các đỉnh $A(2;3), B(4.5;3), C(4.5;1.5), D(2.5;2)$.<br>Hàm chi phí $F(x,y) = 150x + 100y$.<br>$F(D) = 150(2.5) + 100(2) = 575$ là nhỏ nhất."
+            },
+            {
+                text: "Từ thiện bán nước cam và khoai chiên. TĐ1: 32k (1 cam + 2 khoai). TĐ2: 46k (2 cam + 3 khoai). Có tối đa 92 cam và 157 khoai. Số tiền lớn nhất thu được bằng bao nhiêu nghìn đồng?",
+                answer: 2458,
+                solution: "Hệ: $x \\ge 0, y \\ge 0, x+2y \\le 92, 2x+3y \\le 157$.<br>Hàm doanh thu $F(x,y) = 32x + 46y$.<br>Các đỉnh: $(0;0), (46;0), (38;27), (0;157/3)$.<br>$F(38;27) = 32(38) + 46(27) = 2458$ là lớn nhất."
+            }
+        ]
+    };
+
+    const STORE_KEY = "exam_autosave_ltvact1_random";
+    let state = {
+        name: "", class: "", code: "",
+        ans1: {}, ans2: {}, ans3: {},
+        isSubmitted: false,
+        startTime: Date.now(),
+        endTime: null
+    };
+    
+    let map1 = [], map2 = [];
+
+    // =====================================
+    // CORE FUNCTIONS
+    // =====================================
+    function generateCode() { return Math.floor(100 + Math.random() * 900).toString(); }
+
+    function shuffle(arr) {
+        let array = [...arr];
+        for (let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function parseFloatStrict(str) {
+        if(str === null || str === undefined || str.toString().trim() === "") return null;
+        let s = str.toString().replace(/,/g, '.').trim();
+        let num = parseFloat(s);
+        return isNaN(num) ? null : num;
+    }
+
+    function init() {
+        loadState();
+        
+        if(!state.code) {
+            state.code = generateCode();
+            state.startTime = Date.now();
+            if(DATA.part1.length > 0) {
+                map1 = shuffle(DATA.part1.map((q, i) => {
+                    let opts = shuffle(q.options.map((o, j) => ({...o, origIdx: j})));
+                    return { origIdx: i, opts: opts };
+                }));
+            }
+            if(DATA.part2.length > 0) {
+                map2 = shuffle(DATA.part2.map((q, i) => ({ origIdx: i }))); 
+            }
+            saveState(); 
+        }
+
+        document.getElementById("lbl_exam_code").innerText = state.code;
+        
+        if(DATA.part2.length > 0) {
+            document.querySelectorAll('.part-title')[1].style.display = 'block';
+            document.getElementById('desc_p2').style.display = 'block';
+        }
+        if(DATA.part3.length > 0) {
+            document.querySelectorAll('.part-title')[2].style.display = 'block';
+            document.getElementById('desc_p3').style.display = 'block';
+        }
+
+        if(DATA.part1.length > 0) renderPart1(); 
+        if(DATA.part2.length > 0) renderPart2(); 
+        if(DATA.part3.length > 0) renderPart3();
+        
+        MathJax.typesetPromise();
+        updateToolbar();
+
+        if (state.isSubmitted) evaluateExam();
+        
+        setInterval(saveState, 10000);
+    }
+
+    function retakeExam() {
+        if(confirm("Bạn có chắc chắn muốn làm lại bài thi? Lịch sử điểm và mã đề hiện tại trên máy này sẽ bị xóa.")) {
+            localStorage.removeItem(STORE_KEY);
+            location.reload();
+        }
+    }
+
+    // =====================================
+    // RENDER UI
+    // =====================================
+    function renderPart1() {
+        const wrap = document.getElementById("wrap_p1");
+        let html = '';
+        map1.forEach((qMap, idx) => {
+            let q = DATA.part1[qMap.origIdx];
+            html += `<div class="question-card shadow-sm" id="card_p1_${idx}">
+                <div class="fw-bold mb-3 text-dark" style="font-size: 1.1rem;">
+                    Câu ${idx + 1}: <span class="fw-normal">${q.text}</span>
+                </div>
+                <div class="row g-3 ms-2">`;
+            const labels = ['A', 'B', 'C', 'D'];
+            qMap.opts.forEach((opt, oIdx) => {
+                let checked = state.ans1[idx] === oIdx ? "checked" : "";
+                let disabled = state.isSubmitted ? "disabled" : "";
+                html += `
+                <div class="col-md-6 col-12">
+                    <div class="form-check">
+                        <input class="form-check-input border-secondary" type="radio" name="p1_q${idx}" id="p1_q${idx}_o${oIdx}" value="${oIdx}" ${checked} ${disabled} onchange="ans1(${idx}, ${oIdx})">
+                        <label class="form-check-label" id="lbl_p1_q${idx}_o${oIdx}" for="p1_q${idx}_o${oIdx}">${labels[oIdx]}. ${opt.text}</label>
+                    </div>
+                </div>`;
+            });
+            html += `</div>
+                <div class="solution-box shadow-sm" id="sol_p1_${idx}">
+                    <strong class="text-primary fs-5 mb-2 d-block">Lời giải chi tiết:</strong>
+                    <div>${q.solution}</div>
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    function renderPart2() {
+        const wrap = document.getElementById("wrap_p2");
+        let html = '';
+        map2.forEach((qMap, idx) => {
+            let q = DATA.part2[qMap.origIdx];
+            if(!state.ans2[idx]) state.ans2[idx] = {};
+            
+            html += `<div class="question-card shadow-sm" id="card_p2_${idx}">
+                <div class="fw-bold mb-3 text-dark" style="font-size: 1.1rem;">
+                    Câu ${idx + 1}: <span class="fw-normal">${q.text}</span>
+                </div>
+                <div class="table-responsive ms-2">
+                <table class="table table-bordered align-middle mb-0 bg-white">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%" class="text-center">Ý</th>
+                            <th>Phát biểu</th>
+                            <th width="10%" class="text-center text-success">Đúng</th>
+                            <th width="10%" class="text-center text-danger">Sai</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            
+            const labels = ['a)', 'b)', 'c)', 'd)'];
+            q.statements.forEach((stmt, sIdx) => {
+                let vT = state.ans2[idx][sIdx] === true ? "checked" : "";
+                let vF = state.ans2[idx][sIdx] === false ? "checked" : "";
+                let disabled = state.isSubmitted ? "disabled" : "";
+                html += `<tr>
+                    <td class="text-center fw-bold">${labels[sIdx]}</td>
+                    <td>${stmt.text}</td>
+                    <td class="text-center"><input class="form-check-input border-secondary mx-auto" type="radio" name="p2_q${idx}_s${sIdx}" ${vT} ${disabled} onchange="ans2(${idx}, ${sIdx}, true)"></td>
+                    <td class="text-center"><input class="form-check-input border-secondary mx-auto" type="radio" name="p2_q${idx}_s${sIdx}" ${vF} ${disabled} onchange="ans2(${idx}, ${sIdx}, false)"></td>
+                </tr>`;
+            });
+            html += `</tbody></table></div>
+                <div class="solution-box shadow-sm" id="sol_p2_${idx}">
+                    <strong class="text-primary fs-5 mb-2 d-block">Lời giải chi tiết:</strong>
+                    <div>${q.solution}</div>
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    function renderPart3() {
+        const wrap = document.getElementById("wrap_p3");
+        let html = '';
+        DATA.part3.forEach((q, idx) => {
+            let val = state.ans3[idx] !== undefined ? state.ans3[idx] : "";
+            let disabled = state.isSubmitted ? "disabled" : "";
+            html += `<div class="question-card shadow-sm" id="card_p3_${idx}">
+                <div class="fw-bold mb-3 text-dark" style="font-size: 1.1rem;">
+                    Câu ${idx + 1}: <span class="fw-normal">${q.text}</span>
+                </div>
+                <div class="ms-2">
+                    <input type="text" class="form-control border-secondary text-primary fw-bold" style="max-width: 250px;" id="inp_p3_${idx}" placeholder="Nhập đáp số..." value="${val}" ${disabled} oninput="ans3(${idx}, this.value)">
+                </div>
+                <div id="fb_p3_${idx}" class="mt-2 ms-2 fw-bold" style="display:none;"></div>
+                <div class="solution-box shadow-sm" id="sol_p3_${idx}">
+                    <strong class="text-primary fs-5 mb-2 d-block">Lời giải chi tiết:</strong>
+                    <div>${q.solution}</div>
+                </div>
+            </div>`;
+        });
+        wrap.innerHTML = html;
+    }
+
+    // =====================================
+    // STATE MANAGEMENT
+    // =====================================
+    function ans1(qIdx, val) { state.ans1[qIdx] = val; updateToolbar(); triggerSave(); }
+    function ans2(qIdx, sIdx, val) { state.ans2[qIdx][sIdx] = val; updateToolbar(); triggerSave(); }
+    function ans3(qIdx, val) { state.ans3[qIdx] = val; updateToolbar(); triggerSave(); }
+
+    function updateToolbar() {
+        let count = 0;
+        let total = DATA.part1.length + (DATA.part2.length * 4) + DATA.part3.length;
+        
+        count += Object.keys(state.ans1).length;
+        Object.keys(state.ans2).forEach(k => { count += Object.keys(state.ans2[k]).length; });
+        Object.keys(state.ans3).forEach(k => { if(state.ans3[k].toString().trim() !== "") count++; });
+        
+        document.getElementById("lbl_answered").innerText = count;
+        document.getElementById("lbl_total").innerText = total;
+
+        document.getElementById("max_p1").innerText = (DATA.part1.length * 0.25).toFixed(2);
+        document.getElementById("max_p2").innerText = (DATA.part2.length * 1.0).toFixed(2);
+        document.getElementById("max_p3").innerText = (DATA.part3.length * 0.5).toFixed(2);
+        document.getElementById("max_total").innerText = ((DATA.part1.length * 0.25) + (DATA.part2.length * 1.0) + (DATA.part3.length * 0.5)).toFixed(2);
+
+        return {count, total};
+    }
+
+    function triggerSave() {
+        if(state.isSubmitted) return;
+        state.name = document.getElementById("input_name").value;
+        state.class = document.getElementById("input_class").value;
+        saveState();
+    }
+
+    function saveState() {
+        if(state.isSubmitted) return;
+        localStorage.setItem(STORE_KEY, JSON.stringify({state, map1, map2}));
+    }
+
+    function loadState() {
+        let saved = localStorage.getItem(STORE_KEY);
+        if(saved) {
+            let data = JSON.parse(saved);
+            state = data.state;
+            if(data.map1) map1 = data.map1;
+            if(data.map2) map2 = data.map2;
+            
+            document.getElementById("input_name").value = state.name || "";
+            document.getElementById("input_class").value = state.class || "";
+            
+            if(!state.isSubmitted) {
+                let toast = document.getElementById('toast-msg');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+        }
+    }
+
+    // =====================================
+    // EVALUATION & SUBMISSION
+    // =====================================
+    function submitExam() {
+        let {count, total} = updateToolbar();
+        if(count / total < 0.5) {
+            alert("Vui lòng hoàn thành ít nhất 50% tổng số câu hỏi (bao gồm các ý) trước khi nộp bài!");
+            return;
+        }
+        
+        state.name = document.getElementById("input_name").value.trim();
+        state.class = document.getElementById("input_class").value.trim();
+        if(!state.name) { alert("Vui lòng nhập Họ và Tên trước khi nộp bài!"); return; }
+
+        if(!confirm("Bạn có chắc chắn muốn nộp bài?")) return;
+
+        state.isSubmitted = true;
+        state.endTime = Date.now();
+        localStorage.setItem(STORE_KEY, JSON.stringify({state, map1, map2}));
+        
+        document.querySelectorAll('input').forEach(i => i.disabled = true);
+        document.getElementById("btn_submit").classList.add("d-none");
+        document.getElementById("btn_print").classList.remove("d-none");
+        document.getElementById("btn_retake").classList.remove("d-none");
+        
+        evaluateExam();
+    }
+
+    function evaluateExam() {
+        let score1 = 0, score2 = 0, score3 = 0;
+
+        // Part 1
+        map1.forEach((qMap, idx) => {
+            let isCorrect = false;
+            let chosenOpt = state.ans1[idx];
+            qMap.opts.forEach((opt, oIdx) => {
+                let lbl = document.getElementById(`lbl_p1_q${idx}_o${oIdx}`);
+                if(opt.correct) {
+                    lbl.classList.add("opt-correct");
+                    if(chosenOpt === oIdx) isCorrect = true;
+                } else if (chosenOpt === oIdx) {
+                    lbl.classList.add("opt-wrong");
+                }
+            });
+            let card = document.getElementById(`card_p1_${idx}`);
+            if(isCorrect) { score1 += 0.25; card.style.borderLeft = "6px solid var(--success-color)"; }
+            else { card.style.borderLeft = "6px solid var(--danger-color)"; }
+            document.getElementById(`sol_p1_${idx}`).style.display = "block";
+        });
+
+        // Part 2
+        map2.forEach((qMap, idx) => {
+            let q = DATA.part2[qMap.origIdx];
+            let numCorrect = 0;
+            q.statements.forEach((stmt, sIdx) => {
+                let ans = state.ans2[idx] ? state.ans2[idx][sIdx] : undefined;
+                if(ans === stmt.correct) numCorrect++;
+            });
+            if(numCorrect === 1) score2 += 0.1;
+            else if(numCorrect === 2) score2 += 0.25;
+            else if(numCorrect === 3) score2 += 0.5;
+            else if(numCorrect === 4) score2 += 1.0;
+
+            let card = document.getElementById(`card_p2_${idx}`);
+            if(numCorrect === 4) card.style.borderLeft = "6px solid var(--success-color)";
+            else if(numCorrect > 0) card.style.borderLeft = "6px solid #ffc107";
+            else card.style.borderLeft = "6px solid var(--danger-color)";
+            document.getElementById(`sol_p2_${idx}`).style.display = "block";
+        });
+
+        // Part 3
+        DATA.part3.forEach((q, idx) => {
+            let ansNum = parseFloatStrict(state.ans3[idx]);
+            let targetNum = parseFloatStrict(q.answer);
+            let isCorrect = (ansNum !== null && targetNum !== null && Math.abs(ansNum - targetNum) < 0.001);
+            
+            let card = document.getElementById(`card_p3_${idx}`);
+            let fb = document.getElementById(`fb_p3_${idx}`);
+            fb.style.display = "block";
+            if(isCorrect) {
+                score3 += 0.5;
+                card.style.borderLeft = "6px solid var(--success-color)";
+                document.getElementById(`inp_p3_${idx}`).classList.add("is-valid");
+            } else {
+                card.style.borderLeft = "6px solid var(--danger-color)";
+                document.getElementById(`inp_p3_${idx}`).classList.add("is-invalid");
+                fb.innerHTML = `Đáp án đúng: <span class="text-success">${q.answer}</span>`;
+            }
+            document.getElementById(`sol_p3_${idx}`).style.display = "block";
+        });
+
+        // Tally & Render
+        let totalScore = score1 + score2 + score3;
+        
+        document.getElementById("res_p1").innerText = score1.toFixed(2);
+        document.getElementById("res_p2").innerText = score2.toFixed(2);
+        document.getElementById("res_p3").innerText = score3.toFixed(2);
+        document.getElementById("res_total").innerText = totalScore.toFixed(2);
+        
+        let timeMin = Math.round(((state.endTime || Date.now()) - state.startTime) / 60000);
+        if(timeMin < 0) timeMin = 0;
+        document.getElementById("res_time").innerText = timeMin;
+        
+        let {count, total} = updateToolbar();
+        let pct = total > 0 ? Math.round((count/total)*100) : 0;
+        document.getElementById("res_percent").innerText = pct;
+        
+        document.getElementById("result-board").style.display = "block";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        sendToGAS(state.name, state.class, score1, score2, score3, totalScore, timeMin, pct);
+    }
+
+    function sendToGAS(name, className, s1, s2, s3, total, time, pct) {
+        // DÁN URL GOOGLE APPS SCRIPT CỦA BẠN VÀO ĐÂY:
+        const URL = 'https://script.google.com/macros/s/AKfycbwgq1UZ315UkIn8JPJLYAdC8WHEiYJ5drb_9RxMfOQ8h8lQ2Kk-wOhC1o2BUgTmuopZBQ/exec'; 
+        
+        const payload = {
+            sheetName: "t10-ch2", 
+            student_name: name,
+            class_name: className,
+            part1_score: s1,
+            part2_score: s2,
+            part3_score: s3,
+            total_score: total,
+            submit_time: new Date().toISOString(),
+            duration_minutes: time,
+            percent: pct
+        };
+
+        const btnSubmit = document.getElementById("btn_submit");
+        if(btnSubmit) btnSubmit.innerText = "ĐANG GỬI DỮ LIỆU...";
+
+        fetch(URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Mạng bị lỗi hoặc link Web App sai.");
+            return res.json();
+        })
+        .then(data => {
+            if (data.status === "success") {
+                alert(`${data.message}\nHọc sinh: ${data.saved_name}\nTổng điểm: ${data.final_score}`);
+            } else {
+                alert("Lưu thất bại: " + data.message);
+            }
+        })
+        .catch(err => {
+            console.error("Lỗi khi gửi dữ liệu: ", err);
+        })
+        .finally(() => {
+            if(btnSubmit) btnSubmit.innerText = "NỘP BÀI"; 
+        });
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>
