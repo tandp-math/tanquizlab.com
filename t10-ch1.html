@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐỀ ÔN TẬP TOÁN 10 - CHƯƠNG 1</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css'">
+    
+    <!-- CẤU HÌNH MATHJAX PHẢI ĐẶT TRƯỚC KHI LOAD SCRIPT -->
+    <script>
+        window.MathJax = {
+            tex: { 
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            },
+            startup: {
+                typeset: false // Tắt tự động render ban đầu để chờ xáo trộn DOM xong mới gọi
+            }
+        };
+    </script>
+    <script>
+        // Nạp MathJax: thử lần lượt nhiều CDN, nếu một nguồn bị chặn/lỗi thì chuyển sang nguồn kế tiếp
+        (function () {
+            var urls = [
+                'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js',
+                'https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js'
+            ], i = 0;
+            function load() {
+                if (i >= urls.length) return;
+                var sc = document.createElement('script');
+                sc.src = urls[i++]; sc.async = true; sc.onerror = load;
+                document.head.appendChild(sc);
+            }
+            load();
+        })();
+    </script>
+
+    <style>
+        body { background-color: #f8f9fa; color: #333; }
+        .exam-header { background-color: #0d6efd; color: white; padding: 20px 0; margin-bottom: 20px; border-radius: 0 0 10px 10px; }
+        .q-block { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .opt-container { cursor: pointer; transition: 0.2s; border: 1px solid #dee2e6; display: flex; align-items: baseline; }
+        .opt-container:hover { background-color: #e9ecef; }
+        .opt-container.selected { background-color: #cfe2ff; border-color: #0d6efd; }
+        .opt-container.correct { background-color: #d1e7dd !important; border-color: #198754 !important; }
+        .opt-container.wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; }
+        .q-explanation { background-color: #e2e3e5; border-left: 4px solid #6c757d; }
+        input[type="radio"] { cursor: pointer; }
+        .n-line { position: relative; height: 40px; width: 100%; max-width: 300px; margin: 10px auto; }
+        .n-axis { position: absolute; top: 18px; left: 0; right: 0; height: 2px; background: black; }
+        .n-arrow { position: absolute; top: 14px; right: -5px; border: 5px solid transparent; border-left: 10px solid black; }
+        .n-mark { position: absolute; top: 8px; font-size: 18px; font-weight: bold; transform: translateX(-50%); }
+        .n-label { position: absolute; top: 25px; font-size: 14px; transform: translateX(-50%); }
+        .hatch { background: repeating-linear-gradient(45deg, transparent, transparent 4px, #000 4px, #000 5px); }
+        .n-shade-left { position: absolute; top: 12px; height: 14px; left: 0; }
+        .n-shade-right { position: absolute; top: 12px; height: 14px; right: 0; }
+        
+        @media print {
+            body { background: white; }
+            .no-print { display: none !important; }
+            .q-block { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+            .exam-header { color: black; background: transparent; border-bottom: 2px solid black; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mb-5">
+    <!-- Header -->
+    <div class="exam-header text-center position-relative">
+        <h2 class="text-uppercase fw-bold">ĐỀ ÔN TẬP TOÁN 10 - CHƯƠNG 1</h2>
+        <div class="row justify-content-center mt-3 no-print">
+            <div class="col-md-4">
+                <input type="text" id="studentName" class="form-control" placeholder="Họ và tên học sinh">
+            </div>
+            <div class="col-md-3 mt-2 mt-md-0">
+                <input type="text" id="studentClass" class="form-control" placeholder="Lớp">
+            </div>
+        </div>
+        <div class="mt-3">
+            <span class="badge bg-light text-dark fs-6">Mã đề: <span id="maDe"></span></span>
+            <span class="badge bg-warning text-dark fs-6 ms-2 no-print">Thời gian: <span id="timer">00:00</span></span>
+        </div>
+    </div>
+
+    <!-- Thông báo phục hồi bài -->
+    <div id="mathWarn" class="alert alert-warning d-none no-print">Đang tải thư viện hiển thị công thức toán... Nếu công thức vẫn chưa hiện, hãy kiểm tra kết nối mạng rồi tải lại trang.</div>
+    <div id="restoreMsg" class="alert alert-success d-none no-print">
+        Đã khôi phục bài làm trước đó.
+    </div>
+
+    <!-- Results Panel -->
+    <div id="resultsPanel" class="alert alert-info d-none text-center fs-5 shadow-sm">
+        <h4 class="fw-bold text-success mb-3">KẾT QUẢ BÀI LÀM</h4>
+        <div class="row">
+            <div class="col-md-3">Phần I: <strong id="score1">0</strong> điểm</div>
+            <div class="col-md-3">Phần II: <strong id="score2">0</strong> điểm</div>
+            <div class="col-md-3">Phần III: <strong id="score3">0</strong> điểm</div>
+            <div class="col-md-3">Tổng: <strong class="text-danger fs-4" id="totalScore">0</strong>/<span id="maxTotal">15</span></div>
+        </div>
+        <hr>
+        <p class="mb-1">Tỷ lệ hoàn thành: <strong id="percentComplete">0</strong>% | Thời gian: <strong id="timeTaken">0</strong> phút</p>
+        <div class="mt-2 small no-print"><span id="sendStatus"></span><button id="btnResend" class="btn btn-sm btn-outline-primary ms-2 d-none" onclick="sendToGAS()">Gửi lại</button></div>
+    </div>
+
+    <div id="examContent">
+        <!-- PHẦN I -->
+        <h4 class="fw-bold text-primary mt-4">PHẦN I. Câu hỏi trắc nghiệm nhiều phương án lựa chọn</h4>
+        <p>Mỗi câu hỏi thí sinh chỉ chọn một phương án (0.25 điểm/câu).</p>
+        <div id="part1">
+            <div class="q-block" data-part="1" id="p1q1">
+                <div class="fw-bold"><span class="q-num"></span> <span class="q-text">Mệnh đề phủ định của mệnh đề "$\forall x \in \mathbb{R}:4 x^{2}>5 x - 6$" là</span></div>
+                <div class="q-options row mt-2">
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="false"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q1" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$\forall x \in \mathbb{R}:4 x^{2} \le 5 x - 6$</span></label></div>
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="false"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q1" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$\exists  x \in \mathbb{R}:4 x^{2} < 5 x - 6$</span></label></div>
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="true"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q1" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$\exists  x \in \mathbb{R}:4 x^{2} \le 5 x - 6$</span></label></div>
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="false"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q1" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$\forall x \in \mathbb{R}:4 x^{2} < 5 x - 6$</span></label></div>
+                </div>
+                <div class="q-explanation d-none p-3 mt-2 rounded"><strong>Lời giải:</strong> Mệnh đề phủ định của mệnh đề đã cho là "$\exists  x \in \mathbb{R}:4 x^{2} \le 5 x - 6$".</div>
+            </div>
+
+            <div class="q-block" data-part="1" id="p1q2">
+                <div class="fw-bold"><span class="q-num"></span> <span class="q-text">Mệnh đề phủ định của mệnh đề "$\exists x \in \mathbb{R}:- 4 x^{2} - 7 x=9$" là</span></div>
+                <div class="q-options row mt-2">
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="false"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q2" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$\forall x \in \mathbb{R}:- 4 x^{2} - 7 x \le 9$</span></label></div>
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="false"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q2" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$\exists x \in \mathbb{R}:- 4 x^{2} - 7 x \ne 9$</span></label></div>
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="false"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q2" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$\exists  x \in \mathbb{R}:- 4 x^{2} - 7 x > 9$</span></label></div>
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="true"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q2" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$\forall  x \in \mathbb{R}:- 4 x^{2} - 7 x \ne 9$</span></label></div>
+                </div>
+                <div class="q-explanation d-none p-3 mt-2 rounded"><strong>Lời giải:</strong> Mệnh đề phủ định của mệnh đề đã cho là "$\forall  x \in \mathbb{R}:- 4 x^{2} - 7 x \ne 9$".</div>
+            </div>
+
+            <div class="q-block" data-part="1" id="p1q4">
+                <div class="fw-bold"><span class="q-num"></span> <span class="q-text">Phủ định của mệnh đề "$\exists x\in \mathbb{R}:3{{x}^{2}}+9x+6$ là số dương" là</span></div>
+                <div class="q-options row mt-2">
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="false"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q4" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">"$\forall x\in \mathbb{R}:3{{x}^{2}}+9x+6$ là số âm"</span></label></div>
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="false"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q4" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">"$\forall x\in \mathbb{R}:3{{x}^{2}}+9x+6$ là số dương"</span></label></div>
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="true"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q4" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">"$\forall x\in \mathbb{R}:3{{x}^{2}}+9x+6$ là số không dương"</span></label></div>
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="false"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q4" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">"$\exists x\in \mathbb{R}:3{{x}^{2}}+9x+6$ là số không âm"</span></label></div>
+                </div>
+                <div class="q-explanation d-none p-3 mt-2 rounded"><strong>Lời giải:</strong> Phủ định của $\exists$ là $\forall$. Phủ định của "số dương" là "số không dương".</div>
+            </div>
+
+            <div class="q-block" data-part="1" id="p1q28">
+                <div class="fw-bold"><span class="q-num"></span> <span class="q-text">Cho hai tập hợp $C=\left( -\infty;7 \right),Q=\left[ 0;+\infty \right)$. Khi đó $C\cap Q$ là tập nào sau đây?</span></div>
+                <div class="q-options row mt-2">
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="false"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q28" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$C\cap Q = \left( 0;7 \right)$</span></label></div>
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="false"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q28" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$C\cap Q = \left( 0;7 \right]$</span></label></div>
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="true"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q28" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$C\cap Q = \left[ 0;7 \right)$</span></label></div>
+                    <div class="col-md-6 col-12 opt mb-2" data-correct="false"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q28" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$C\cap Q = \left( -\infty ;+\infty \right)$</span></label></div>
+                </div>
+                <div class="q-explanation d-none p-3 mt-2 rounded">
+                    <strong>Lời giải:</strong> Tập $C\cap Q$ là phần không bị gạch ở cả $C$ và $Q$ nên $x\in \left[ 0;7 \right)$.
+                    <div class="n-line"><div class="n-axis"></div><div class="n-arrow"></div><div class="hatch n-shade-right" style="width: 30%"></div><div class="n-mark" style="left: 70%">)</div ><div class="n-label" style="left: 70%">7</div></div>
+                </div>
+            </div>
+            
+            <div class="q-block" data-part="1" id="p1q34">
+                <div class="fw-bold"><span class="q-num"></span> <span class="q-text">Mỗi học sinh lớp 10B đều chơi bóng đá hoặc bóng chuyền. Biết rằng có $29$ bạn chơi bóng đá, $30$ bạn chơi bóng chuyền và $17$ bạn chơi cả hai môn. Hỏi lớp 10B có bao nhiêu học sinh?</span></div>
+                <div class="q-options row mt-2">
+                    <div class="col-md-3 col-6 opt mb-2" data-correct="false"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q34" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$52$</span></label></div>
+                    <div class="col-md-3 col-6 opt mb-2" data-correct="false"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q34" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$47$</span></label></div>
+                    <div class="col-md-3 col-6 opt mb-2" data-correct="false"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q34" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$37$</span></label></div>
+                    <div class="col-md-3 col-6 opt mb-2" data-correct="true"><label class="w-100 p-2 border rounded opt-container"><input type="radio" name="p1q34" class="me-2 d-none"><span class="opt-label fw-bold"></span><span class="opt-content">$42$</span></label></div>
+                </div>
+                <div class="q-explanation d-none p-3 mt-2 rounded"><strong>Lời giải:</strong> $n(A \cup B) = 29 + 30 - 17 = 42$.</div>
+            </div>
+        </div>
+
+        <!-- PHẦN II -->
+        <h4 class="fw-bold text-primary mt-5">PHẦN II. Câu hỏi trắc nghiệm đúng sai</h4>
+        <div id="part2">
+            <div class="q-block" data-part="2" id="p2q1">
+                <div class="fw-bold"><span class="q-num"></span> <span class="q-text">Cho mệnh đề $P$ là :"$67$ là một số nguyên tố".</span></div>
+                <table class="table table-bordered mt-2">
+                    <tbody>
+                        <tr class="tf-item" data-correct="true" id="tf_p2q1_a">
+                            <td style="width: 30px;">a)</td>
+                            <td>Mệnh đề phủ định của mệnh đề $P$ là $\overline{P}:$"$67$ là một số hợp số"</td>
+                            <td style="width: 140px;" class="text-center">
+                                <div class="btn-group">
+                                    <input type="radio" class="btn-check" name="p2q1_a" id="p2q1_a_t" value="true"><label class="btn btn-outline-success btn-sm" for="p2q1_a_t">Đúng</label>
+                                    <input type="radio" class="btn-check" name="p2q1_a" id="p2q1_a_f" value="false"><label class="btn btn-outline-danger btn-sm" for="p2q1_a_f">Sai</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="tf-item" data-correct="false" id="tf_p2q1_b">
+                            <td>b)</td>
+                            <td>Mệnh $P$ là mệnh đề sai</td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <input type="radio" class="btn-check" name="p2q1_b" id="p2q1_b_t" value="true"><label class="btn btn-outline-success btn-sm" for="p2q1_b_t">Đúng</label>
+                                    <input type="radio" class="btn-check" name="p2q1_b" id="p2q1_b_f" value="false"><label class="btn btn-outline-danger btn-sm" for="p2q1_b_f">Sai</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="tf-item" data-correct="true" id="tf_p2q1_c">
+                            <td>c)</td>
+                            <td>Mệnh đề phủ định của mệnh đề $P$ là $\overline{P}:$"$67$ không là một số nguyên tố"</td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <input type="radio" class="btn-check" name="p2q1_c" id="p2q1_c_t" value="true"><label class="btn btn-outline-success btn-sm" for="p2q1_c_t">Đúng</label>
+                                    <input type="radio" class="btn-check" name="p2q1_c" id="p2q1_c_f" value="false"><label class="btn btn-outline-danger btn-sm" for="p2q1_c_f">Sai</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="tf-item" data-correct="false" id="tf_p2q1_d">
+                            <td>d)</td>
+                            <td>Mệnh đề phủ định của mệnh đề $\overline{P}$ là mệnh đề sai</td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <input type="radio" class="btn-check" name="p2q1_d" id="p2q1_d_t" value="true"><label class="btn btn-outline-success btn-sm" for="p2q1_d_t">Đúng</label>
+                                    <input type="radio" class="btn-check" name="p2q1_d" id="p2q1_d_f" value="false"><label class="btn btn-outline-danger btn-sm" for="p2q1_d_f">Sai</label>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="q-explanation d-none p-3 mt-2 rounded"><strong>Lời giải:</strong> (a) Phủ định hợp số. (b) 67 nguyên tố đúng. (c) Không nguyên tố. (d) Mệnh đề phủ định của $\overline{P}$ là $P$ đúng.</div>
+            </div>
+            
+            <div class="q-block" data-part="2" id="p2q2">
+                <div class="fw-bold"><span class="q-num"></span> <span class="q-text">Các câu sau là đúng hay sai?</span></div>
+                <table class="table table-bordered mt-2">
+                    <tbody>
+                        <tr class="tf-item" data-correct="false">
+                            <td style="width: 30px;">a)</td>
+                            <td>Với hai tập $A = \{1; 2; 4; 5\}$ và $B = \{2; 4; 5\}$, ta có $A \not\subset B$</td>
+                            <td style="width: 140px;" class="text-center">
+                                <div class="btn-group">
+                                    <input type="radio" class="btn-check" name="p2q2_a" id="p2q2_a_t" value="true"><label class="btn btn-outline-success btn-sm" for="p2q2_a_t">Đúng</label>
+                                    <input type="radio" class="btn-check" name="p2q2_a" id="p2q2_a_f" value="false"><label class="btn btn-outline-danger btn-sm" for="p2q2_a_f">Sai</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="tf-item" data-correct="true">
+                            <td>b)</td>
+                            <td>Với hai tập $C = \{x \in \mathbb{R} | x^2 = 2^2\}$ và $D = \{x \in \mathbb{R} | |x| = 2\}$, ta có $C = D$</td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <input type="radio" class="btn-check" name="p2q2_b" id="p2q2_b_t" value="true"><label class="btn btn-outline-success btn-sm" for="p2q2_b_t">Đúng</label>
+                                    <input type="radio" class="btn-check" name="p2q2_b" id="p2q2_b_f" value="false"><label class="btn btn-outline-danger btn-sm" for="p2q2_b_f">Sai</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="tf-item" data-correct="true">
+                            <td>c)</td>
+                            <td>Với $E$ là tập các hình bình hành và $F$ là tập các tứ giác có hai cặp cạnh đối song song, ta có $E = F$</td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <input type="radio" class="btn-check" name="p2q2_c" id="p2q2_c_t" value="true"><label class="btn btn-outline-success btn-sm" for="p2q2_c_t">Đúng</label>
+                                    <input type="radio" class="btn-check" name="p2q2_c" id="p2q2_c_f" value="false"><label class="btn btn-outline-danger btn-sm" for="p2q2_c_f">Sai</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="tf-item" data-correct="true">
+                            <td>d)</td>
+                            <td>Với hai tập $G = \{x \in \mathbb{N} | x \text{ là bội của } 2\}$ và $H = \{x \in \mathbb{N} | x \text{ là bội của } 4\}$, ta có $G \subset H$</td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <input type="radio" class="btn-check" name="p2q2_d" id="p2q2_d_t" value="true"><label class="btn btn-outline-success btn-sm" for="p2q2_d_t">Đúng</label>
+                                    <input type="radio" class="btn-check" name="p2q2_d" id="p2q2_d_f" value="false"><label class="btn btn-outline-danger btn-sm" for="p2q2_d_f">Sai</label>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="q-explanation d-none p-3 mt-2 rounded"><strong>Lời giải:</strong> (a) $A \not\subset B$ là ĐÚNG. (b) C = D = {-2; 2}. (c) ĐÚNG. (d) ĐÚNG.</div>
+            </div>
+        </div>
+
+        <!-- PHẦN III -->
+        <h4 class="fw-bold text-primary mt-5">PHẦN III. Câu trắc nghiệm trả lời ngắn</h4>
+        <div id="part3">
+            <div class="q-block" data-part="3" id="p3q1">
+                <div class="fw-bold"><span class="q-num"></span> <span class="q-text">Cho hai tập hợp $P=\left[ -4;6 \right),Q=\left( 1;9 \right]$. Biết rằng $P\cap Q =(a;b)$. Hỏi giá trị của biểu thức $P=a+b$ bằng bao nhiêu?</span></div>
+                <div class="mt-3">
+                    <input type="text" class="form-control w-50 sa-input border-primary shadow-sm" placeholder="Nhập đáp án (vd: 12.5)" data-correct="7" name="p3q1_ans">
+                </div>
+                <div class="q-explanation d-none p-3 mt-2 rounded"><strong>Lời giải:</strong> $P\cap Q = \left( 1;6 \right)$. Vậy $P=a+b=1+6=7$.</div>
+            </div>
+
+            <div class="q-block" data-part="3" id="p3q2">
+                <div class="fw-bold"><span class="q-num"></span> <span class="q-text">Cho tập $A$ là tập hợp các số tự nhiên, mà mỗi số tự nhiên trong $A$ đều chia hết cho $2$ hoặc chia hết cho $3$, hoặc chia hết cho cả $2$ và $3$. Trong đó có $2159$ số chia hết cho $2$, $2203$ số chia hết cho $3$, $133$ số chia hết cho $6$. Số phần tử của tập $A$ bằng bao nhiêu?</span></div>
+                <div class="mt-3">
+                    <input type="text" class="form-control w-50 sa-input border-primary shadow-sm" placeholder="Nhập đáp án (vd: 12.5)" data-correct="4229" name="p3q2_ans">
+                </div>
+                <div class="q-explanation d-none p-3 mt-2 rounded"><strong>Lời giải:</strong> $n(A) = 2159 + 2203 - 133 = 4229$.</div>
+            </div>
+            
+            <div class="q-block" data-part="3" id="p3q4">
+                <div class="fw-bold"><span class="q-num"></span> <span class="q-text">Kết quả khảo sát tại lớp 11A1 có: $23$ học sinh thích môn Toán; $18$ học sinh thích Vật lý và $17$ học sinh thích môn Hóa học. Biết rằng có $11$ học sinh thích hai môn Toán và Vật lý; $6$ học sinh thích hai môn Vật lý và Hóa học; $8$ học sinh thích hai môn Toán và Hóa học; $4$ học sinh thích cả ba môn. Số học sinh thích ít nhất một trong ba môn Toán, Vật lý và Hóa học bằng bao nhiêu?</span></div>
+                <div class="mt-3">
+                    <!-- SVG Equivalent for TikZ Venn Diagram -->
+                    <svg viewBox="-50 -50 250 200" width="100%" style="max-width:250px; display:block; margin:auto;" class="mb-3">
+                      <circle cx="50" cy="50" r="60" fill="rgba(0,0,255,0.1)" stroke="black"/>
+                      <text x="20" y="20" text-anchor="middle" font-weight="bold">T</text>
+                      <circle cx="120" cy="50" r="60" fill="rgba(0,0,255,0.1)" stroke="black"/>
+                      <text x="150" y="20" text-anchor="middle" font-weight="bold">V</text>
+                      <circle cx="85" cy="110" r="60" fill="rgba(0,0,255,0.1)" stroke="black"/>
+                      <text x="85" y="150" text-anchor="middle" font-weight="bold">H</text>
+                      <text x="85" y="75" text-anchor="middle" font-weight="bold">4</text>
+                    </svg>
+                    <input type="text" class="form-control w-50 sa-input border-primary shadow-sm" placeholder="Nhập đáp án (vd: 12.5)" data-correct="37" name="p3q4_ans">
+                </div>
+                <div class="q-explanation d-none p-3 mt-2 rounded"><strong>Lời giải:</strong> Theo nguyên lý bù trừ: $23 + 18 + 17 - (11 + 6 + 8) + 4 = 37$.</div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="text-center mt-5 mb-5 no-print" id="actionButtons">
+            <button class="btn btn-primary btn-lg px-5 shadow" id="btnSubmit" onclick="submitExam()">NỘP BÀI</button>
+            <button class="btn btn-success btn-lg px-5 shadow d-none ms-2" id="btnRetry" onclick="resetExam()">LÀM LẠI BÀI</button>
+            <button class="btn btn-secondary btn-lg px-4 shadow d-none ms-2" id="btnPrint" onclick="window.print()">IN KẾT QUẢ PDF</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const EXAM_ID = "de_on_tap_toan_10_ch1_fixed";
+    // ====== GỬI ĐIỂM LÊN GOOGLE SHEET (Apps Script) ======
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwgq1UZ315UkIn8JPJLYAdC8WHEiYJ5drb_9RxMfOQ8h8lQ2Kk-wOhC1o2BUgTmuopZBQ/exec'; // dán URL /exec của bạn
+    const SHEET_NAME = 't10-ch1';   // tên tab nhận điểm trong Google Sheet
+    let lastPayload = null;
+
+    function sendToGAS() {
+        const st = document.getElementById('sendStatus'), rb = document.getElementById('btnResend');
+        rb.classList.add('d-none'); st.className = 'text-secondary'; st.innerText = 'Đang gửi điểm lên Google Sheet...';
+        fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(lastPayload) })
+            .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            .then(d => {
+                if (d.status !== 'success') throw new Error(d.message || 'Lỗi không rõ');
+                st.className = 'text-success fw-bold'; st.innerText = '✔ ' + d.message;
+            })
+            .catch(e => {
+                console.error('Lỗi gửi điểm:', e);
+                st.className = 'text-danger fw-bold';
+                st.innerText = '✘ Chưa gửi được điểm (' + e.message + '). Kiểm tra mạng rồi bấm "Gửi lại".';
+                rb.classList.remove('d-none');
+            });
+    }
+
+    let startTime = Date.now();
+    let timerInterval = null;
+    let timeElapsed = 0;
+    let isSubmitted = false;
+    const fmt = v => +Number(v).toFixed(2);
+
+    // ===== HIỂN THỊ CÔNG THỨC: đợi MathJax tải xong (script nạp bất đồng bộ) rồi mới render =====
+    let mathTries = 0;
+    function renderMath() {
+        const ready = window.MathJax && MathJax.startup && MathJax.startup.promise && MathJax.typesetPromise;
+        if (ready) {
+            MathJax.startup.promise
+                .then(() => MathJax.typesetPromise())
+                .then(() => document.getElementById('mathWarn').classList.add('d-none'))
+                .catch(err => console.error('MathJax lỗi:', err));
+            return;
+        }
+        if (++mathTries === 40) document.getElementById('mathWarn').classList.remove('d-none'); // ~8 giây vẫn chưa tải được
+        if (mathTries < 400) setTimeout(renderMath, 200);
+    }
+
+    // ===== Thứ tự câu/phương án: gán chỉ số gốc, lưu và khôi phục =====
+    function tagOptions() {
+        document.querySelectorAll('#part1 .q-block').forEach(q => q.querySelectorAll('.opt').forEach((o, i) => o.dataset.oi = i));
+    }
+    function relabel() {
+        ['part1', 'part2', 'part3'].forEach(p => document.querySelectorAll('#' + p + ' .q-block').forEach((q, i) => { q.querySelector('.q-num').innerText = 'Câu ' + (i + 1) + ':'; }));
+        document.querySelectorAll('#part1 .q-block').forEach(q => q.querySelectorAll('.opt').forEach((o, k) => { o.querySelector('.opt-label').innerText = String.fromCharCode(65 + k) + '. '; }));
+    }
+    function captureOrder() {
+        const o = { opts: {} };
+        ['part1', 'part2', 'part3'].forEach(p => o[p] = [...document.querySelectorAll('#' + p + ' .q-block')].map(q => q.id));
+        document.querySelectorAll('#part1 .q-block').forEach(q => o.opts[q.id] = [...q.querySelectorAll('.opt')].map(x => x.dataset.oi));
+        return o;
+    }
+    function applyOrder(o) {
+        if (!o) return;
+        ['part1', 'part2', 'part3'].forEach(p => { const c = document.getElementById(p); (o[p] || []).forEach(id => { const el = document.getElementById(id); if (el) c.appendChild(el); }); });
+        document.querySelectorAll('#part1 .q-block').forEach(q => {
+            const wrap = q.querySelector('.q-options');
+            ((o.opts || {})[q.id] || []).forEach(oi => { const el = q.querySelector('.opt[data-oi="' + oi + '"]'); if (el) wrap.appendChild(el); });
+        });
+        relabel();
+    }
+
+    // Shuffle Array
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    // Initialize Questions
+    function initExam(isNew = true) {
+        if(isNew) {
+            document.getElementById('maDe').innerText = Math.floor(Math.random() * 90000 + 10000);
+            document.getElementById('studentName').value = "";
+            document.getElementById('studentClass').value = "";
+            
+            // Shuffle Part 1
+            let p1 = Array.from(document.querySelectorAll('#part1 .q-block'));
+            shuffle(p1);
+            p1.forEach((q, i) => {
+                q.querySelector('.q-num').innerText = 'Câu ' + (i + 1) + ':';
+                document.getElementById('part1').appendChild(q);
+                let opts = Array.from(q.querySelectorAll('.opt'));
+                shuffle(opts);
+                opts.forEach((o, oIdx) => {
+                    let label = String.fromCharCode(65 + oIdx) + '. ';
+                    o.querySelector('.opt-label').innerText = label;
+                    q.querySelector('.q-options').appendChild(o);
+                });
+            });
+
+            // Shuffle Part 2 (Main questions only)
+            let p2 = Array.from(document.querySelectorAll('#part2 .q-block'));
+            shuffle(p2);
+            p2.forEach((q, i) => {
+                q.querySelector('.q-num').innerText = 'Câu ' + (i + 1) + ':';
+                document.getElementById('part2').appendChild(q);
+            });
+
+            // Shuffle Part 3
+            let p3 = Array.from(document.querySelectorAll('#part3 .q-block'));
+            shuffle(p3);
+            p3.forEach((q, i) => {
+                q.querySelector('.q-num').innerText = 'Câu ' + (i + 1) + ':';
+                document.getElementById('part3').appendChild(q);
+            });
+            
+            saveState();
+        }
+
+        // Start Timer
+        startTime = Date.now() - (timeElapsed * 1000);
+        if(!isSubmitted) {
+            timerInterval = setInterval(() => {
+                timeElapsed = Math.floor((Date.now() - startTime) / 1000);
+                let m = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
+                let s = (timeElapsed % 60).toString().padStart(2, '0');
+                document.getElementById('timer').innerText = m + ':' + s;
+                if (timeElapsed % 10 === 0) saveState();
+            }, 1000);
+        }
+        
+        // Render công thức sau khi đã xáo trộn DOM
+        renderMath();
+    }
+
+    // Options UI Interaction
+    document.querySelectorAll('.opt-container input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            if(isSubmitted) return;
+            let group = this.closest('.q-options').querySelectorAll('.opt-container');
+            group.forEach(g => g.classList.remove('selected'));
+            this.closest('.opt-container').classList.add('selected');
+        });
+    });
+
+    // Save State
+    function saveState() {
+        if(isSubmitted) return;
+        let data = {
+            maDe: document.getElementById('maDe').innerText,
+            studentName: document.getElementById('studentName').value,
+            studentClass: document.getElementById('studentClass').value,
+            timeElapsed: timeElapsed,
+            isSubmitted: false,
+            order: captureOrder(),
+            p1: {}, p2: {}, p3: {}
+        };
+        document.querySelectorAll('#part1 .q-block').forEach(q => {
+            let checked = q.querySelector('input[type="radio"]:checked');
+            if(checked) data.p1[q.id] = checked.closest('.opt').dataset.oi;
+        });
+        document.querySelectorAll('#part2 .tf-item').forEach(item => {
+            let checked = item.querySelector('input[type="radio"]:checked');
+            if(checked) data.p2[item.id] = checked.value;
+        });
+        document.querySelectorAll('#part3 .sa-input').forEach(input => {
+            if(input.value.trim() !== "") data.p3[input.name] = input.value;
+        });
+        localStorage.setItem(EXAM_ID, JSON.stringify(data));
+    }
+
+    // Restore Session
+    function restoreSession(data) {
+        document.getElementById('maDe').innerText = data.maDe || "00000";
+        document.getElementById('studentName').value = data.studentName || "";
+        document.getElementById('studentClass').value = data.studentClass || "";
+        timeElapsed = data.timeElapsed || 0;
+        
+        if(data.p3) {
+            for(let key in data.p3) {
+                let el = document.querySelector(`input[name="${key}"]`);
+                if(el) el.value = data.p3[key];
+            }
+        }
+        
+        applyOrder(data.order);
+        for (const qid in (data.p1 || {})) {
+            const q = document.getElementById(qid), o = q && q.querySelector('.opt[data-oi="' + data.p1[qid] + '"]');
+            if (o) { o.querySelector('input').checked = true; o.querySelector('.opt-container').classList.add('selected'); }
+        }
+        for (const id in (data.p2 || {})) {
+            const it = document.getElementById(id), r = it && it.querySelector('input[value="' + data.p2[id] + '"]');
+            if (r) r.checked = true;
+        }
+
+        if(!data.isSubmitted) {
+            document.getElementById('restoreMsg').classList.remove('d-none');
+            setTimeout(() => document.getElementById('restoreMsg').classList.add('d-none'), 3000);
+            initExam(false);
+        } else {
+            isSubmitted = true;
+        }
+    }
+
+    function resetExam() {
+        localStorage.removeItem(EXAM_ID);
+        location.reload();
+    }
+
+    // Submit Exam
+    function submitExam() {
+        let totalBlocks = document.querySelectorAll('.q-block').length;
+        let answered = 0;
+        
+        document.querySelectorAll('#part1 .q-block').forEach(q => { if(q.querySelector('input:checked')) answered++; });
+        document.querySelectorAll('#part2 .q-block').forEach(q => { if(q.querySelector('input:checked')) answered++; });
+        document.querySelectorAll('#part3 .sa-input').forEach(input => { if(input.value.trim() !== "") answered++; });
+
+        let percent = Math.round((answered / totalBlocks) * 100);
+        if (percent < 50) {
+            alert("Bạn phải làm ít nhất 50% số câu hỏi mới được nộp bài (Đã làm: " + percent + "%).");
+            return;
+        }
+
+        if (!document.getElementById('studentName').value.trim()) { alert("Vui lòng nhập Họ và Tên trước khi nộp bài!"); return; }
+        if (!confirm("Bạn có chắc chắn muốn nộp bài?")) return;
+        clearInterval(timerInterval);
+        isSubmitted = true;
+
+        let score1 = 0, score2 = 0, score3 = 0;
+
+        // Grade Part 1
+        document.querySelectorAll('#part1 .q-block').forEach(q => {
+            let opts = q.querySelectorAll('.opt');
+            opts.forEach(opt => {
+                let container = opt.querySelector('.opt-container');
+                let radio = opt.querySelector('input[type="radio"]');
+                if (opt.dataset.correct === "true") {
+                    container.classList.add('correct');
+                    if (radio.checked) score1 += 0.25;
+                } else if (radio.checked) {
+                    container.classList.add('wrong');
+                }
+                radio.disabled = true;
+            });
+            q.querySelector('.q-explanation').classList.remove('d-none');
+        });
+
+        // Grade Part 2
+        document.querySelectorAll('#part2 .q-block').forEach(q => {
+            let correctCount = 0;
+            q.querySelectorAll('.tf-item').forEach(item => {
+                let isTrue = item.dataset.correct === "true";
+                let checked = item.querySelector('input:checked');
+                
+                item.querySelectorAll('.btn-outline-success, .btn-outline-danger').forEach(b => b.classList.add('opacity-50'));
+                
+                if (checked) {
+                    let userVal = checked.value === "true";
+                    if (userVal === isTrue) correctCount++;
+                    else checked.nextElementSibling.classList.add('border', 'border-3', 'border-dark'); 
+                }
+                
+                if(isTrue) {
+                    item.querySelector('input[value="true"]').nextElementSibling.classList.remove('opacity-50', 'btn-outline-success');
+                    item.querySelector('input[value="true"]').nextElementSibling.classList.add('btn-success');
+                } else {
+                    item.querySelector('input[value="false"]').nextElementSibling.classList.remove('opacity-50', 'btn-outline-danger');
+                    item.querySelector('input[value="false"]').nextElementSibling.classList.add('btn-danger');
+                }
+                item.querySelectorAll('input').forEach(i => i.disabled = true);
+            });
+            if (correctCount === 1) score2 += 0.1;
+            else if (correctCount === 2) score2 += 0.25;
+            else if (correctCount === 3) score2 += 0.5;
+            else if (correctCount === 4) score2 += 1.0;
+            q.querySelector('.q-explanation').classList.remove('d-none');
+        });
+
+        // Grade Part 3
+        document.querySelectorAll('#part3 .q-block').forEach(q => {
+            let input = q.querySelector('.sa-input');
+            let userVal = input.value.trim().replace(',', '.');
+            let correctVal = parseFloat(input.dataset.correct.replace(',', '.'));
+            if (userVal !== "" && Math.abs(parseFloat(userVal) - correctVal) < 0.001) {
+                score3 += 0.5;
+                input.classList.add('is-valid', 'bg-success', 'text-white');
+            } else {
+                input.classList.add('is-invalid');
+                input.value = input.value + " (Đ.Án: " + input.dataset.correct + ")";
+            }
+            input.disabled = true;
+            q.querySelector('.q-explanation').classList.remove('d-none');
+        });
+
+        let totalScore = score1 + score2 + score3;
+        
+        // UI Updates
+        document.getElementById('score1').innerText = fmt(score1);
+        document.getElementById('score2').innerText = fmt(score2);
+        document.getElementById('score3').innerText = fmt(score3);
+        document.getElementById('totalScore').innerText = fmt(totalScore);
+        document.getElementById('percentComplete').innerText = percent;
+        document.getElementById('timeTaken').innerText = Math.round(timeElapsed / 60);
+        
+        document.getElementById('resultsPanel').classList.remove('d-none');
+        document.getElementById('btnSubmit').classList.add('d-none');
+        document.getElementById('btnRetry').classList.remove('d-none');
+        document.getElementById('btnPrint').classList.remove('d-none');
+        
+        document.getElementById('studentName').readOnly = true;
+        document.getElementById('studentClass').readOnly = true;
+
+        localStorage.setItem(EXAM_ID, JSON.stringify({ isSubmitted: true }));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        lastPayload = {
+            sheetName: SHEET_NAME,
+            student_name: document.getElementById('studentName').value.trim(),
+            class_name: document.getElementById('studentClass').value.trim(),
+            exam_code: document.getElementById('maDe').innerText,
+            part1_score: fmt(score1), part2_score: fmt(score2), part3_score: fmt(score3), total_score: fmt(totalScore),
+            submit_time: new Date().toISOString(),
+            duration_minutes: Math.round(timeElapsed / 60),
+            percent: percent
+        };
+        sendToGAS();
+    }
+
+    // Startup
+    document.addEventListener("DOMContentLoaded", () => {
+        tagOptions();
+        const n = sel => document.querySelectorAll(sel).length;
+        document.getElementById('maxTotal').innerText = fmt(n('#part1 .q-block') * 0.25 + n('#part2 .q-block') * 1 + n('#part3 .q-block') * 0.5);
+        // lưu ngay khi học sinh chọn/nhập đáp án
+        ['change', 'input'].forEach(ev => document.addEventListener(ev, () => { if (!isSubmitted) saveState(); }));
+        let saved = localStorage.getItem(EXAM_ID);
+        if (saved) {
+            let data = JSON.parse(saved);
+            if (!data.isSubmitted && data.order) {
+                restoreSession(data);
+            } else {
+                initExam(true);
+            }
+        } else {
+            initExam(true);
+        }
+    });
+</script>
+</body>
+</html>
