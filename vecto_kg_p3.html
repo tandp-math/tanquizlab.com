@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐỀ ÔN TẬP TOÁN 12 – VECTO_KG_P3</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- MathJax -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                macros: {
+                    hoac: ["\\left[\\begin{aligned}#1\\end{aligned}\\right.", 1],
+                    heva: ["\\left\\{\\begin{aligned}#1\\end{aligned}\\right.", 1],
+                    mathscr: ["\\mathcal{#1}", 1]
+                }
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --bg-color: #f8fbff;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+
+        /* Header Styles */
+        .header-box {
+            background-color: var(--bg-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.05);
+        }
+
+        /* Section Titles */
+        .part-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 40px;
+            margin-bottom: 25px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        /* Question Cards */
+        .question-card {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            background-color: #fcfcfc;
+            transition: all 0.3s ease;
+        }
+
+        /* Solution Box */
+        .solution-box {
+            background-color: #f1f5f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            border-radius: 0 8px 8px 0;
+            overflow-x: auto;
+        }
+
+        /* Sticky Toolbar */
+        .sticky-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        /* Result Board */
+        #result-board {
+            display: none;
+            background-color: var(--bg-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .opt-correct { color: var(--success-color); font-weight: 700; }
+        .opt-wrong { color: var(--danger-color); font-weight: 700; text-decoration: line-through; }
+        
+        /* Toast Notification */
+        .toast-notify {
+            position: fixed; 
+            bottom: 30px; 
+            right: 30px; 
+            background: var(--success-color); 
+            color: white;
+            padding: 15px 25px; 
+            border-radius: 8px; 
+            opacity: 0; 
+            visibility: hidden;
+            transition: all 0.5s ease; 
+            z-index: 9999;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            font-weight: 600;
+            transform: translateY(20px);
+        }
+        .toast-notify.show { 
+            opacity: 1; 
+            visibility: visible; 
+            transform: translateY(0);
+        }
+
+        /* Input Customizations */
+        .form-check-input {
+            cursor: pointer;
+            width: 1.2em;
+            height: 1.2em;
+        }
+        .form-check-input:checked { 
+            background-color: var(--primary-color); 
+            border-color: var(--primary-color); 
+        }
+        
+        .svg-container svg { max-width: 100%; height: auto; }
+        .svg-container {
+            text-align: center;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        /* Print Media Queries */
+        @media print {
+            body { background-color: white; color: black; }
+            .sticky-toolbar, .no-print, .toast-notify { display: none !important; }
+            .solution-box { 
+                display: block !important; 
+                break-inside: avoid; 
+                border-left-color: #6c757d; 
+                background-color: transparent; 
+                border: 1px solid #ccc;
+            }
+            .question-card { 
+                break-inside: avoid; 
+                border: none; 
+                border-bottom: 2px solid #000; 
+                background-color: transparent; 
+                padding: 15px 0; 
+            }
+            #result-board { 
+                display: block !important; 
+                border: 2px solid #000; 
+                box-shadow: none; 
+            }
+            .header-box { border: 2px solid #000; background-color: transparent;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-4">
+    <!-- Header Section -->
+    <div class="header-box text-center">
+        <h2 class="fw-bold text-primary mb-2">ĐỀ ÔN TẬP TOÁN 12 – VECTO_KG_P3</h2>
+        <p class="text-muted mb-4">Vectơ trong không gian &nbsp;|&nbsp; Mỗi lần vào lại, đề được trộn mới để luyện tập</p>
+        <div class="row justify-content-center g-3">
+            <div class="col-md-4">
+                <input type="text" id="input_name" class="form-control border-primary shadow-sm" placeholder="Nhập Họ và Tên" oninput="triggerSave()">
+            </div>
+            <div class="col-md-3">
+                <input type="text" id="input_class" class="form-control border-primary shadow-sm" placeholder="Nhập Lớp" oninput="triggerSave()">
+            </div>
+            <div class="col-md-3">
+                <div class="form-control bg-white text-start border-primary shadow-sm fw-bold">
+                    Mã đề: <span id="lbl_exam_code" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Toolbar -->
+    <div class="sticky-toolbar text-center no-print">
+        <span class="fw-bold text-primary fs-5 me-4">
+            Đã làm: <span id="lbl_answered" class="text-danger">0</span> / <span id="lbl_total" class="text-danger">0</span> câu
+        </span>
+        <button id="btn_submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm" onclick="submitExam()">NỘP BÀI</button>
+        <button id="btn_retake" class="btn btn-warning px-4 py-2 fw-bold shadow-sm ms-2" onclick="retakeExam()">TRỘN ĐỀ MỚI</button>
+        <button id="btn_print" class="btn btn-success px-4 py-2 fw-bold shadow-sm d-none ms-2" onclick="window.print()">IN KẾT QUẢ PDF</button>
+    </div>
+
+    <!-- Results Board -->
+    <div id="result-board" class="text-center">
+        <h3 class="text-success fw-bold mb-4">KẾT QUẢ BÀI LÀM</h3>
+        <div class="row fw-bold text-primary fs-5 mb-4">
+            <div class="col-md-3">Phần I: <span id="res_p1" class="text-danger"></span> / <span id="max_p1"></span></div>
+            <div class="col-md-3">Phần II: <span id="res_p2" class="text-danger"></span> / <span id="max_p2"></span></div>
+            <div class="col-md-3">Phần III: <span id="res_p3" class="text-danger"></span> / <span id="max_p3"></span></div>
+            <div class="col-md-3 text-danger fs-4 border-start border-danger">TỔNG: <span id="res_total"></span> / <span id="max_total"></span></div>
+        </div>
+        <hr class="border-secondary">
+        <div class="row fs-6 text-muted fw-semibold">
+            <div class="col-md-6">Tỷ lệ hoàn thành: <span id="res_percent" class="text-dark"></span>%</div>
+            <div class="col-md-6">Thời gian làm bài: <span id="res_time" class="text-dark"></span> phút</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="exam-content">
+        <!-- Part 1 -->
+        <h4 class="part-title">PHẦN I. CÂU HỎI TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN</h4>
+        <p class="fst-italic text-muted">Mỗi câu trả lời đúng được 0.25 điểm.</p>
+        <div id="wrap_p1"></div>
+
+        <!-- Part 2 -->
+        <h4 class="part-title">PHẦN II. CÂU HỎI TRẮC NGHIỆM ĐÚNG SAI</h4>
+        <p class="fst-italic text-muted">Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai. Điểm: Đúng 1 ý: 0.1đ | Đúng 2 ý: 0.25đ | Đúng 3 ý: 0.5đ | Đúng 4 ý: 1.0đ.</p>
+        <div id="wrap_p2"></div>
+
+        <!-- Part 3 -->
+        <h4 class="part-title">PHẦN III. CÂU TRẮC NGHIỆM TRẢ LỜI NGẮN</h4>
+        <p class="fst-italic text-muted">Mỗi câu trả lời đúng được 0.5 điểm.</p>
+        <div id="wrap_p3"></div>
+    </div>
+</div>
+
+<!-- Notification Toast -->
+<div id="toast-msg" class="toast-notify">
+    Đã khôi phục bài làm trước đó.
+</div>
+
+<script>
+    const DATA = {"part1":[{"text":"Cho hình chóp $S.ABCD$ có đáy $ABCD$ là hình bình hành. Gọi $M, N, O$ lần lượt là trung điểm của $AB, CD$ và $AC$. Khẳng định nào sau đây là đúng?","options":[{"text":"$\\overrightarrow{SA}$ và $\\overrightarrow{BN}$ có giá cùng nằm trong một mặt phẳng","correct":0},{"text":"$\\overrightarrow{SD}$ và $\\overrightarrow{AM}$ có giá cùng nằm trong một mặt phẳng","correct":0},{"text":"$\\overrightarrow{SO}$ và $\\overrightarrow{MN}$ có giá cùng nằm trong một mặt phẳng","correct":0},{"text":"$\\overrightarrow{SA}$ và $\\overrightarrow{SC}$ có giá cùng nằm trong một mặt phẳng","correct":1}],"solution":"<div class=\"svg-container\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-76.6 -162.0 307.2 243.0\" width=\"307\" style=\"max-width:100%;height:auto;font-family:'Times New Roman',Times,serif\" role=\"img\"><line x1=\"26.00\" y1=\"0.00\" x2=\"208.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"26.00\" y1=\"0.00\" x2=\"-52.00\" y2=\"52.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"-52.00\" y1=\"52.00\" x2=\"130.00\" y2=\"52.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"130.00\" y1=\"52.00\" x2=\"208.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"26.00\" y1=\"0.00\" x2=\"130.00\" y2=\"52.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"-52.00\" y1=\"52.00\" x2=\"208.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"52.00\" y1=\"-130.00\" x2=\"26.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"52.00\" y1=\"-130.00\" x2=\"-52.00\" y2=\"52.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"52.00\" y1=\"-130.00\" x2=\"130.00\" y2=\"52.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"52.00\" y1=\"-130.00\" x2=\"208.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"-13.00\" y1=\"26.00\" x2=\"169.00\" y2=\"26.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><circle cx=\"-13.00\" cy=\"26.00\" r=\"2.3\" fill=\"#111\"/><circle cx=\"169.00\" cy=\"26.00\" r=\"2.3\" fill=\"#111\"/><circle cx=\"78.00\" cy=\"26.00\" r=\"2.3\" fill=\"#111\"/><text x=\"52.00\" y=\"-138.00\" text-anchor=\"middle\" font-size=\"16\" font-style=\"italic\">S</text><text x=\"21.00\" y=\"-6.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">A</text><text x=\"-59.00\" y=\"57.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">B</text><text x=\"130.00\" y=\"69.00\" text-anchor=\"middle\" font-size=\"16\" font-style=\"italic\">C</text><text x=\"213.00\" y=\"-6.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">D</text><text x=\"-20.00\" y=\"31.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">M</text><text x=\"176.00\" y=\"31.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">N</text><text x=\"78.00\" y=\"43.00\" text-anchor=\"middle\" font-size=\"16\" font-style=\"italic\">O</text></svg></div>Hai vectơ $\\overrightarrow{SA}$ và $\\overrightarrow{SC}$ có giá là hai đường thẳng cắt nhau tại $S$ nên chúng cùng nằm trong mặt phẳng $(SAC)$."},{"text":"Cho tứ diện đều $ABCD$ có độ dài cạnh bằng $1$. Tích vô hướng $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$ bằng","options":[{"text":"$\\dfrac{3}{2}$","correct":0},{"text":"$-1$","correct":0},{"text":"$\\dfrac{1}{2}$","correct":1},{"text":"$0$","correct":0}],"solution":"Tam giác $ABC$ đều nên $\\left(\\overrightarrow{AB},\\overrightarrow{AC}\\right)=60^\\circ$.<br>$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\left|\\overrightarrow{AB}\\right|\\cdot\\left|\\overrightarrow{AC}\\right|\\cdot\\cos\\left(\\overrightarrow{AB},\\overrightarrow{AC}\\right)=1\\cdot 1\\cdot\\cos 60^\\circ=\\dfrac{1}{2}$."},{"text":"Cho hình lập phương $ABCD.A'B'C'D'$ có cạnh bằng $4a$. Tích vô hướng $\\overrightarrow{AC}\\cdot\\overrightarrow{C'A'}$ bằng","options":[{"text":"$-32a$","correct":0},{"text":"$48a^2$","correct":0},{"text":"$32a^2$","correct":0},{"text":"$-32a^2$","correct":1}],"solution":"Vì $AC,\\ C'A'$ là các đường chéo của hai hình vuông cạnh $4a$ nên $\\left|\\overrightarrow{AC}\\right|=\\left|\\overrightarrow{C'A'}\\right|=4a\\sqrt{2}$.<br>\n$\\overrightarrow{AC}$ và $\\overrightarrow{C'A'}$ ngược hướng nên $\\left(\\overrightarrow{AC},\\overrightarrow{C'A'}\\right)=180^\\circ$.<br>Suy ra\n$$\\overrightarrow{AC}\\cdot\\overrightarrow{C'A'}=\\left|\\overrightarrow{AC}\\right|\\cdot\\left|\\overrightarrow{C'A'}\\right|\\cdot\\cos 180^\\circ=4a\\sqrt{2}\\cdot 4a\\sqrt{2}\\cdot(-1)=-32a^2.$$","fig":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-34.2 -202.0 270.4 230.0\" width=\"270\" style=\"max-width:100%;height:auto;font-family:'Times New Roman',Times,serif\" role=\"img\"><line x1=\"0.00\" y1=\"0.00\" x2=\"136.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"136.00\" y1=\"0.00\" x2=\"204.00\" y2=\"-68.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"204.00\" y1=\"-68.00\" x2=\"68.00\" y2=\"-68.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"68.00\" y1=\"-68.00\" x2=\"0.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"0.00\" y2=\"-102.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"136.00\" y1=\"0.00\" x2=\"136.00\" y2=\"-102.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"204.00\" y1=\"-68.00\" x2=\"204.00\" y2=\"-170.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"68.00\" y1=\"-68.00\" x2=\"68.00\" y2=\"-170.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"0.00\" y1=\"-102.00\" x2=\"136.00\" y2=\"-102.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"136.00\" y1=\"-102.00\" x2=\"204.00\" y2=\"-170.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"204.00\" y1=\"-170.00\" x2=\"68.00\" y2=\"-170.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"68.00\" y1=\"-170.00\" x2=\"0.00\" y2=\"-102.00\" stroke=\"#111\" stroke-width=\"1.4\"/><text x=\"-5.00\" y=\"16.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">A</text><text x=\"141.00\" y=\"16.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">B</text><text x=\"211.00\" y=\"-63.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">C</text><text x=\"73.00\" y=\"-74.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">D</text><text x=\"-7.00\" y=\"-97.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">A′</text><text x=\"141.00\" y=\"-86.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">B′</text><text x=\"209.00\" y=\"-176.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">C′</text><text x=\"68.00\" y=\"-178.00\" text-anchor=\"middle\" font-size=\"16\" font-style=\"italic\">D′</text></svg>"},{"text":"Cho hình lập phương $ABCD.A'B'C'D'$. Phát biểu nào sau đây đúng?","options":[{"text":"$\\overrightarrow{A'D'}+\\overrightarrow{A'B'}=\\overrightarrow{A'C'}$","correct":1},{"text":"$\\overrightarrow{AA'}+\\overrightarrow{A'B'}=\\overrightarrow{AB}$","correct":0},{"text":"$\\overrightarrow{A'B'}+\\overrightarrow{B'C'}=\\overrightarrow{AC'}$","correct":0},{"text":"$\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AA'}=\\overrightarrow{AB}$","correct":0}],"solution":"Theo quy tắc hình bình hành trong mặt phẳng $(A'B'C'D')$, ta có $\\overrightarrow{A'D'}+\\overrightarrow{A'B'}=\\overrightarrow{A'C'}$. Do đó A đúng.<br>\nCác phương án còn lại sai vì: $\\overrightarrow{AA'}+\\overrightarrow{A'B'}=\\overrightarrow{AB'}\\neq\\overrightarrow{AB}$; $\\overrightarrow{A'B'}+\\overrightarrow{B'C'}=\\overrightarrow{A'C'}\\neq\\overrightarrow{AC'}$; $\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AA'}=\\overrightarrow{AC'}\\neq\\overrightarrow{AB}$."},{"text":"Cho hình lập phương $ABCD.A'B'C'D'$. Khẳng định nào sau đây là đúng?","options":[{"text":"$\\overrightarrow{AB}+\\overrightarrow{AD}=\\overrightarrow{AC}$","correct":1},{"text":"$\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AA'}=\\overrightarrow{AB}$","correct":0},{"text":"$\\overrightarrow{AC}+\\overrightarrow{A'C'}=2\\overrightarrow{A'B'}$","correct":0},{"text":"$\\overrightarrow{A'B'}+\\overrightarrow{B'C'}=\\overrightarrow{AC'}$","correct":0}],"solution":"Theo quy tắc hình bình hành trong mặt phẳng $(ABCD)$, ta có $\\overrightarrow{AB}+\\overrightarrow{AD}=\\overrightarrow{AC}$. Do đó A đúng.<br>\nCác phương án còn lại sai vì: $\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AA'}=\\overrightarrow{AC'}$; $\\overrightarrow{AC}+\\overrightarrow{A'C'}=2\\overrightarrow{AC}$; $\\overrightarrow{A'B'}+\\overrightarrow{B'C'}=\\overrightarrow{A'C'}$."},{"text":"Cho hình lập phương $ABCD.A'B'C'D'$ có cạnh $5$. Đặt $\\vec{u}=\\overrightarrow{A'C'}-\\overrightarrow{A'A}$. Độ dài của vectơ $\\vec{u}$ bằng","options":[{"text":"$5\\sqrt{3}$","correct":1},{"text":"$5\\sqrt{2}$","correct":0},{"text":"$1+5\\sqrt{3}$","correct":0},{"text":"$5$","correct":0}],"solution":"Ta có $\\vec{u}=\\overrightarrow{A'C'}-\\overrightarrow{A'A}=\\overrightarrow{A'C'}+\\overrightarrow{AA'}=\\overrightarrow{AC'}$.<br>\nĐây là vectơ đường chéo của hình lập phương cạnh $5$. Do đó $|\\vec{u}|=AC'=5\\sqrt{3}$."},{"text":"Cho hình lập phương $ABCD.A'B'C'D'$. Góc giữa hai vectơ $\\overrightarrow{BC}$ và $\\overrightarrow{DA'}$ bằng","options":[{"text":"$120^\\circ$","correct":0},{"text":"$60^\\circ$","correct":0},{"text":"$90^\\circ$","correct":0},{"text":"$135^\\circ$","correct":1}],"solution":"Vì $ABCD$ là hình vuông nên $\\overrightarrow{BC}=\\overrightarrow{AD}$, suy ra $\\left(\\overrightarrow{BC},\\overrightarrow{DA'}\\right)=\\left(\\overrightarrow{AD},\\overrightarrow{DA'}\\right)$.<br>\n$\\overrightarrow{AD}=-\\overrightarrow{DA}$ nên $\\left(\\overrightarrow{AD},\\overrightarrow{DA'}\\right)=180^\\circ-\\left(\\overrightarrow{DA},\\overrightarrow{DA'}\\right)=180^\\circ-\\widehat{ADA'}=180^\\circ-45^\\circ=135^\\circ$\n(tam giác $AA'D$ vuông cân tại $A$)."},{"text":"Cho ba điểm $H$, $D$, $G$. Mệnh đề nào sau đây đúng?","options":[{"text":"$\\overrightarrow{HD}+\\overrightarrow{GH}=\\overrightarrow{DG}$","correct":0},{"text":"$\\overrightarrow{HD}=\\overrightarrow{HG}+\\overrightarrow{DG}$","correct":0},{"text":"$\\overrightarrow{GD}=\\overrightarrow{HG}+\\overrightarrow{HD}$","correct":0},{"text":"$\\overrightarrow{HD}+\\overrightarrow{DG}=\\overrightarrow{HG}$","correct":1}],"solution":"Theo quy tắc ba điểm: $\\overrightarrow{HD}+\\overrightarrow{DG}=\\overrightarrow{HG}$."},{"text":"Cho ba điểm $E$, $C$, $F$. Mệnh đề nào sau đây đúng?","options":[{"text":"$\\overrightarrow{CF}-\\overrightarrow{EF}=\\overrightarrow{CE}$","correct":1},{"text":"$\\overrightarrow{EF}-\\overrightarrow{EC}=\\overrightarrow{FC}$","correct":0},{"text":"$\\overrightarrow{FE}=\\overrightarrow{CF}-\\overrightarrow{EC}$","correct":0},{"text":"$\\overrightarrow{CF}=\\overrightarrow{CE}-\\overrightarrow{EF}$","correct":0}],"solution":"Ta có $\\overrightarrow{CF}-\\overrightarrow{EF}=\\overrightarrow{CF}+\\overrightarrow{FE}=\\overrightarrow{CE}$ (quy tắc ba điểm)."},{"text":"Cho lăng trụ đều $ABC.A'B'C'$. Góc giữa hai vectơ $\\overrightarrow{CA}$ và $\\overrightarrow{C'B'}$ bằng bao nhiêu?","options":[{"text":"$60^\\circ$","correct":1},{"text":"$90^\\circ$","correct":0},{"text":"$120^\\circ$","correct":0},{"text":"$30^\\circ$","correct":0}],"solution":"Vì $\\overrightarrow{C'B'}=\\overrightarrow{CB}$ nên $\\left(\\overrightarrow{CA},\\overrightarrow{C'B'}\\right)=\\left(\\overrightarrow{CA},\\overrightarrow{CB}\\right)=\\widehat{ACB}=60^\\circ$ (tam giác $ABC$ đều).","fig":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-34.2 -139.0 208.4 228.0\" width=\"208\" style=\"max-width:100%;height:auto;font-family:'Times New Roman',Times,serif\" role=\"img\"><line x1=\"0.00\" y1=\"-120.00\" x2=\"140.00\" y2=\"-120.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"140.00\" y1=\"-120.00\" x2=\"60.00\" y2=\"-60.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"60.00\" y1=\"-60.00\" x2=\"0.00\" y2=\"-120.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"60.00\" y2=\"60.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"60.00\" y1=\"60.00\" x2=\"140.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"0.00\" y1=\"-120.00\" x2=\"0.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"60.00\" y1=\"-60.00\" x2=\"60.00\" y2=\"60.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"140.00\" y1=\"-120.00\" x2=\"140.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"140.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.5\" stroke-dasharray=\"5 4\"/><circle cx=\"0.00\" cy=\"-120.00\" r=\"2.4\" fill=\"#111\"/><circle cx=\"60.00\" cy=\"-60.00\" r=\"2.4\" fill=\"#111\"/><circle cx=\"140.00\" cy=\"-120.00\" r=\"2.4\" fill=\"#111\"/><circle cx=\"0.00\" cy=\"0.00\" r=\"2.4\" fill=\"#111\"/><circle cx=\"60.00\" cy=\"60.00\" r=\"2.4\" fill=\"#111\"/><circle cx=\"140.00\" cy=\"0.00\" r=\"2.4\" fill=\"#111\"/><text x=\"-7.00\" y=\"-115.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">A</text><text x=\"147.00\" y=\"-115.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">C</text><text x=\"53.00\" y=\"-55.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">B</text><text x=\"-7.00\" y=\"5.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">A′</text><text x=\"60.00\" y=\"77.00\" text-anchor=\"middle\" font-size=\"16\" font-style=\"italic\">B′</text><text x=\"147.00\" y=\"5.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">C′</text></svg>"},{"text":"Cho hình hộp $ABCD.A'B'C'D'$. Tổng $\\overrightarrow{BC}+\\overrightarrow{BA}+\\overrightarrow{B'D'}$ bằng","options":[{"text":"$2\\overrightarrow{BD}$","correct":1},{"text":"$2\\overrightarrow{D'B'}$","correct":0},{"text":"$2\\overrightarrow{BB'}$","correct":0},{"text":"$\\overrightarrow{BD}$","correct":0}],"solution":"Áp dụng quy tắc hình bình hành và $\\overrightarrow{B'D'}=\\overrightarrow{BD}$, ta có: $\\overrightarrow{BC}+\\overrightarrow{BA}+\\overrightarrow{B'D'}=\\overrightarrow{BD}+\\overrightarrow{BD}=2\\overrightarrow{BD}$.","fig":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-94.2 -112.0 268.4 189.0\" width=\"268\" style=\"max-width:100%;height:auto;font-family:'Times New Roman',Times,serif\" role=\"img\"><line x1=\"-60.00\" y1=\"60.00\" x2=\"0.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.5\" stroke-dasharray=\"5 4\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"140.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.5\" stroke-dasharray=\"5 4\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"0.00\" y2=\"-80.00\" stroke=\"#111\" stroke-width=\"1.5\" stroke-dasharray=\"5 4\"/><line x1=\"-60.00\" y1=\"-20.00\" x2=\"0.00\" y2=\"-80.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"0.00\" y1=\"-80.00\" x2=\"140.00\" y2=\"-80.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"140.00\" y1=\"-80.00\" x2=\"80.00\" y2=\"-20.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"80.00\" y1=\"-20.00\" x2=\"-60.00\" y2=\"-20.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"-60.00\" y1=\"60.00\" x2=\"80.00\" y2=\"60.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"80.00\" y1=\"60.00\" x2=\"140.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"-60.00\" y1=\"60.00\" x2=\"-60.00\" y2=\"-20.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"80.00\" y1=\"60.00\" x2=\"80.00\" y2=\"-20.00\" stroke=\"#111\" stroke-width=\"1.5\"/><line x1=\"140.00\" y1=\"0.00\" x2=\"140.00\" y2=\"-80.00\" stroke=\"#111\" stroke-width=\"1.5\"/><circle cx=\"0.00\" cy=\"0.00\" r=\"2.2\" fill=\"#111\"/><circle cx=\"-60.00\" cy=\"60.00\" r=\"2.2\" fill=\"#111\"/><circle cx=\"80.00\" cy=\"60.00\" r=\"2.2\" fill=\"#111\"/><circle cx=\"140.00\" cy=\"0.00\" r=\"2.2\" fill=\"#111\"/><circle cx=\"0.00\" cy=\"-80.00\" r=\"2.2\" fill=\"#111\"/><circle cx=\"-60.00\" cy=\"-20.00\" r=\"2.2\" fill=\"#111\"/><circle cx=\"80.00\" cy=\"-20.00\" r=\"2.2\" fill=\"#111\"/><circle cx=\"140.00\" cy=\"-80.00\" r=\"2.2\" fill=\"#111\"/><text x=\"-5.00\" y=\"-6.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">A</text><text x=\"-67.00\" y=\"65.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">B</text><text x=\"87.00\" y=\"65.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">C</text><text x=\"147.00\" y=\"5.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">D</text><text x=\"0.00\" y=\"-88.00\" text-anchor=\"middle\" font-size=\"16\" font-style=\"italic\">A′</text><text x=\"-67.00\" y=\"-15.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">B′</text><text x=\"87.00\" y=\"-15.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">C′</text><text x=\"147.00\" y=\"-75.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">D′</text></svg>"}],"part2":[{"text":"Cho hình hộp chữ nhật $ABCD.A'B'C'D'$ có $AB=6,\\ AD=2,\\ AA'=1$.","solfig":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-34.2 -202.0 270.4 230.0\" width=\"270\" style=\"max-width:100%;height:auto;font-family:'Times New Roman',Times,serif\" role=\"img\"><line x1=\"0.00\" y1=\"0.00\" x2=\"136.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"136.00\" y1=\"0.00\" x2=\"204.00\" y2=\"-68.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"204.00\" y1=\"-68.00\" x2=\"68.00\" y2=\"-68.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"68.00\" y1=\"-68.00\" x2=\"0.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"0.00\" y2=\"-102.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"136.00\" y1=\"0.00\" x2=\"136.00\" y2=\"-102.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"204.00\" y1=\"-68.00\" x2=\"204.00\" y2=\"-170.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"68.00\" y1=\"-68.00\" x2=\"68.00\" y2=\"-170.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"0.00\" y1=\"-102.00\" x2=\"136.00\" y2=\"-102.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"136.00\" y1=\"-102.00\" x2=\"204.00\" y2=\"-170.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"204.00\" y1=\"-170.00\" x2=\"68.00\" y2=\"-170.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"68.00\" y1=\"-170.00\" x2=\"0.00\" y2=\"-102.00\" stroke=\"#111\" stroke-width=\"1.4\"/><text x=\"-5.00\" y=\"16.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">A</text><text x=\"141.00\" y=\"16.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">B</text><text x=\"211.00\" y=\"-63.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">C</text><text x=\"73.00\" y=\"-74.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">D</text><text x=\"-7.00\" y=\"-97.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">A′</text><text x=\"141.00\" y=\"-86.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">B′</text><text x=\"209.00\" y=\"-176.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">C′</text><text x=\"68.00\" y=\"-178.00\" text-anchor=\"middle\" font-size=\"16\" font-style=\"italic\">D′</text></svg>","statements":[{"text":"$\\left|\\overrightarrow{AB}+\\overrightarrow{AC}\\right|=\\sqrt{41}$","sol":"Ta có $AC=\\sqrt{AB^2+BC^2}=\\sqrt{6^2+2^2}=2\\sqrt{10}$ và $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=AB^2=36$ (vì $AB\\perp BC$).<br>$\\left|\\overrightarrow{AB}+\\overrightarrow{AC}\\right|^2=AB^2+AC^2+2\\,\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=36+40+72=148$, suy ra $\\left|\\overrightarrow{AB}+\\overrightarrow{AC}\\right|=2\\sqrt{37}\\neq\\sqrt{41}$.","correct":false},{"text":"$\\left|\\overrightarrow{CD}\\right|=6$","sol":"$\\left|\\overrightarrow{CD}\\right|=CD=AB=6$.","correct":true},{"text":"$\\left|\\overrightarrow{BC'}\\right|\\neq\\left|\\overrightarrow{A'D}\\right|$","sol":"$BC'=\\sqrt{BC^2+CC'^2}=\\sqrt{5}$ và $A'D=\\sqrt{A'A^2+AD^2}=\\sqrt{5}$. Hai cạnh $BC'$ và $A'D$ bằng nhau nên $\\left|\\overrightarrow{BC'}\\right|=\\left|\\overrightarrow{A'D}\\right|$.","correct":false},{"text":"Số các vectơ khác $\\vec{0}$ được tạo ra từ các đỉnh của hình hộp chữ nhật là $66$","sol":"Số các vectơ khác $\\vec{0}$ được tạo ra từ $8$ đỉnh của hình hộp chữ nhật là $A_8^2=56$.","correct":false}]},{"text":"Cho hình lăng trụ $ABC.A'B'C'$. Gọi $M$ là trung điểm của $BB'$ và $G$ là trọng tâm của tam giác $ABC$.","solfig":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-34.2 -152.0 216.8 221.0\" width=\"217\" style=\"max-width:100%;height:auto;font-family:'Times New Roman',Times,serif\" role=\"img\"><line x1=\"0.00\" y1=\"0.00\" x2=\"120.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"40.00\" y2=\"40.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"40.00\" y1=\"40.00\" x2=\"120.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"40.00\" y2=\"-120.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"40.00\" y1=\"-120.00\" x2=\"160.00\" y2=\"-120.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"160.00\" y1=\"-120.00\" x2=\"120.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"40.00\" y1=\"-120.00\" x2=\"80.00\" y2=\"-80.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"80.00\" y1=\"-80.00\" x2=\"160.00\" y2=\"-120.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"80.00\" y1=\"-80.00\" x2=\"40.00\" y2=\"40.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"40.00\" y1=\"-120.00\" x2=\"120.00\" y2=\"-100.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"160.00\" y1=\"-120.00\" x2=\"60.00\" y2=\"-100.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"40.00\" y1=\"-120.00\" x2=\"60.00\" y2=\"-20.00\" stroke=\"#111\" stroke-width=\"1.4\"/><circle cx=\"60.00\" cy=\"-20.00\" r=\"2.3\" fill=\"#111\"/><circle cx=\"93.33\" cy=\"-106.67\" r=\"2.3\" fill=\"#111\"/><text x=\"40.00\" y=\"-128.00\" text-anchor=\"middle\" font-size=\"16\" font-style=\"italic\">A</text><text x=\"85.00\" y=\"-64.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">B</text><text x=\"-7.00\" y=\"5.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">A′</text><text x=\"165.00\" y=\"-126.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">C</text><text x=\"40.00\" y=\"57.00\" text-anchor=\"middle\" font-size=\"16\" font-style=\"italic\">B′</text><text x=\"67.00\" y=\"-15.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">M</text><text x=\"98.33\" y=\"-90.67\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">G</text><text x=\"127.00\" y=\"5.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">C′</text></svg>","statements":[{"text":"$\\overrightarrow{AM}=\\overrightarrow{AB}+\\overrightarrow{AB'}$","sol":"Vì $M$ là trung điểm của $BB'$ nên $\\overrightarrow{AM}=\\dfrac{1}{2}\\overrightarrow{AB}+\\dfrac{1}{2}\\overrightarrow{AB'}$.","correct":false},{"text":"$\\overrightarrow{MG}-\\overrightarrow{MC}=\\overrightarrow{GC}$","sol":"Theo quy tắc trừ hai vectơ ta có $\\overrightarrow{MG}-\\overrightarrow{MC}=\\overrightarrow{CG}$.","correct":false},{"text":"$\\overrightarrow{BM}=\\dfrac{1}{3}\\overrightarrow{BB'}$","sol":"$M$ là trung điểm của $BB'$ nên $\\overrightarrow{BM}=\\dfrac{1}{2}\\overrightarrow{BB'}$.","correct":false},{"text":"$\\overrightarrow{MA}+\\overrightarrow{MB}+\\overrightarrow{MC}=-3\\overrightarrow{MG}$","sol":"Ta có $\\overrightarrow{GA}+\\overrightarrow{GB}+\\overrightarrow{GC}=\\vec{0}$<br>$\\Leftrightarrow(\\overrightarrow{GM}+\\overrightarrow{MA})+(\\overrightarrow{GM}+\\overrightarrow{MB})+(\\overrightarrow{GM}+\\overrightarrow{MC})=\\vec{0}$<br>$\\Leftrightarrow 3\\overrightarrow{GM}+\\overrightarrow{MA}+\\overrightarrow{MB}+\\overrightarrow{MC}=\\vec{0}$<br>$\\Leftrightarrow\\overrightarrow{MA}+\\overrightarrow{MB}+\\overrightarrow{MC}=3\\overrightarrow{MG}$.","correct":false}]},{"text":"Cho hình tứ diện đều $ABCD$ cạnh $3$, $O$ là tâm của tam giác $BCD$, $M$ là trung điểm của $BC$.","solfig":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-24.6 -123.5 209.2 232.5\" width=\"209\" style=\"max-width:100%;height:auto;font-family:'Times New Roman',Times,serif\" role=\"img\"><line x1=\"0.00\" y1=\"0.00\" x2=\"40.00\" y2=\"80.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"40.00\" y1=\"80.00\" x2=\"160.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"100.00\" y2=\"40.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"66.67\" y1=\"26.67\" x2=\"66.67\" y2=\"-91.52\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"66.67\" y1=\"-91.52\" x2=\"0.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"66.67\" y1=\"-91.52\" x2=\"40.00\" y2=\"80.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"66.67\" y1=\"-91.52\" x2=\"160.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"160.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"66.67\" y1=\"-91.52\" x2=\"100.00\" y2=\"40.00\" stroke=\"#111\" stroke-width=\"1.4\"/><circle cx=\"100.00\" cy=\"40.00\" r=\"2.3\" fill=\"#111\"/><circle cx=\"66.67\" cy=\"26.67\" r=\"2.3\" fill=\"#111\"/><text x=\"66.67\" y=\"-99.52\" text-anchor=\"middle\" font-size=\"16\" font-style=\"italic\">A</text><text x=\"40.00\" y=\"97.00\" text-anchor=\"middle\" font-size=\"16\" font-style=\"italic\">B</text><text x=\"167.00\" y=\"5.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">C</text><text x=\"-7.00\" y=\"5.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">D</text><text x=\"105.00\" y=\"56.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">M</text><text x=\"61.67\" y=\"42.67\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">O</text></svg>","statements":[{"text":"$\\overrightarrow{BC}=3\\overrightarrow{MC}$","sol":"Vì $M$ là trung điểm của $BC$ nên $\\overrightarrow{BC}=2\\overrightarrow{MC}$.","correct":false},{"text":"$\\overrightarrow{OD}=-2\\overrightarrow{OM}$","sol":"$O$ là trọng tâm của tam giác $BCD$ nên $OD=2OM$, hơn nữa $\\overrightarrow{OD}$ và $\\overrightarrow{OM}$ ngược hướng. Do đó $\\overrightarrow{OD}=-2\\overrightarrow{OM}$.","correct":true},{"text":"Góc giữa hai vectơ $\\overrightarrow{AB}$ và $\\overrightarrow{CA}$ bằng $60^\\circ$","sol":"Ta có $\\left(\\overrightarrow{AB},\\overrightarrow{CA}\\right)=180^\\circ-\\left(\\overrightarrow{AB},\\overrightarrow{AC}\\right)=180^\\circ-60^\\circ=120^\\circ$.","correct":false},{"text":"$\\overrightarrow{DC}\\cdot\\overrightarrow{DM}=\\dfrac{27}{4}$","sol":"Ta có $DM=\\dfrac{3\\sqrt{3}}{2}$ và $\\left(\\overrightarrow{DC},\\overrightarrow{DM}\\right)=\\widehat{CDM}=30^\\circ$.<br>$\\overrightarrow{DC}\\cdot\\overrightarrow{DM}=DC\\cdot DM\\cdot\\cos 30^\\circ=3\\cdot\\dfrac{3\\sqrt{3}}{2}\\cdot\\dfrac{\\sqrt{3}}{2}=\\dfrac{27}{4}$.","correct":true}]}],"part3":[{"text":"Một chiếc đèn được treo song song với mặt phẳng nằm ngang bởi ba sợi dây không giãn xuất phát từ điểm $O$ trên trần nhà và lần lượt buộc vào ba điểm $A,B,C$ trên đèn tròn sao cho tam giác $ABC$ đều. Độ dài của ba đoạn thẳng $OA,OB,OC$ đều bằng $L$. Trọng lượng của chiếc đèn là $42$ N và bán kính của đèn là $0{,}56$ m. Tìm chiều dài tối thiểu của mỗi sợi dây, biết rằng mỗi sợi dây đó được thiết kế để chịu được lực căng tối đa là $19$ N. (Chiều dài tính theo đơn vị cm và làm tròn đến hàng phần chục).","fig":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-100.8 -210.0 205.7 326.0\" width=\"206\" style=\"max-width:100%;height:auto;font-family:'Times New Roman',Times,serif\" role=\"img\"><defs><marker id=\"f8r\" viewBox=\"0 0 10 10\" refX=\"9.5\" refY=\"5\" markerWidth=\"8\" markerHeight=\"8\" markerUnits=\"userSpaceOnUse\" orient=\"auto\"><path d=\"M0 0L10 5L0 10L3 5z\" fill=\"#d62828\"/></marker><pattern id=\"f8h\" patternUnits=\"userSpaceOnUse\" width=\"6\" height=\"6\" patternTransform=\"rotate(45)\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"6\" stroke=\"#111\" stroke-width=\"1\"/></pattern></defs><polygon points=\"-72.00,-180.00 72.00,-180.00 72.50,-194.69 -72.23,-194.69\" fill=\"url(#f8h)\" stroke=\"#111\" stroke-width=\"1.4\"/><ellipse cx=\"0\" cy=\"0\" rx=\"82.38\" ry=\"40.02\" fill=\"none\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"-82.38\" y1=\"0.00\" x2=\"-81.90\" y2=\"20.39\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"82.38\" y1=\"0.00\" x2=\"82.13\" y2=\"22.32\" stroke=\"#111\" stroke-width=\"1.4\"/><path d=\"M-81.90 20.39 A120.49 120.49 0 0 0 82.13 22.32\" fill=\"none\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"82.38\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"0.00\" y2=\"53.59\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"0.00\" y1=\"-180.00\" x2=\"82.38\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"0.00\" y1=\"-180.00\" x2=\"-76.17\" y2=\"15.25\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"0.00\" y1=\"-180.00\" x2=\"-36.00\" y2=\"-36.00\" stroke=\"#111\" stroke-width=\"1.4\"/><line x1=\"0.00\" y1=\"53.59\" x2=\"0.00\" y2=\"108.00\" stroke=\"#d62828\" stroke-width=\"1.4\" marker-end=\"url(#f8r)\"/><line x1=\"0.00\" y1=\"-180.00\" x2=\"45.31\" y2=\"-81.00\" stroke=\"#d62828\" stroke-width=\"1.4\" marker-end=\"url(#f8r)\"/><line x1=\"0.00\" y1=\"-180.00\" x2=\"-22.08\" y2=\"-91.70\" stroke=\"#d62828\" stroke-width=\"1.4\" marker-end=\"url(#f8r)\"/><line x1=\"0.00\" y1=\"-180.00\" x2=\"-44.74\" y2=\"-65.31\" stroke=\"#d62828\" stroke-width=\"1.4\" marker-end=\"url(#f8r)\"/><circle cx=\"-76.17\" cy=\"15.25\" r=\"2.4\" fill=\"#111\"/><circle cx=\"-36.00\" cy=\"-36.00\" r=\"2.4\" fill=\"#111\"/><circle cx=\"82.38\" cy=\"0.00\" r=\"2.4\" fill=\"#111\"/><circle cx=\"0.00\" cy=\"0.00\" r=\"2.2\" fill=\"#111\"/><circle cx=\"0.00\" cy=\"-180.00\" r=\"2.4\" fill=\"#111\"/><text x=\"5.00\" y=\"-186.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">O</text><text x=\"-83.17\" y=\"20.25\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">A</text><text x=\"-29.00\" y=\"-31.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">B</text><text x=\"87.38\" y=\"-6.00\" text-anchor=\"start\" font-size=\"16\" font-style=\"italic\">C</text><text x=\"-71.00\" y=\"-85.80\" font-size=\"16\" fill=\"#111\"><tspan font-style=\"italic\">F</tspan><tspan dy=\"4\" font-size=\"11.2\">1</tspan></text><line x1=\"-72.00\" y1=\"-98.92\" x2=\"-61.00\" y2=\"-98.92\" stroke=\"#111\" stroke-width=\"1\"/><path d=\"M-59.50 -98.92 L-64.00 -101.32 L-62.70 -98.92 L-64.00 -96.52z\" fill=\"#111\"/><text x=\"4.60\" y=\"-114.60\" font-size=\"16\" fill=\"#111\"><tspan font-style=\"italic\">F</tspan><tspan dy=\"4\" font-size=\"11.2\">2</tspan></text><line x1=\"3.60\" y1=\"-127.72\" x2=\"14.60\" y2=\"-127.72\" stroke=\"#111\" stroke-width=\"1\"/><path d=\"M16.10 -127.72 L11.60 -130.12 L12.90 -127.72 L11.60 -125.32z\" fill=\"#111\"/><text x=\"47.80\" y=\"-102.00\" font-size=\"16\" fill=\"#111\"><tspan font-style=\"italic\">F</tspan><tspan dy=\"4\" font-size=\"11.2\">3</tspan></text><line x1=\"46.80\" y1=\"-115.12\" x2=\"57.80\" y2=\"-115.12\" stroke=\"#111\" stroke-width=\"1\"/><path d=\"M59.30 -115.12 L54.80 -117.52 L56.10 -115.12 L54.80 -112.72z\" fill=\"#111\"/><text x=\"6.40\" y=\"92.40\" font-size=\"16\" fill=\"#111\"><tspan font-style=\"italic\">P</tspan></text><line x1=\"5.40\" y1=\"79.28\" x2=\"16.40\" y2=\"79.28\" stroke=\"#111\" stroke-width=\"1\"/><path d=\"M17.90 79.28 L13.40 76.88 L14.70 79.28 L13.40 81.68z\" fill=\"#111\"/></svg>","answer":"82.8","show":"82,8","solution":"Gọi $G$ là trọng tâm của tam giác $ABC$.<br>\nVì tam giác $ABC$ đều nên $G$ là tâm đường tròn ngoại tiếp tam giác $ABC$. Do đó $GA=GB=GC=0{,}56$ m.<br>\nGọi $F$ là độ lớn của các lực căng $\\vec{F_1},\\vec{F_2},\\vec{F_3}$ trên mỗi sợi dây. Khi đó $F=F(L)$ là hàm số của biến $L$.<br>\nVì $OA=OB=OC=L$ nên $OG\\perp(ABC)$ và $\\left|\\vec{F_1}\\right|=\\left|\\vec{F_2}\\right|=\\left|\\vec{F_3}\\right|$.<br>\nDo đó tồn tại hằng số $c\\neq 0$ sao cho $\\vec{F_1}=c\\,\\overrightarrow{OA},\\ \\vec{F_2}=c\\,\\overrightarrow{OB},\\ \\vec{F_3}=c\\,\\overrightarrow{OC}$.<br>\nSuy ra $\\vec{F_1}+\\vec{F_2}+\\vec{F_3}=c\\left(\\overrightarrow{OA}+\\overrightarrow{OB}+\\overrightarrow{OC}\\right)$.<br>\nVì $G$ là trọng tâm của tam giác $ABC$ nên $\\overrightarrow{OA}+\\overrightarrow{OB}+\\overrightarrow{OC}=3\\overrightarrow{OG}$, do đó $\\vec{F_1}+\\vec{F_2}+\\vec{F_3}=3c\\,\\overrightarrow{OG}$.<br>\nMặt khác $\\vec{F_1}+\\vec{F_2}+\\vec{F_3}=\\vec{P}$ (độ lớn $42$ N) nên $3c\\cdot OG=42\\Leftrightarrow c=\\dfrac{14}{OG}$.<br>\nTam giác $OGA$ vuông tại $G$ nên $OG=\\sqrt{OA^2-GA^2}=\\sqrt{L^2-0{,}56^2}$ (m), với $L>0{,}56$.<br>\nKhi đó $F=\\left|\\vec{F_1}\\right|=c\\cdot OA=\\dfrac{14L}{\\sqrt{L^2-0{,}56^2}}$.<br>\nLực căng tối đa của mỗi sợi dây là $19$ N nên<br>\n$F(L)\\leq 19\\Leftrightarrow\\dfrac{14L}{\\sqrt{L^2-0{,}56^2}}\\leq 19\\Leftrightarrow 196L^2\\leq 361\\left(L^2-0{,}56^2\\right)\\Leftrightarrow 165L^2\\geq 113{,}2096\\Rightarrow L\\geq 0{,}8283\\ \\text{m}.$<br>\nVậy chiều dài tối thiểu của mỗi sợi dây là $L\\approx 0{,}8283$ m $\\approx 82{,}8$ cm."},{"text":"Trong không gian cho hình lập phương $ABCD.A'B'C'D'$ có tất cả các cạnh bằng $15$. Hỏi độ dài vectơ $\\overrightarrow{A'C}$ bằng bao nhiêu? (Kết quả làm tròn đến hàng phần chục).","answer":"26.0","show":"26,0","solution":"$A'C$ là đường chéo của hình lập phương cạnh $15$ nên $A'C=15\\sqrt{3}$.<br>Vậy $\\left|\\overrightarrow{A'C}\\right|=A'C=15\\sqrt{3}\\approx 26{,}0$."},{"text":"Có ba lực cùng tác động vào một vật. Hai trong ba lực này hợp với nhau một góc $97^\\circ$ và có độ lớn lần lượt là $30$ N và $10$ N. Lực thứ ba vuông góc với mặt phẳng tạo bởi hai lực đã cho và có độ lớn $3$ N. Độ lớn của hợp lực của ba lực trên bằng bao nhiêu? (làm tròn đến hàng phần chục).","answer":"30.6","show":"30,6","solution":"<div class=\"svg-container\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-120.9 -193.4 310.9 316.2\" width=\"311\" style=\"max-width:100%;height:auto;font-family:'Times New Roman',Times,serif\" role=\"img\"><defs><marker id=\"f9a\" viewBox=\"0 0 10 10\" refX=\"9.5\" refY=\"5\" markerWidth=\"8\" markerHeight=\"8\" markerUnits=\"userSpaceOnUse\" orient=\"auto\"><path d=\"M0 0L10 5L0 10L3 5z\" fill=\"#111\"/></marker></defs><line x1=\"0.00\" y1=\"0.00\" x2=\"168.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\" marker-end=\"url(#f9a)\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"0.00\" y2=\"-168.00\" stroke=\"#111\" stroke-width=\"1.4\" marker-end=\"url(#f9a)\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"-84.00\" y2=\"84.00\" stroke=\"#111\" stroke-width=\"1.4\" marker-end=\"url(#f9a)\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"84.00\" y2=\"84.00\" stroke=\"#111\" stroke-width=\"1.4\" marker-end=\"url(#f9a)\"/><line x1=\"0.00\" y1=\"0.00\" x2=\"84.00\" y2=\"-84.00\" stroke=\"#111\" stroke-width=\"1.4\" marker-end=\"url(#f9a)\"/><line x1=\"-84.00\" y1=\"84.00\" x2=\"84.00\" y2=\"84.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"84.00\" y1=\"84.00\" x2=\"168.00\" y2=\"0.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"84.00\" y1=\"84.00\" x2=\"84.00\" y2=\"-84.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><line x1=\"84.00\" y1=\"-84.00\" x2=\"0.00\" y2=\"-168.00\" stroke=\"#111\" stroke-width=\"1.4\" stroke-dasharray=\"5 4\"/><text x=\"-5.00\" y=\"16.00\" text-anchor=\"end\" font-size=\"16\" font-style=\"italic\">O</text><text x=\"160.00\" y=\"-12.90\" font-size=\"16\" fill=\"#111\"><tspan font-style=\"italic\">F</tspan><tspan dy=\"4\" font-size=\"11.2\">1</tspan></text><line x1=\"159.00\" y1=\"-26.02\" x2=\"170.00\" y2=\"-26.02\" stroke=\"#111\" stroke-width=\"1\"/><path d=\"M171.50 -26.02 L167.00 -28.42 L168.30 -26.02 L167.00 -23.62z\" fill=\"#111\"/><text x=\"-110.90\" y=\"75.30\" font-size=\"16\" fill=\"#111\"><tspan font-style=\"italic\">F</tspan><tspan dy=\"4\" font-size=\"11.2\">2</tspan></text><line x1=\"-111.90\" y1=\"62.18\" x2=\"-100.90\" y2=\"62.18\" stroke=\"#111\" stroke-width=\"1\"/><path d=\"M-99.40 62.18 L-103.90 59.78 L-102.60 62.18 L-103.90 64.58z\" fill=\"#111\"/><text x=\"-31.10\" y=\"-168.30\" font-size=\"16\" fill=\"#111\"><tspan font-style=\"italic\">F</tspan><tspan dy=\"4\" font-size=\"11.2\">3</tspan></text><line x1=\"-32.10\" y1=\"-181.42\" x2=\"-21.10\" y2=\"-181.42\" stroke=\"#111\" stroke-width=\"1\"/><path d=\"M-19.60 -181.42 L-24.10 -183.82 L-22.80 -181.42 L-24.10 -179.02z\" fill=\"#111\"/><text x=\"82.30\" y=\"106.80\" font-size=\"16\" fill=\"#111\"><tspan font-style=\"italic\">F</tspan><tspan dy=\"4\" font-size=\"11.2\">12</tspan></text><line x1=\"81.30\" y1=\"93.68\" x2=\"92.30\" y2=\"93.68\" stroke=\"#111\" stroke-width=\"1\"/><path d=\"M93.80 93.68 L89.30 91.28 L90.60 93.68 L89.30 96.08z\" fill=\"#111\"/><text x=\"80.20\" y=\"-92.70\" font-size=\"16\" fill=\"#111\"><tspan font-style=\"italic\">F</tspan></text><line x1=\"79.20\" y1=\"-105.82\" x2=\"90.20\" y2=\"-105.82\" stroke=\"#111\" stroke-width=\"1\"/><path d=\"M91.70 -105.82 L87.20 -108.22 L88.50 -105.82 L87.20 -103.42z\" fill=\"#111\"/></svg></div>Gọi $\\vec{F_1},\\vec{F_2},\\vec{F_3}$ là ba lực tác động vào vật tại điểm $O$, có độ lớn lần lượt là $30$ N, $10$ N, $3$ N.<br>\nHợp lực của hai lực $\\vec{F_1}$ và $\\vec{F_2}$ là $\\vec{F_{12}}$. Theo quy tắc hình bình hành và định lí cosin, độ lớn của $\\vec{F_{12}}$ là<br>\n$$\\left|\\vec{F_{12}}\\right|=\\sqrt{30^2+10^2+2\\cdot 30\\cdot 10\\cdot\\cos 97^\\circ}\\approx\\sqrt{926{,}88}\\approx 30{,}44\\ \\text{(N)}.$$\nLực $\\vec{F_3}$ vuông góc với mặt phẳng chứa $\\vec{F_1},\\vec{F_2}$, nên cũng vuông góc với $\\vec{F_{12}}$. Hợp lực $\\vec{F}=\\vec{F_{12}}+\\vec{F_3}$ có độ lớn (định lí Pythagore)<br>\n$$\\left|\\vec{F}\\right|=\\sqrt{\\left|\\vec{F_{12}}\\right|^2+\\left|\\vec{F_3}\\right|^2}\\approx\\sqrt{926{,}88+9}\\approx\\sqrt{935{,}88}\\approx 30{,}6\\ \\text{(N)}.$$"}]};
+
+    const STORE_KEY = "exam_autosave_vecto_kg_p3", PROFILE_KEY = "exam_profile_vecto_kg_p3", VER = 1;
+    const SHEET_NAME = "vecto_kg_p3";
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwz6w34gQTnq-k5rZNqsamYl7abyHC4owX5MeuSceZNeJYBkKsTtllgQ_x_wM6JYxJedA/exec';
+    let state, map1 = [], map2 = [], map3 = [];
+    const $ = id => document.getElementById(id);
+
+    function newState() { return { name: "", class: "", code: "", ans1: {}, ans2: {}, ans3: {}, isSubmitted: false, startTime: Date.now(), endTime: null }; }
+    function generateCode() { return Math.floor(100 + Math.random() * 900).toString(); }
+    function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+    function parseFloatStrict(s) { if (s === null || s === undefined || s.toString().trim() === "") return null; const n = parseFloat(s.toString().replace(/,/g, '.').trim()); return isNaN(n) ? null : n; }
+    function toast(msg) { const t = $('toast-msg'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500); }
+    function typeset() { if (window.MathJax && MathJax.startup) MathJax.startup.promise.then(() => MathJax.typesetPromise()); }
+
+    // Trộn: thứ tự câu, thứ tự phương án (Phần I), thứ tự câu + thứ tự 4 ý a-b-c-d (Phần II), thứ tự câu (Phần III)
+    function buildMaps() {
+        map1 = shuffle(DATA.part1.map((q, i) => ({ origIdx: i, opts: shuffle(q.options.map((o, j) => ({ ...o, origIdx: j }))) })));
+        map2 = shuffle(DATA.part2.map((q, i) => ({ origIdx: i, st: shuffle(q.statements.map((_, j) => j)) })));
+        map3 = shuffle(DATA.part3.map((q, i) => ({ origIdx: i })));
+    }
+    function persist() { if (!state.isSubmitted) localStorage.setItem(STORE_KEY, JSON.stringify({ ver: VER, state, map1, map2, map3 })); }
+
+    function init() {
+        let saved = null, restored = false, hadSubmitted = false;
+        try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) {}
+        if (saved && saved.ver === VER && saved.state && saved.map1 && saved.map2 && saved.map3) {
+            if (saved.state.isSubmitted) hadSubmitted = true;              // lần trước đã nộp -> vào lại là đề mới
+            else { state = saved.state; map1 = saved.map1; map2 = saved.map2; map3 = saved.map3; restored = true; }
+        }
+        if (!restored) { state = newState(); state.code = generateCode(); buildMaps(); localStorage.removeItem(STORE_KEY); }
+        let prof = {}; try { prof = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}'); } catch (e) {}
+        if (!state.name) state.name = prof.name || ""; if (!state.class) state.class = prof.class || "";
+        $("input_name").value = state.name; $("input_class").value = state.class;
+        $("lbl_exam_code").innerText = state.code;
+        renderPart1(); renderPart2(); renderPart3(); updateToolbar(); persist();
+        if (restored) toast("Đã khôi phục bài làm đang dở.");
+        else if (hadSubmitted) toast("Đề mới đã được trộn lại cho lần luyện tập này.");
+        typeset(); setInterval(persist, 10000);
+    }
+
+    function retakeExam() {
+        const msg = state.isSubmitted ? "Làm lại với một đề mới được trộn?" : "Bỏ bài đang làm và trộn đề mới? Các câu đã chọn sẽ bị xóa.";
+        if (confirm(msg)) { localStorage.removeItem(STORE_KEY); location.reload(); }
+    }
+
+    const figHTML = q => q.fig ? `<div class="svg-container">${q.fig}</div>` : '';
+    const solBox = (id, inner) => `<div class="solution-box shadow-sm" id="${id}"><strong class="text-primary fs-5 mb-2 d-block">Lời giải chi tiết:</strong><div>${inner}</div></div>`;
+    const qHead = (idx, q) => `<div class="fw-bold mb-3 text-dark" style="font-size:1.1rem;">Câu ${idx + 1}: <span class="fw-normal">${q.text}</span></div>${figHTML(q)}`;
+
+    function renderPart1() {
+        const L = ['A', 'B', 'C', 'D']; let h = '';
+        map1.forEach((qm, idx) => {
+            const q = DATA.part1[qm.origIdx];
+            h += `<div class="question-card shadow-sm" id="card_p1_${idx}">${qHead(idx, q)}<div class="row g-3 ms-2">`;
+            qm.opts.forEach((o, k) => {
+                h += `<div class="col-md-6 col-12"><div class="form-check">
+                    <input class="form-check-input border-secondary" type="radio" name="p1_q${idx}" id="p1_q${idx}_o${k}" ${state.ans1[idx] === k ? 'checked' : ''} ${state.isSubmitted ? 'disabled' : ''} onchange="ans1(${idx},${k})">
+                    <label class="form-check-label" id="lbl_p1_q${idx}_o${k}" for="p1_q${idx}_o${k}">${L[k]}. ${o.text}</label></div></div>`;
+            });
+            h += `</div>${solBox('sol_p1_' + idx, q.solution)}</div>`;
+        });
+        $("wrap_p1").innerHTML = h;
+    }
+
+    function renderPart2() {
+        const L = ['a)', 'b)', 'c)', 'd)']; let h = '';
+        map2.forEach((qm, idx) => {
+            const q = DATA.part2[qm.origIdx]; if (!state.ans2[idx]) state.ans2[idx] = {};
+            h += `<div class="question-card shadow-sm" id="card_p2_${idx}">${qHead(idx, q)}
+                <div class="table-responsive ms-2"><table class="table table-bordered align-middle mb-0 bg-white">
+                <thead class="table-light"><tr><th width="5%" class="text-center">Ý</th><th>Phát biểu</th><th width="10%" class="text-center text-success">Đúng</th><th width="10%" class="text-center text-danger">Sai</th></tr></thead><tbody>`;
+            let sol = '';
+            qm.st.forEach((si, k) => {
+                const s = q.statements[si], dis = state.isSubmitted ? 'disabled' : '', a = state.ans2[idx][k];
+                h += `<tr><td class="text-center fw-bold">${L[k]}</td><td>${s.text}</td>
+                    <td class="text-center"><input class="form-check-input border-secondary mx-auto" type="radio" name="p2_q${idx}_s${k}" ${a === true ? 'checked' : ''} ${dis} onchange="ans2(${idx},${k},true)"></td>
+                    <td class="text-center"><input class="form-check-input border-secondary mx-auto" type="radio" name="p2_q${idx}_s${k}" ${a === false ? 'checked' : ''} ${dis} onchange="ans2(${idx},${k},false)"></td></tr>`;
+                sol += `<div class="mb-2"><b>${L[k]}</b> ${s.sol} <b class="${s.correct ? 'text-success' : 'text-danger'}">(${s.correct ? 'Đúng' : 'Sai'})</b></div>`;
+            });
+            h += `</tbody></table></div>${solBox('sol_p2_' + idx, (q.solfig ? '<div class="svg-container">' + q.solfig + '</div>' : '') + sol)}</div>`;
+        });
+        $("wrap_p2").innerHTML = h;
+    }
+
+    function renderPart3() {
+        let h = '';
+        map3.forEach((qm, idx) => {
+            const q = DATA.part3[qm.origIdx], v = state.ans3[idx] !== undefined ? state.ans3[idx] : "";
+            h += `<div class="question-card shadow-sm" id="card_p3_${idx}">${qHead(idx, q)}
+                <div class="ms-2"><input type="text" class="form-control border-secondary text-primary fw-bold" style="max-width:250px;" id="inp_p3_${idx}" placeholder="Nhập đáp số..." value="${v}" ${state.isSubmitted ? 'disabled' : ''} oninput="ans3(${idx},this.value)"></div>
+                <div id="fb_p3_${idx}" class="mt-2 ms-2 fw-bold" style="display:none;"></div>${solBox('sol_p3_' + idx, q.solution)}</div>`;
+        });
+        $("wrap_p3").innerHTML = h;
+    }
+
+    function ans1(q, v) { state.ans1[q] = v; updateToolbar(); triggerSave(); }
+    function ans2(q, s, v) { state.ans2[q][s] = v; updateToolbar(); triggerSave(); }
+    function ans3(q, v) { state.ans3[q] = v; updateToolbar(); triggerSave(); }
+
+    function updateToolbar() {
+        let count = Object.keys(state.ans1).length;
+        Object.keys(state.ans2).forEach(k => count += Object.keys(state.ans2[k]).length);
+        Object.keys(state.ans3).forEach(k => { if (state.ans3[k].toString().trim() !== "") count++; });
+        const total = DATA.part1.length + DATA.part2.length * 4 + DATA.part3.length;
+        $("lbl_answered").innerText = count; $("lbl_total").innerText = total;
+        const m1 = DATA.part1.length * 0.25, m2 = DATA.part2.length, m3 = DATA.part3.length * 0.5;
+        $("max_p1").innerText = m1.toFixed(2); $("max_p2").innerText = m2.toFixed(2); $("max_p3").innerText = m3.toFixed(2);
+        $("max_total").innerText = (m1 + m2 + m3).toFixed(2);
+        return { count, total };
+    }
+
+    function triggerSave() {
+        if (state.isSubmitted) return;
+        state.name = $("input_name").value; state.class = $("input_class").value;
+        localStorage.setItem(PROFILE_KEY, JSON.stringify({ name: state.name, class: state.class }));
+        persist();
+    }
+
+    function submitExam() {
+        const { count, total } = updateToolbar();
+        if (count / total < 0.5) { alert("Vui lòng hoàn thành ít nhất 50% tổng số câu hỏi (bao gồm các ý) trước khi nộp bài!"); return; }
+        state.name = $("input_name").value.trim(); state.class = $("input_class").value.trim();
+        if (!state.name) { alert("Vui lòng nhập Họ và Tên trước khi nộp bài!"); return; }
+        if (!confirm("Bạn có chắc chắn muốn nộp bài?")) return;
+        state.isSubmitted = true; state.endTime = Date.now();
+        localStorage.setItem(PROFILE_KEY, JSON.stringify({ name: state.name, class: state.class }));
+        localStorage.setItem(STORE_KEY, JSON.stringify({ ver: VER, state, map1, map2, map3 }));   // đánh dấu đã nộp -> lần vào sau sẽ là đề mới
+        document.querySelectorAll('input').forEach(i => i.disabled = true);
+        $("btn_submit").classList.add("d-none"); $("btn_print").classList.remove("d-none");
+        evaluateExam();
+    }
+
+    function evaluateExam() {
+        let s1 = 0, s2 = 0, s3 = 0; const green = "6px solid var(--success-color)", red = "6px solid var(--danger-color)";
+        map1.forEach((qm, idx) => {
+            let ok = false; const ch = state.ans1[idx];
+            qm.opts.forEach((o, k) => {
+                const l = $(`lbl_p1_q${idx}_o${k}`);
+                if (o.correct) { l.classList.add("opt-correct"); if (ch === k) ok = true; } else if (ch === k) l.classList.add("opt-wrong");
+            });
+            if (ok) s1 += 0.25;
+            $(`card_p1_${idx}`).style.borderLeft = ok ? green : red; $(`sol_p1_${idx}`).style.display = "block";
+        });
+        map2.forEach((qm, idx) => {
+            const q = DATA.part2[qm.origIdx]; let n = 0;
+            qm.st.forEach((si, k) => { if ((state.ans2[idx] || {})[k] === q.statements[si].correct) n++; });
+            s2 += [0, 0.1, 0.25, 0.5, 1.0][n];
+            $(`card_p2_${idx}`).style.borderLeft = n === 4 ? green : n > 0 ? "6px solid #ffc107" : red; $(`sol_p2_${idx}`).style.display = "block";
+        });
+        map3.forEach((qm, idx) => {
+            const q = DATA.part3[qm.origIdx], a = parseFloatStrict(state.ans3[idx]), t = parseFloatStrict(q.answer);
+            const ok = a !== null && t !== null && Math.abs(a - t) < 0.001, fb = $(`fb_p3_${idx}`), inp = $(`inp_p3_${idx}`);
+            fb.style.display = "block";
+            if (ok) { s3 += 0.5; inp.classList.add("is-valid"); } else { inp.classList.add("is-invalid"); fb.innerHTML = `Đáp án đúng: <span class="text-success">${q.show}</span>`; }
+            $(`card_p3_${idx}`).style.borderLeft = ok ? green : red; $(`sol_p3_${idx}`).style.display = "block";
+        });
+        const total = s1 + s2 + s3;
+        $("res_p1").innerText = s1.toFixed(2); $("res_p2").innerText = s2.toFixed(2); $("res_p3").innerText = s3.toFixed(2); $("res_total").innerText = total.toFixed(2);
+        const timeMin = Math.max(0, Math.round(((state.endTime || Date.now()) - state.startTime) / 60000)); $("res_time").innerText = timeMin;
+        const { count, total: tt } = updateToolbar(), pct = tt > 0 ? Math.round(count / tt * 100) : 0; $("res_percent").innerText = pct;
+        $("result-board").style.display = "block"; window.scrollTo({ top: 0, behavior: 'smooth' });
+        sendToGAS(state.name, state.class, s1, s2, s3, total, timeMin, pct);
+    }
+
+    function sendToGAS(name, className, s1, s2, s3, total, time, pct) {
+        const payload = { sheetName: SHEET_NAME, student_name: name, class_name: className, exam_code: state.code,
+            part1_score: s1, part2_score: s2, part3_score: s3, total_score: total,
+            submit_time: new Date().toISOString(), duration_minutes: time, percent: pct };
+        const pb = $("btn_print"); if (pb) pb.innerText = "ĐANG GỬI ĐIỂM...";
+        fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
+            .then(r => { if (!r.ok) throw new Error("Mạng bị lỗi hoặc link Web App sai."); return r.json(); })
+            .then(d => { if (d.status === "success") alert(`${d.message}\nHọc sinh: ${d.saved_name}\nTổng điểm: ${d.final_score}`); else alert("Lưu thất bại: " + d.message); })
+            .catch(e => { console.error("Lỗi khi gửi dữ liệu: ", e); alert("Chưa gửi được điểm lên Google Sheet. Hãy kiểm tra mạng rồi bấm IN KẾT QUẢ để lưu lại bài làm."); })
+            .finally(() => { if (pb) pb.innerText = "IN KẾT QUẢ PDF"; });
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>
