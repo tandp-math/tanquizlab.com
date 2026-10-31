@@ -2,7 +2,15 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hệ thống lý thuyết trọng tâm và ngân hàng tài liệu, đề thi môn Toán THPT — Cơ Sở Dạy thêm Trí Đức. Bài tập trắc nghiệm Toán 10, 11, 12 và ĐGNL có chấm điểm trực tuyến.">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta property="og:title" content="Học Toán Trực Tuyến - Cơ Sở Dạy thêm Trí Đức">
+    <meta property="og:description" content="Hệ thống lý thuyết trọng tâm và ngân hàng tài liệu, đề thi môn Toán THPT — Cơ Sở Dạy thêm Trí Đức.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tandp-math.github.io/tanquizlab.com/">
+    <meta property="og:locale" content="vi_VN">
+    <meta name="twitter:card" content="summary">
     <title>Học Toán Trực Tuyến - Cơ Sở Dạy thêm Trí Đức</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -231,6 +239,10 @@
     <div class="main-container">
         <aside class="sidebar">
             <div class="sidebar-content">
+                <div style="margin-bottom:15px;">
+                    <input type="text" id="siteSearch" placeholder="Tìm bài tập... (ví dụ: Oxyz, lượng giác)" style="width:100%;padding:10px 12px;border:1px solid #dee2e6;border-radius:6px;font-size:0.95rem;">
+                    <div id="siteSearchResults" style="margin-top:8px;font-size:0.9rem;color:#555;">Gõ tên bài, chương hoặc lớp để tìm trong 20 bài tập.</div>
+                </div>
                 
                 <details open>
                     <summary class="grade-title">Toán 12</summary>
@@ -659,6 +671,24 @@
 
     // Cho hàm chạy ngay lập tức khi trang vừa load xong
     updateCountdown();
+</script>
+<script>
+    (function () {
+        var pages = [{"g": "Toán 12 · Chương 1", "t": "Sự biến thiên và cực trị", "u": "lths1.html"}, {"g": "Toán 12 · Chương 1", "t": "Cực trị và GTLN-GTNN", "u": "lths2.html"}, {"g": "Toán 12 · Chương 1", "t": "GTLN-GTNN và Tiệm cận", "u": "lths3.html"}, {"g": "Toán 12 · Chương 1", "t": "Tiệm cận và KSHS", "u": "lths4.html"}, {"g": "Toán 12 · Chương 1", "t": "Bài tập ôn chương - P1", "u": "lths5.html"}, {"g": "Toán 12 · Chương 1", "t": "Bài tập ôn chương - P2", "u": "lths6.html"}, {"g": "Toán 12 · Chương 2", "t": "Trắc nghiệm lý thuyết", "u": "tnlt_ch2.html"}, {"g": "Toán 12 · Chương 2", "t": "Bài tập Vecto", "u": "vecto_kg_p3.html"}, {"g": "Toán 12 · Chương 2", "t": "Bài tập 1", "u": "Oxyz_ot1.html"}, {"g": "Toán 12 · Chương 2", "t": "Bài tập 2", "u": "Oxyz_ot2.html"}, {"g": "Toán 12 · Chương 2", "t": "Bài tập 3", "u": "Oxyz_ot3.html"}, {"g": "Toán 12 · Chương 2", "t": "Bài tập ôn chương", "u": "oxyz_ot_ch.html"}, {"g": "Toán 12 · Chương 5", "t": "Bài tập 1", "u": "Hinh_Oxyz_1.html"}, {"g": "Toán 12 · Chương 5", "t": "Bài tập 2", "u": "Hinh_Oxyz_2.html"}, {"g": "Toán 11 · Chương 1", "t": "Phương trình lượng giác", "u": "ptlg_lt1.html"}, {"g": "Toán 10 · Chương 1", "t": "Bài tập ôn chương", "u": "t10-ch1.html"}, {"g": "Toán 10 · Chương 2", "t": "Ôn tập chương 2 - Phần 1", "u": "t10-ch2.html"}, {"g": "Toán 10 · Chương 3", "t": "Hệ thức lượng trong tam giác", "u": "giai_tam_giac_lt1.html"}, {"g": "ĐGNL", "t": "Đơn điệu - Cực trị: Bài toán có tham số (P1)", "u": "ltvact1.html"}, {"g": "Từ điển thực tế", "t": "Chương 2: Vector và tọa độ không gian", "u": "thucte_ch2.html"}];
+        function norm(s) { return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+        var input = document.getElementById("siteSearch");
+        var out = document.getElementById("siteSearchResults");
+        if (!input || !out) return;
+        input.addEventListener("input", function () {
+            var q = norm(input.value.trim());
+            if (!q) { out.innerHTML = "Gõ tên bài, chương hoặc lớp để tìm trong 20 bài tập."; return; }
+            var hits = pages.filter(function (p) { return norm(p.g + " " + p.t).indexOf(q) !== -1; });
+            if (!hits.length) { out.innerHTML = "Không tìm thấy bài tập phù hợp."; return; }
+            out.innerHTML = hits.map(function (p) {
+                return "<div style=\"margin-bottom:6px;\"><a href=\"" + p.u + "\" style=\"color:#0056b3;text-decoration:none;\">" + p.t + "</a><span style=\"color:#888;\"> — " + p.g + "</span></div>";
+            }).join("");
+        });
+    })();
 </script>
 </body>
 </html>
