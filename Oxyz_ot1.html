@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8">
+
     <meta name="description" content="Bài tập ÔN TẬP VECTƠ - Oxyz - PHẦN 1 trực tuyến có chấm điểm, lời giải chi tiết — Cơ Sở Dạy thêm Trí Đức.">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <meta property="og:title" content="ÔN TẬP VECTƠ - Oxyz - PHẦN 1">
@@ -119,7 +120,8 @@
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
-<body>
+<body>
+
 <div style="background:#0056b3;padding:10px 16px;position:sticky;top:0;z-index:2000;"><a href="index.html" style="color:#fff;text-decoration:none;font-weight:bold;">← Trang chủ Trí Đức</a></div>
 
 <div class="container shadow p-4 p-md-5 bg-white rounded mt-4 mb-5">
@@ -533,8 +535,8 @@ function processSubmit() {
         inputEl.disabled = true;
         let uAns = inputEl.value.trim();
         
-        let uVal = parseFloat(uAns.replace(',', '.'));
-        let cVal = parseFloat(q.answer.replace(',', '.'));
+        let uVal = parseFloat(uAns.replace(/,/g, '.'));
+        let cVal = parseFloat(q.answer.replace(/,/g, '.'));
         
         if(uAns !== "" && Math.abs(uVal - cVal) < 0.001) {
             scoreP3 += 0.5;

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8">
+
     <meta name="description" content="Bài tập ĐỀ ÔN TẬP - HỆ TRỤC TỌA ĐỘ TRONG KHÔNG GIAN OXYZ trực tuyến có chấm điểm, lời giải chi tiết — Cơ Sở Dạy thêm Trí Đức.">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <meta property="og:title" content="ĐỀ ÔN TẬP - HỆ TRỤC TỌA ĐỘ TRONG KHÔNG GIAN OXYZ">
@@ -124,7 +125,8 @@
         }
     </style>
 </head>
-<body>
+<body>
+
 <div style="background:#0056b3;padding:10px 16px;position:sticky;top:0;z-index:2000;"><a href="index.html" style="color:#fff;text-decoration:none;font-weight:bold;">← Trang chủ Trí Đức</a></div>
 
     <div id="restore-alert" class="alert alert-info alert-dismissible fade show container mt-3 d-none" role="alert">
@@ -773,13 +775,13 @@
             let scoreP3 = 0;
             p3Data.forEach((q, idx) => {
                 const inputEl = document.getElementById(`p3-q${idx}`);
-                const userVal = inputEl.value.trim().replace(',', '.');
-                const correctVal = q.correct.replace(',', '.');
+                const userVal = inputEl.value.trim().replace(/,/g, '.');
+                const correctVal = q.correct.replace(/,/g, '.');
 
                 const numUser = parseFloat(userVal);
                 const numCorrect = parseFloat(correctVal);
 
-                if (!isNaN(numUser) && Math.abs(numUser - numCorrect) < 1e-6) {
+                if (!isNaN(numUser) && Math.abs(numUser - numCorrect) < 0.001) {
                     scoreP3 += 0.5;
                     inputEl.classList.add('is-valid', 'bg-success', 'text-white');
                 } else {

@@ -611,8 +611,8 @@
         // Grade Part 3
         document.querySelectorAll('#part3 .q-block').forEach(q => {
             let input = q.querySelector('.sa-input');
-            let userVal = input.value.trim().replace(',', '.');
-            let correctVal = parseFloat(input.dataset.correct.replace(',', '.'));
+            let userVal = input.value.trim().replace(/,/g, '.');
+            let correctVal = parseFloat(input.dataset.correct.replace(/,/g, '.'));
             if (userVal !== "" && Math.abs(parseFloat(userVal) - correctVal) < 0.001) {
                 score3 += 0.5;
                 input.classList.add('is-valid', 'bg-success', 'text-white');

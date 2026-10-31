@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8">
+
     <meta name="description" content="Bài tập Ôn tập Oxyz - P2 trực tuyến có chấm điểm, lời giải chi tiết — Cơ Sở Dạy thêm Trí Đức.">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <meta property="og:title" content="Ôn tập Oxyz - P2">
@@ -150,7 +151,8 @@
         }
     </style>
 </head>
-<body>
+<body>
+
 <div style="background:#0056b3;padding:10px 16px;position:sticky;top:0;z-index:2000;"><a href="index.html" style="color:#fff;text-decoration:none;font-weight:bold;">← Trang chủ Trí Đức</a></div>
 
     <div class="header-section no-print">
@@ -540,7 +542,7 @@ setInterval(saveData, 10000);
 // --- NỘP BÀI & CHẤM ĐIỂM ---
 function parseFloatVN(str) {
     if(!str) return NaN;
-    return parseFloat(str.toString().replace(',', '.'));
+    return parseFloat(str.toString().replace(/,/g, '.'));
 }
 
 document.getElementById('btnSubmit').addEventListener('click', function() {
@@ -619,7 +621,7 @@ document.getElementById('btnSubmit').addEventListener('click', function() {
         let userVal = parseFloatVN(inputEl.value);
         let correctVal = parseFloatVN(q.ans);
 
-        if(!isNaN(userVal) && userVal === correctVal) {
+        if(!isNaN(userVal) && Math.abs(userVal - correctVal) < 0.001) {
             scoreP3 += 0.5;
             inputEl.classList.add('correct-ans');
         } else {

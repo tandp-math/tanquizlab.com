@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8">
+
     <meta name="description" content="Bài tập Đề Ôn Tập - Hệ Tọa Độ Oxyz (Đề 3) trực tuyến có chấm điểm, lời giải chi tiết — Cơ Sở Dạy thêm Trí Đức.">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <meta property="og:title" content="Đề Ôn Tập - Hệ Tọa Độ Oxyz (Đề 3)">
@@ -149,7 +150,8 @@
         }
     </style>
 </head>
-<body>
+<body>
+
 <div style="background:#0056b3;padding:10px 16px;position:sticky;top:0;z-index:2000;"><a href="index.html" style="color:#fff;text-decoration:none;font-weight:bold;">← Trang chủ Trí Đức</a></div>
 
     <script>
@@ -479,7 +481,7 @@
             let numUser = parseFloat(cleanUser);
             let numCorrect = parseFloat(cleanCorrect);
             if (!isNaN(numUser) && !isNaN(numCorrect)) {
-                return Math.abs(numUser - numCorrect) < 0.0001;
+                return Math.abs(numUser - numCorrect) < 0.001;
             }
             return cleanUser.toLowerCase() === cleanCorrect.toLowerCase();
         }
