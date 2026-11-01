@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Phòng thi mẫu GK1 Toán 10 — chế độ thi: chấm bằng máy chủ, đáp án không nằm trong trang. Cơ Sở Dạy thêm Trí Đức.">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHÒNG THI MẪU — GK1 TOÁN 10 (CHẾ ĐỘ THI)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fff; color: #333; line-height: 1.6; padding-bottom: 50px; }
+        .header-box { background: #f8fbff; border: 2px solid #dc3545; border-radius: 12px; padding: 30px; margin-bottom: 30px; }
+        .q-block { border-left: 5px solid transparent; padding-left: 10px; }
+        #timerWrap { position: sticky; top: 0; z-index: 10; background: #fff; padding: 8px 0; }
+    </style>
+</head>
+<body>
+<div class="container mt-3">
+    <div class="sticky-top bg-white py-2"><a href="index.html" class="btn btn-outline-primary btn-sm">← Trang chủ Trí Đức</a></div>
+    <div class="header-box">
+        <h2>Phòng thi mẫu — Đề kiểm tra giữa kỳ 1, Toán 10 (2026–2027)</h2>
+        <p><span class="badge bg-danger">Chế độ thi</span> Chấm bằng máy chủ. Trang này <b>không chứa đáp án hay lời giải</b> — đáp án và lời giải chỉ được trả về sau khi em nộp bài.</p>
+        <p>Thời gian: <b>60 phút</b> (đồng hồ không tạm dừng; tải lại trang vẫn giữ thời gian còn lại; hết giờ tự nộp) &nbsp; Thang điểm tự động: <b>8,0</b> &nbsp; Phần IV tự luận được gửi về giáo viên để chấm tay.</p>
+        <p>Phạm vi: Mệnh đề – Tập hợp; Bất phương trình – Hệ bất phương trình bậc nhất hai ẩn; Hệ thức lượng trong tam giác. Không có chương vectơ.</p>
+        <div id="setupNote" class="alert alert-warning" style="display:none">Trang thi chưa cấu hình địa chỉ máy chủ chấm (GAS). Cần triển khai script <b>gk1-toan10-gas.gs</b> thành web app rồi điền URL vào biến <b>GAS_URL</b> trong trang này, sau đó mới mở thi được.</div>
+        <div class="row g-2">
+            <div class="col-md-5"><input id="studentName" class="form-control" placeholder="Họ và tên"></div>
+            <div class="col-md-3"><input id="className" class="form-control" placeholder="Lớp"></div>
+            <div class="col-md-4"><button id="btnStart" class="btn btn-danger w-100">Vào thi</button></div>
+        </div>
+    </div>
+    <div id="timerWrap" style="display:none"><h4 class="text-danger">Còn lại: <span id="timer">60:00</span></h4></div>
+    <div id="examArea" style="display:none">
+        <div id="examContainer"></div>
+        <button id="btnSubmit" class="btn btn-success btn-lg w-100 my-3">Nộp bài</button>
+        <div id="resultBox" class="card p-3 mb-4" style="display:none"></div>
+    </div>
+</div>
+<script src="gk1-toan10-questions.js"></script>
+<script src="gk1-toan10-room.js"></script>
+<script>
+  // Điền URL web app GAS sau khi triển khai gk1-toan10-gas.gs. Để trống = chưa mở thi.
+  const GAS_URL = "";
+  GK1T10_ROOM.init("exam", GAS_URL);
+</script>
+</body>
+</html>
