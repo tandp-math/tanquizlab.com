@@ -201,6 +201,14 @@ const GK1T10_ROOM = (function () {
           try {
             const r = await fetch(gasUrl, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ action: "start", name, className: cls, examCode: GK1T10_QUESTIONS.examCode }) });
             const d = await r.json();
+            // GAS v2: 5 lần mở bài / 15 phút thì trả {ok:false, error:"locked"}.
+            // Phải chặn ngay ở đây — bản cũ bỏ qua d.ok nên học sinh bị khóa
+            // vẫn vào thi được. Lỗi mạng (catch) thì vẫn cho vào thi như cũ,
+            // để một lần rớt mạng ở bước start không khóa luôn bài thi thật.
+            if (d && d.ok === false) {
+              alert(d.message || d.error || "Không vào thi được, thử lại sau.");
+              return;
+            }
             attemptId = d.attemptId || null;
           } catch (e) { attemptId = null; }
         }
